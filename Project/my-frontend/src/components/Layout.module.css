@@ -1,0 +1,123 @@
+:root {
+   /* The main dark background of the navbar */
+   --surface-1: var(--primary-900);
+
+   /* The accent color for the gradient glow */
+   --primary-900: hsl(256, 43%, 7%);
+   --primary-800: hsl(240, 24%, 13%);
+   --primary-700: hsl(243, 26%, 15%);
+   --primary-600: hsl(252, 9%, 22%);
+   --primary-500: hsl(259, 13%, 28%);
+   --primary-400: hsl(254, 22%, 32%);
+
+   /* The start and end colors for the border gradient */
+   --border-1: var(--primary-500);
+   --border-2: var(--primary-600);
+}
+
+/* *NAVBAR Layout page */
+.layoutContainer {
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh;
+}
+
+.navBarCon {
+   display: flex;
+   position: sticky;
+   top: 1rem;
+   left: 50%;
+   transform: translateX(-50%);
+   width: 50vw;
+   z-index: 10;
+   align-items: center;
+   justify-content: space-between;
+   padding: 0.75rem 1.5rem;
+
+   border-radius: 16px;
+   background-color: var(--surface-1);
+
+   background: radial-gradient(circle at 50% 200%, var(--primary-500), var(--surface-1) 70%) padding-box,
+      linear-gradient(var(--border-1), var(--border-2));
+
+   /* We create a transparent border that will act as a "window" */
+   border: 1px solid transparent;
+   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+   backdrop-filter: blur(12px);
+   -webkit-backdrop-filter: blur(12px);
+}
+.navBarCon h1 {
+   margin-right: 20px;
+}
+.navBarItemsCon {
+   display: flex;
+   align-items: center;
+   gap: 20px;
+}
+/* Base style for ALL links (active or not) */
+.defaultLink,
+.activeLink {
+   padding: 0.75rem 1.25rem; /* Creates a nice clickable area */
+   border-radius: 999px; /* A large value creates the "pill" shape */
+   text-decoration: none;
+   font-weight: 500;
+   font-size: 1rem;
+   outline: none; /* Removes the default outline on focus */
+   position: relative; /* Needed for the underline effect in Option 2 */
+
+   /* THIS IS KEY for a modern feel! */
+   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.defaultLink {
+   color: #525252; /* Or your default text color */
+   background-color: transparent;
+}
+
+/* Add a hover effect for non-active links for better UX */
+.defaultLink:hover {
+   background-color: rgba(150, 150, 150, 0.05); /* A subtle background on hover */
+}
+.activeLink {
+   background-color: #007bff; /* A primary brand color */
+   color: white;
+   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); /* Optional: a nice glow */
+}
+.mainCon {
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   flex: 1; /* It tells this element to grow and take up any available space */
+   padding-bottom: 2rem;
+   margin-top: 15px;
+}
+.mainCon h1 {
+   margin: 0;
+}
+
+/* * About Section (About Page) */
+.aboutSection {
+   display: flex;
+   flex-direction: row;
+   justify-content: space-between;
+   align-items: center;
+   width: 50vw;
+   height: 100%;
+}
+
+/* * Footer Section */
+.footerCon {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 100%;
+   background-color: #888888;
+   padding: 10px 0px;
+}
+.footerLinks {
+   display: flex;
+   gap: 45px;
+}
+.footerLinks a {
+   text-decoration: none;
+}
