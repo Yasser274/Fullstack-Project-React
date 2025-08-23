@@ -1,0 +1,16 @@
+/* * Profile Data Section */
+.profileDataCon{
+  display: flex;
+  flex-direction: column;
+}
+.profileDetails1{
+  display: flex;
+  gap: 10px;
+}
+.profileDetails1 img{
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}

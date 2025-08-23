@@ -1,48 +1,38 @@
-import styles from "../components/Home.module.css";
+import { useState, useEffect } from "react";
 
-// Importing SVGs
-import ThumbsDownSVG from "../assets/icons/thumb-down.svg";
-import ThumbsUpSVG from "../assets/icons/thumb-up.svg";
+import styles from "../components/styles/Home.module.css";
+import RestaurantCard from "../components/RestaurantCard";
 
 interface homePageProps {
    sectionTitle: string;
 }
+// export the types of restaurants in useState
+export interface Restaurant {
+   id: string; // Or number, but string is safer for database IDs
+   rank: number;
+   name: string;
+   logoUrl: string;
+   description: string;
+   tags: string[];
+   upvotes: number;
+   downvotes: number;
+}
 
 const HomePage = ({ sectionTitle }: homePageProps) => {
+   // State to hold the list of restaurants
+   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+
+   // useEffect to fetch the data(json) from api of restaurants and use setRestaurants to store the data in the state
+   useEffect(() => {
+      return () => {};
+   }, []);
+
    return (
       <div className={styles.homeContentCon}>
          <h1>{sectionTitle}</h1>
-         <div className={styles.restaurantsCardsCon}>
-            <div className={styles.leftRestaurantsContentCon}>
-               <div className={styles.rankName}>
-                  <span>1.</span>
-                  <h1>Mac</h1>
-               </div>
-               <div className={styles.restLabels}>
-                  <div>Burgers</div>
-                  <div>Ice cream</div>
-               </div>
-               <span className={styles.restDesc}>Burgers that tastes amazing</span>
-            </div>
-            <div className={styles.rightRestaurantsContentCon}>
-               <div className={styles.restaurantLogo}>
-                  <img
-                     src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f"
-                     alt="Restaurant's Logo"
-                  />
-               </div>
-               <div className={styles.votingCon}>
-                  <div className={styles.votingDetails}>
-                     <img src={ThumbsDownSVG} alt="Thumbs down" />
-                     <span>0</span>
-                  </div>
-                  <div className={styles.votingDetails}>
-                     <img src={ThumbsUpSVG} alt="Thumbs up" />
-                     <span>0</span>
-                  </div>
-               </div>
-            </div>
-         </div>
+         {restaurants.map((restaurant) => {
+            return <RestaurantCard key={restaurant.id} restaurant={restaurant}></RestaurantCard>;
+         })}
       </div>
    );
 };

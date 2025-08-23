@@ -1,5 +1,5 @@
 // Import styling CSS for this component
-import styles from "./Layout.module.css";
+import styles from "../components/styles/Layout.module.css";
 import { Outlet, Link, NavLink } from "react-router-dom";
 
 const Layout = () => {

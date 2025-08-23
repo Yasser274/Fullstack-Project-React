@@ -1,4 +1,4 @@
-import styles from "../components/Layout.module.css";
+import styles from "../components/styles/Layout.module.css";
 
 const AboutPage = () => {
    return (

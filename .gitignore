@@ -38,3 +38,6 @@ dist/
 
 # Vite-specific cache
 .vite/
+
+# Ignore SQL session query
+*session.sql

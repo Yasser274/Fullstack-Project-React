@@ -25,14 +25,14 @@
    gap: 4px;
    flex: 2;
 }
-.rankName{
-  display: flex;
-  align-items: center;
-  gap: 7px;
+.rankName {
+   display: flex;
+   align-items: center;
+   gap: 7px;
 }
-.rankName span{
-  font-size: 2.1rem;
-  font-weight: 800;
+.rankName span {
+   font-size: 2.1rem;
+   font-weight: 800;
 }
 .restDesc {
    font-size: 1.1rem;
@@ -82,6 +82,56 @@
    filter: drop-shadow(0px 0px 7px rgba(0, 0, 0, 0.322));
    transition: all 0.2s ease-in-out;
 }
-.votingDetails img:hover{
-  filter: drop-shadow(0px 0px 7px rgba(0, 0, 0, 0.541));
+.votingDetails img:hover {
+   filter: drop-shadow(0px 0px 7px rgba(0, 0, 0, 0.541));
+}
+
+/* *Profile Section */
+.profileSection {
+   display: flex;
+   width: 50vw;
+   gap: 44px;
+}
+.profileLeftSection {
+   display: flex;
+   flex-shrink: 0;
+}
+.profileNavCon {
+   display: inline-flex;
+   flex-shrink: 0;
+}
+.profileNavCon ul {
+   list-style: none;
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   padding: 0;
+   margin: 0;
+}
+.innerProfileNavDefault,
+.innerProfileNavAct {
+   display: block;
+   width: 130px;
+   text-decoration: none;
+   background-color: purple;
+   color: #525252;
+   padding: 10px 50px 10px 10px;
+   transition: all 0.2s ease-in-out;
+   border-top-left-radius: 10px;
+   border-bottom-left-radius: 10px;
+   border-top-right-radius: 30px;
+   border-bottom-right-radius: 30px;
+   box-shadow: 0px 4px 7px rgba(0, 0, 0, 0.329);
+}
+.innerProfileNavDefault:hover {
+   padding-right: 80px;
+}
+.innerProfileNavAct {
+   color: white;
+   padding-right: 80px;
+   box-shadow: 3px 2px 15px rgba(0, 0, 0, 0.603);
+}
+.profileRightSection {
+   display: flex;
+   flex: 1;
 }
