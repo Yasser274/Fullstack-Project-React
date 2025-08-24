@@ -1,8 +1,19 @@
 // Import styling CSS for this component
+import { useState } from "react";
 import styles from "../components/styles/Layout.module.css";
 import { Outlet, Link, NavLink } from "react-router-dom";
+import Modal from "./common/Modal";
+import Form from "./common/Form";
 
 const Layout = () => {
+   // useState to close down and open the login/register modal(overlay)
+   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+   // get Login and register data
+   const handleLoginSubmit = (formData: { username: string; password: string }) => {
+      console.log("Form Data received", formData);
+   };
+
    return (
       <div className={styles.layoutContainer}>
          <header>
@@ -33,6 +44,14 @@ const Layout = () => {
                   >
                      Profile
                   </NavLink>
+                  <button onClick={() => setIsLoginModalOpen(true)}>Login</button>{" "}
+                  {/* when clicked on it will update state of IsLoginModalOpen to true */}
+                  <Modal
+                     isOpen={isLoginModalOpen} // if it's true it render the overlay if false it will not render it
+                     title="Login"
+                     children={<Form buttonAction="Login" onSubmit={handleLoginSubmit}></Form>}
+                     onClose={() => setIsLoginModalOpen(false)} // it will close overlay down
+                  ></Modal>
                </div>
             </nav>
          </header>

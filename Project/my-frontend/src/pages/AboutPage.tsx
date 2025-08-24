@@ -3,6 +3,7 @@ import styles from "../components/styles/Layout.module.css";
 const AboutPage = () => {
    return (
       <>
+      <title>About</title>
          <div className={styles.aboutSection}>
             <div className={styles.aboutDescCon}>
                <h1>Company Name</h1>

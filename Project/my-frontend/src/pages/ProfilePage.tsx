@@ -9,21 +9,22 @@ export interface profileDataProps {
 }
 
 const ProfilePage = () => {
-
-  // Profile Data API
-  const user:profileDataProps = {
-    name:"Alice",
-    profilePicture:"dsa",
-    email: "testing41295841@gmail.com"
-  }
+   // Profile Data API
+   const user: profileDataProps = {
+      name: "Alice",
+      profilePicture: "dsa",
+      email: "testing41295841@gmail.com",
+   };
 
    return (
       <div className={styles.profileSection}>
+         <title>Profile</title>
          <div className={styles.profileLeftSection}>
             <ProfileNav></ProfileNav>
          </div>
          <section className={styles.profileRightSection}>
-            <Outlet context={user}></Outlet> {/* context will pass down the API(object json) into the Outlet that has many components inside it */}
+            <Outlet context={user}></Outlet>{" "}
+            {/* context will pass down the API(object json) into the Outlet that has many components inside it */}
          </section>
       </div>
    );

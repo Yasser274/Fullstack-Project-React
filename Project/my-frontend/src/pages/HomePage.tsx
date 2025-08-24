@@ -29,6 +29,7 @@ const HomePage = ({ sectionTitle }: homePageProps) => {
 
    return (
       <div className={styles.homeContentCon}>
+         <title>Home</title>
          <h1>{sectionTitle}</h1>
          {restaurants.map((restaurant) => {
             return <RestaurantCard key={restaurant.id} restaurant={restaurant}></RestaurantCard>;

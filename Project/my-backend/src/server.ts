@@ -34,10 +34,10 @@ app.get("/api/test", (req: Request, res: Response) => {
    res.send("Backend Started ✅");
 });
 
-// the function is "async" meaning i can use await to wait for the database response after requesting a query
+//? the function is "async" meaning i can use await to wait for the database response after requesting a query
 app.get("/api/user", async (req: Request, res: Response) => {
    try {
-      // i destructed the rows object because pool.query returns a lot of objects but i only care about the rows data from the DB value of that property
+      //? i destructed the rows object because pool.query returns a lot of objects but i only care about the rows data from the DB value of that property
       // example of the data get returned rows(an array of objects and by destructing it i only get one object)
       // rows: [       // <--- HERE is your actual data!
       //     { id: 1, username: 'alice', email: 'alice@example.com' },
