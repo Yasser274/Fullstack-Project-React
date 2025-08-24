@@ -91,7 +91,9 @@
    padding-bottom: 2rem;
    margin-top: 15px;
 }
-.mainCon h1 {
+.mainCon h1,
+.mainCon h2,
+.mainCon h3 {
    margin: 0;
 }
 

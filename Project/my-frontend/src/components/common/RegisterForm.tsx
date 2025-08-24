@@ -1,49 +1,54 @@
 import React, { useState } from "react";
-import styles from "./common.module.css";
-
+import styles from "../../components/common/common.module.css";
 // Import SVGs icons
 import UsernameIcon from "../../assets/icons/UsernameSVG"; // so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
 import PasswordIcon from "../../assets/icons/PasswordSVG";
 
-export interface FormData {
-   // It specifies that the FormData object must have two properties: username and password, both of type string.
+export interface RegisterFormData {
    username: string;
    password: string;
+   confirmPassword: string;
 }
-// ? ones i created with Props will get data from other Components or Parent Component
-interface FormProps {
+
+interface RegisterFormProps {
    buttonAction: string;
-   onSubmitP: (data: FormData) => void;
+   OnSubmitRegister: (data: RegisterFormData) => void;
 }
 
-const Form = ({ onSubmitP, buttonAction }: FormProps) => {
-   const [username, setUserName] = useState("");
-   const [password, setUserPassword] = useState("");
+const RegisterForm = ({ buttonAction, OnSubmitRegister }: RegisterFormProps) => {
+   const [username, setUsername] = useState("");
+   const [password, setPassword] = useState("");
+   const [confirmPassword, setConfirmPassword] = useState("");
 
-   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-      // Prevent the default form action which reloads the page.
+   const savedRegisterInfo = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      // Call the function passed down from the parent,
-      // sending the current state up. (meaning username, setUserName and password states)
-      onSubmitP({ username, password });
+      OnSubmitRegister({ username, password,confirmPassword });
    };
-
    return (
-      <form className={styles.formCon} onSubmit={handleSubmit}>
+      <form className={styles.formCon} onSubmit={savedRegisterInfo}>
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <UsernameIcon className={styles.formIcons}></UsernameIcon>
                <label>Username</label>
             </div>
-            <input type="text" value={username} onChange={(e) => setUserName(e.target.value)} />
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
          </div>
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <PasswordIcon className={styles.formIcons}></PasswordIcon>
                <label>Password</label>
             </div>
-            <input type="password" value={password} onChange={(e) => setUserPassword(e.target.value)} />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <div className={styles.formDetailsLabel}>
+               <PasswordIcon className={styles.formIcons}></PasswordIcon>
+               <label>Confirm Password</label>
+            </div>
+            <input
+               type="password"
+               value={confirmPassword}
+               onChange={(e) => setConfirmPassword(e.target.value)}
+            />
          </div>
          <div className={styles.formBtnCon}>
             <button type="submit">
@@ -58,4 +63,4 @@ const Form = ({ onSubmitP, buttonAction }: FormProps) => {
    );
 };
 
-export default Form;
+export default RegisterForm;

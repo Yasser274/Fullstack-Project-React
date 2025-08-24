@@ -1,36 +1,229 @@
+:root {
+   --primary-900: hsl(256, 43%, 7%);
+   --primary-800: hsl(240, 24%, 13%);
+   --primary-700: hsl(243, 26%, 15%);
+   --primary-600: hsl(252, 9%, 22%);
+   --primary-500: hsl(259, 13%, 28%);
+   --primary-400: hsl(254, 22%, 32%);
+
+   --primary-300: hsl(251, 13%, 68%);
+   --primary-200: hsl(240, 15%, 76%);
+   --primary-100: hsl(240, 21%, 88%);
+
+   --neutral-100: hsl(0, 0%, 100%);
+
+   --accent-400: hsl(93, 60%, 69%);
+
+   --text-1: var(--neutral-100);
+   --text-2: var(--primary-100);
+   --text-3: var(--primary-200);
+
+   --surface-1: var(--primary-900);
+   --surface-2: var(--primary-800);
+   --surface-3: var(--primary-700);
+
+   --border-1: var(--primary-500); /* top */
+   --border-2: var(--primary-600); /* bottom */
+}
+
 /* * Modal (Modal.tsx) */
-.modalCon{
-  position: fixed;
-  background: rgba(0, 0, 0, 0.397);
-  top: 0;
-  left: 0;
-  z-index: 15;
-  cursor: pointer;
-  width: 100vw;
-  height: 100vh;
-  backdrop-filter: blur(5px);
+h3 {
+   margin: 0;
 }
-.modalContent{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  padding: 20px 40px;
-  background-color: gray;
-  border-radius: 14px;
-z-index: 30;
-cursor: default;
+.modalCon {
+   position: fixed;
+   background: rgba(0, 0, 0, 0.397);
+   top: 0;
+   left: 0;
+   z-index: 15;
+   cursor: pointer;
+   width: 100vw;
+   height: 100vh;
+   backdrop-filter: blur(5px);
 }
-.modalCloseBtn{
-  position: absolute;
-  top: 0;
-  right: 0;
+.modalTitle {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+.modalContent {
+   position: relative;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   padding: 20px 40px;
+   z-index: 30;
+   cursor: default;
+   width: 75vw;
+   color: white;
+   --border-width: 1px;
+   border-radius: 1rem;
+   position: relative;
+
+   background: hsl(from var(--surface-3) h s l / 0.25);
+   backdrop-filter: blur(12px);
+}
+.modalContent::before {
+   content: "";
+   position: absolute;
+   z-index: -1;
+   inset: 0;
+   border-radius: inherit;
+   border: var(--border-width) solid transparent;
+   background: linear-gradient(var(--border-1), var(--border-2)) border-box;
+   mask: linear-gradient(black, black) border-box, linear-gradient(black, black) padding-box;
+   mask-composite: subtract;
+}
+.modalCloseBtn {
+   position: absolute;
+   top: 4%;
+   right: 6%;
+   cursor: pointer;
+}
+.switchAuthCon {
+   display: flex;
+   gap: 10px;
+}
+.switchAuthCon a {
+   text-decoration: underline;
+   color: white;
+   font-weight: 800;
+   cursor: pointer;
 }
 
 /* * Form that will be inside Modal (Form.tsx) */
-.formDetailsDiv{
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px 4px;
+.formCon * {
+   color: white !important;
+}
+.formDetailsDiv {
+   display: flex;
+   align-items: flex-start;
+   flex-direction: column;
+   gap: 4px;
+   padding: 8px 4px;
+   color: white;
+}
+.formDetailsLabel {
+   display: flex;
+   align-items: center;
+   gap: 5px;
+   margin-bottom: 0.2rem;
+}
+.formDetailsLabel label {
+   display: flex;
+   font-size: 0.9rem;
+   font-weight: bold;
+   color: #05060f99;
+   transition: color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+}
+.formIcons {
+   fill: white;
+   height: 24px;
+   width: 24px;
+}
+.formDetailsDiv input {
+   width: 60%;
+   height: 44px;
+   background-color: #7474770a;
+   border-radius: 0.5rem;
+   padding: 0 1rem;
+   border: 2px solid transparent;
+   font-size: 1rem;
+   transition: border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
+      color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s, background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+}
+.formDetailsDiv input:hover,
+.formDetailsDiv input:focus {
+   outline: none;
+   border-color: #6c6d7c;
+}
+.formDetailsDiv:hover .formDetailsLabel label,
+.formDetailsDiv input:focus {
+   color: #6c6d7cc7;
+}
+.formBtnCon {
+   display: flex;
+   justify-content: flex-end;
+   margin-top: 1rem;
+}
+.formBtnCon button {
+   position: relative;
+   border: none;
+   background: transparent;
+   padding: 0;
+   outline: none;
+   cursor: pointer;
+   font-family: sans-serif;
+   font-weight: 600;
+}
+.formBtnShadow {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: rgba(0, 0, 0, 0.25);
+   border-radius: 8px;
+   transform: translateY(2px);
+   transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.formBtnEdge {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   border-radius: 8px;
+   background: linear-gradient(
+      to left,
+      hsl(217, 33%, 16%) 0%,
+      hsl(217, 33%, 32%) 8%,
+      hsl(217, 33%, 32%) 92%,
+      hsl(217, 33%, 16%) 100%
+   );
+}
+.formBtnFront {
+   position: relative;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 12px 28px;
+   font-size: 1.07rem;
+   color: white;
+   background: var(--primary-700);
+   border-radius: 8px;
+   transform: translateY(-4px);
+   transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.formBtnCon button:hover .formBtnShadow {
+   transform: translateY(4px);
+   transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+.formBtnCon button:hover .formBtnFront {
+   transform: translateY(-6px);
+   transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+.formBtnCon button:active .formBtnShadow {
+   transform: translateY(1px);
+   transition: transform 34ms;
+}
+.formBtnCon button:active .formBtnFront {
+   transform: translateY(-2px);
+   transition: transform 34ms;
+}
+
+/* --- MEDIA QUERIES (for responsive design) --- */
+
+/* For screens that are 768px wide or wider (tablets and up) */
+@media (width >= 768px) {
+   .modalContent {
+      width: 600px;
+   }
+}
+
+/* For screens that are 1024px wide or wider (desktops and up) */
+@media (width >= 1024px) {
+   .modalContent {
+      width: 400px;
+   }
 }

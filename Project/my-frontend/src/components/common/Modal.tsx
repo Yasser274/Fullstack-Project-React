@@ -16,7 +16,7 @@ const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
       // if it's false don't return anything
       return null;
    }
-
+  //  if isOpen true go on and return the stuff below
    useEffect(() => {
       const handleEscape = (event: KeyboardEvent) => {
          if (event.key === "Esc") {
@@ -41,7 +41,10 @@ const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
             <button className={styles.modalCloseBtn} onClick={onClose}>
                &times;
             </button>
-            <title>{title}</title>
+            <title>{title}</title> {/* This is for the tab title */}
+            <div className={styles.modalTitle}>
+               <h3>{title}</h3>
+            </div>
             <div>{children}</div>
          </div>
       </div>,

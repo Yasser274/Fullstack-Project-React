@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom"; // this so i can route between pages
 
