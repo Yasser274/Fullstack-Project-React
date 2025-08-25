@@ -14,9 +14,10 @@ export interface FormData {
 interface FormProps {
    buttonAction: string;
    onSubmitP: (data: FormData) => void;
+   errorMes: string | null;
 }
 
-const Form = ({ onSubmitP, buttonAction }: FormProps) => {
+const Form = ({ onSubmitP, buttonAction, errorMes }: FormProps) => {
    const [username, setUserName] = useState("");
    const [password, setUserPassword] = useState("");
 
@@ -31,6 +32,8 @@ const Form = ({ onSubmitP, buttonAction }: FormProps) => {
 
    return (
       <form className={styles.formCon} onSubmit={handleSubmit}>
+         {/* render this when the backend returns an error(meaning not null(a string message means an error)) if there is no error return null(nothing) */}
+         {errorMes !== null ? <p className={styles.modalErrorMessage}>{errorMes}</p> : null}
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <UsernameIcon className={styles.formIcons}></UsernameIcon>

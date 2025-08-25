@@ -96,6 +96,11 @@
 .mainCon h3 {
    margin: 0;
 }
+.loginBtn{
+   cursor: pointer;
+   border: none;
+   padding: 10px 15px;
+}
 
 /* * About Section (About Page) */
 .aboutSection {

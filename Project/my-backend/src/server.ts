@@ -3,6 +3,9 @@ import cors from "cors";
 import { Pool } from "pg"; // this is for PostGreSQL DB connections
 import "dotenv/config"; // Loads environment variables from .env into process.env
 
+// to hash passwords from users
+import bcrypt from "bcrypt";
+
 // Create an instance of the Express application. The `app` object is the heart of my server.
 const app = express();
 const port = process.env.API_PORT || 3001;
@@ -32,6 +35,54 @@ app.get("/api/test", (req: Request, res: Response) => {
    console.log("Running on home page");
 
    res.send("Backend Started ✅");
+});
+
+// . API to get the login/register value from frontend (login)
+app.post("/api/login", (req: Request, res: Response) => {
+   // The data from the frontend will be in `req.body`. and the res(Response) will be the backend Response to Frontend
+   const { username, password } = req.body; // get values of username and password (destruct it from the object)
+
+   res.status(200).json({
+      message: `Successfully received login for user ${username} ${password}`,
+   });
+});
+// . API to create a new user (register)
+app.post("/api/register", async (req: Request, res: Response) => {
+   try {
+      const { username, password, confirmPassword, email } = req.body;
+
+      // - VALIDATION CHECKS -
+
+      // 1. Check if passwords match
+      if (password !== confirmPassword) {
+         // '400 Bad Request' for invalid user input.
+         // Send a JSON object with an 'error' key. so that the frontend can display this "error" back to the user
+         return res.status(400).json({ error: "Passwords do not match." });
+      }
+      // 2. Check if the email already exists in the database
+      const existingUserQuery = "SELECT * FROM users WHERE email = $1 OR username = $2";
+      const { rows: existingUsers } = await pool.query(existingUserQuery, [email, username]);
+      if (existingUsers.length > 0) {
+         return res.status(409).json({ error: `An account with this email/username already exists.` });
+      }
+
+      // - IF ALL CHECKS PASS, PROCEED -
+
+      // hash the password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Store the new user in the database
+      // the "$1", "$2" etc are the placeholders to prevent SQL injection attack (it's where i place what's to pass in the query)
+
+      const newUserQuery = `INSET INTO users (username,password_hash,email) VALUES($1,$2,$3)`;
+      const { rows } = await pool.query(newUserQuery, [username, hashedPassword, email]);
+
+      res.status(201).json({ message: `got these ${username} ${email}`, user: rows[0] });
+   } catch (error) {
+      console.error("Registration error", error); // console.log is for the backend and res(is for the frontend)
+      res.status(500).json({ error: "An error occurred during registration" });
+   }
 });
 
 //? the function is "async" meaning i can use await to wait for the database response after requesting a query

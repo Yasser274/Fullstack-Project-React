@@ -6,3 +6,10 @@ body {
    background-color: #333333;
    margin: 0;
 }
+/* because these elements don't inherit the font-family from body */
+button,
+input,
+textarea,
+select {
+   font-family: inherit;
+}

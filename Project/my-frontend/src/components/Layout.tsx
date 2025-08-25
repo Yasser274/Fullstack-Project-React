@@ -8,6 +8,8 @@ import AuthModalContent from "./common/AuthModalContent";
 const Layout = () => {
    // useState to close down and open the login/register modal(overlay)
    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+   // to switch modal title
+   const [switchModalTitle, setSwitchModalTitle] = useState<1 | 0>(0); 
 
    return (
       <div className={styles.layoutContainer}>
@@ -39,12 +41,19 @@ const Layout = () => {
                   >
                      Profile
                   </NavLink>
-                  <button onClick={() => setIsLoginModalOpen(true)}>Login</button>
+                  <button className={styles.loginBtn} onClick={() => setIsLoginModalOpen(true)}>
+                     Login
+                  </button>
                   {/* when clicked on it will update state of IsLoginModalOpen to true */}
                   <Modal
                      isOpen={isLoginModalOpen} // if it's true it render the overlay if false it will not render it
-                     title="Login"
-                     children={<AuthModalContent></AuthModalContent>}
+                     title={switchModalTitle === 0 ? "Login" : "Register"}
+                     children={
+                        <AuthModalContent
+                           currentTitle={switchModalTitle}
+                           onSwitchTitle={setSwitchModalTitle}
+                        ></AuthModalContent>
+                     }
                      onClose={() => setIsLoginModalOpen(false)} // it will close overlay down
                   ></Modal>
                </div>
