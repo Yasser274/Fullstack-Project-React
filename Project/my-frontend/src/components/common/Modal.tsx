@@ -8,19 +8,21 @@ interface ModalProps {
    onClose: () => void;
    children: React.ReactNode; // Represents all of the things React can render. it can take in anything in it and many things
    title: string;
+   setResetTitle?: (val: 0 | 1) => void;
 }
 
-const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
+const Modal = ({ isOpen, onClose, children, title, setResetTitle }: ModalProps) => {
    // destruct(get values(the types)) inside the interface directly
    if (!isOpen) {
       // if it's false don't return anything
       return null;
    }
-  //  if isOpen true go on and return the stuff below
+   //  if isOpen true go on and return the stuff below
    useEffect(() => {
       const handleEscape = (event: KeyboardEvent) => {
-         if (event.key === "Esc") {
+         if (event.key === "Escape") {
             onClose();
+            setResetTitle?.(0); // since setResetTitle is optional this says if it exists in the parent(being passed down to this component) set it to 0
          }
       };
       document.addEventListener("keydown", handleEscape);
@@ -34,11 +36,23 @@ const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
    // Portal to render the modal at the root of the document
    // This avoids z-index issues.
    return ReactDOM.createPortal(
-      <div className={styles.modalCon} onClick={onClose}>
+      <div
+         className={styles.modalCon}
+         onClick={() => {
+            onClose();
+            setResetTitle?.(0);
+         }}
+      >
          {/* this will be the dark background(overlay) and when user clicks it will close the entire modal */}
          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             {/* The onClick with e.stopPropagation() on the content area acts as a shield, catching any clicks that happen inside it and preventing them from bubbling up and accidentally triggering the "close" handler. */}
-            <button className={styles.modalCloseBtn} onClick={onClose}>
+            <button
+               className={styles.modalCloseBtn}
+               onClick={() => {
+                  onClose();
+                  setResetTitle?.(0);
+               }}
+            >
                &times;
             </button>
             <title>{title}</title> {/* This is for the tab title */}

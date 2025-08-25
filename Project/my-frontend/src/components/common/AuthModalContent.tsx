@@ -13,9 +13,14 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
    const [view, setview] = useState<"login" | "register">("login"); // < > is generic type script it can auto detect the type inside it and in this i'm saying it only accept login and register string
 
    const [error, setError] = useState<string | null>(null); // holds either string or null and null means no error from the backend
+   const [showMessage, setShowMessage] = useState<string | null>(null);
 
    //. login in function (API)
    const handleLoginSubmit = async ({ username, password }: FormData) => {
+      // Clear previous messages on a new submission
+      setError(null);
+      setShowMessage(null);
+
       try {
          const response = await fetch("http://localhost:3001/api/login", {
             //* method: I'm SENDING data to the server to be processed, so i used 'POST'.
@@ -31,14 +36,26 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
             // I must serialize it into a JSON string format, which is what JSON.stringify does.
             body: JSON.stringify({ username, password }),
          });
+         const data = await response.json(); // Parse the JSON response from the server.
+
          if (!response.ok) {
             // if the response wasn't ok catch the server side error (if i send a bad request (400) or if the server crashes (500) (like res.status(400))).
-            const errorData = await response.json();
-            setError(errorData.error || "An unknown error occurred");
+            if (response.status === 401) {
+               setError(data.error);
+            } else {
+               setError("An unexpected error occurred. Please try again.");
+            }
          }
 
-         const data = await response.json(); // Parse the JSON response from the server.
-         console.log("Success", data);
+         if (data.token) {
+            localStorage.setItem("token", data.token); // store the token in localStorage so it keeps user logged in (kinda like his ID)
+
+            setShowMessage(data.displayMessage);
+
+            setTimeout(() => {
+               window.location.reload(); // refresh the page after user logins in
+            }, 1000);
+         }
       } catch (error) {
          console.log("A problem happened while trying to fetch", error);
          setError("Could not connect to the server. Please try again later.");
@@ -47,10 +64,9 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
 
    //.  register function (API)
    const handleRegisterSubmit = async ({ username, password, confirmPassword, email }: RegisterFormData) => {
-      // if (password !== confirmPassword) {
-      //    console.log("Passwords don't match");
-      //    return;
-      // }
+      // Clear previous messages on a new submission
+      setError(null);
+      setShowMessage(null);
 
       try {
          const response = await fetch("http://localhost:3001/api/register", {
@@ -60,14 +76,18 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
             },
             body: JSON.stringify({ username, password, confirmPassword, email }), // send this in req.body for the backend
          });
+         const data = await response.json();
 
          if (!response.ok) {
-            const errorData = await response.json();
-            setError(errorData.error || "An unknown error occurred");
+            if (response.status === 409 || response.status === 400) {
+               setError(data.error);
+            } else {
+               setError("An unexpected error occurred. Please try again.");
+            }
             return; // stop the function right here so that it doesn't go below and setError the next one
          }
 
-         const data = await response.json();
+         setShowMessage(data.displayMessage); // when it all went well get the displayMessage(key) value (EX: "displayMessage": "Example...")
       } catch (error) {
          console.log("A problem happened while trying to fetch", error);
          setError("Could not connect to the server. Please try again later.");
@@ -77,12 +97,18 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
    return (
       <div>
          {view === "login" ? (
-            <Form buttonAction="Login" onSubmitP={handleLoginSubmit} errorMes={error}></Form>
+            <Form
+               buttonAction="Login"
+               onSubmitP={handleLoginSubmit}
+               errorMes={error}
+               displayMessage={showMessage}
+            ></Form>
          ) : (
             <RegisterForm
                buttonAction="Register"
                OnSubmitRegister={handleRegisterSubmit}
                errorMes={error}
+               displayMessage={showMessage}
             ></RegisterForm>
          )}
 
@@ -94,6 +120,8 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
                      onClick={() => {
                         setview("register");
                         onSwitchTitle(1);
+                        setError(null);
+                        setShowMessage(null);
                      }}
                   >
                      Register
@@ -106,6 +134,8 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
                      onClick={() => {
                         setview("login");
                         onSwitchTitle(0);
+                        setError(null);
+                        setShowMessage(null);
                      }}
                   >
                      Login

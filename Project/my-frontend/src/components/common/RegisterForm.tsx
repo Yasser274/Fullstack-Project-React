@@ -14,28 +14,36 @@ export interface RegisterFormData {
 
 interface RegisterFormProps {
    buttonAction: string;
-   OnSubmitRegister: (data: RegisterFormData) => void;
-   errorMes: string | null;
+   OnSubmitRegister: (data: RegisterFormData) => Promise<void>;
+   errorMes?: string | null;
+   displayMessage?: string | null;
 }
 
-const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes }: RegisterFormProps) => {
+const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage }: RegisterFormProps) => {
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
    const [confirmPassword, setConfirmPassword] = useState("");
    const [email, setEmail] = useState("");
 
-   const savedRegisterInfo = (event: React.FormEvent<HTMLFormElement>) => {
+   const savedRegisterInfo = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      OnSubmitRegister({ username, password, confirmPassword, email });
+      try {
+         // NOW wait for the parent function to finish completely.
+         await OnSubmitRegister({ username, password, confirmPassword, email });
 
-      setPassword("");
-      setConfirmPassword(""); // empty out the value of the field
+         setPassword(""); // empty out the value of the field
+         setConfirmPassword("");
+      } catch (error) {
+         console.error("Submission Error",error)
+      }
    };
+
    return (
       <form className={styles.formCon} onSubmit={savedRegisterInfo}>
          {/* render this when the backend returns an error(meaning not null(a string message means an error)) if there is no error return null(nothing) */}
          {errorMes !== null ? <p className={styles.modalErrorMessage}>{errorMes}</p> : null}
+         {displayMessage !== null ? <p className={styles.modalDisplayMessage}>{displayMessage}</p> : null}
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <UsernameIcon className={styles.formIcons}></UsernameIcon>

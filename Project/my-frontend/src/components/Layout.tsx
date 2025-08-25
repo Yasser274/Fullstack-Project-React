@@ -9,7 +9,7 @@ const Layout = () => {
    // useState to close down and open the login/register modal(overlay)
    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
    // to switch modal title
-   const [switchModalTitle, setSwitchModalTitle] = useState<1 | 0>(0); 
+   const [switchModalTitle, setSwitchModalTitle] = useState<1 | 0>(0);
 
    return (
       <div className={styles.layoutContainer}>
@@ -46,6 +46,7 @@ const Layout = () => {
                   </button>
                   {/* when clicked on it will update state of IsLoginModalOpen to true */}
                   <Modal
+                     setResetTitle={setSwitchModalTitle} // so when i close the modal on the register render it will reset the title back to "Login"
                      isOpen={isLoginModalOpen} // if it's true it render the overlay if false it will not render it
                      title={switchModalTitle === 0 ? "Login" : "Register"}
                      children={

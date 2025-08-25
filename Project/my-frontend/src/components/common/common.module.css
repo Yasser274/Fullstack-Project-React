@@ -78,6 +78,10 @@ h3 {
    color: red !important;
    text-align: center;
 }
+.modalDisplayMessage{
+   color: green !important;
+   text-align: center;
+}
 .modalCloseBtn {
    position: absolute;
    top: 4%;
@@ -96,9 +100,6 @@ h3 {
 }
 
 /* * Form that will be inside Modal (Form.tsx) */
-.formCon * {
-   color: white !important;
-}
 .formDetailsDiv {
    display: flex;
    align-items: flex-start;
@@ -117,7 +118,7 @@ h3 {
    display: flex;
    font-size: 0.9rem;
    font-weight: bold;
-   color: #05060f99;
+   color: #ffffff;
    transition: color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
 }
 .formIcons {
@@ -133,6 +134,7 @@ h3 {
    padding: 0 1rem;
    border: 2px solid transparent;
    font-size: 1rem;
+   color: white;
    transition: border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
       color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s, background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
 }

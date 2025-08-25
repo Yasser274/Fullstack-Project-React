@@ -5,6 +5,7 @@ import "dotenv/config"; // Loads environment variables from .env into process.en
 
 // to hash passwords from users
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken"; // (for Login session)
 
 // Create an instance of the Express application. The `app` object is the heart of my server.
 const app = express();
@@ -38,13 +39,50 @@ app.get("/api/test", (req: Request, res: Response) => {
 });
 
 // . API to get the login/register value from frontend (login)
-app.post("/api/login", (req: Request, res: Response) => {
+app.post("/api/login", async (req: Request, res: Response) => {
    // The data from the frontend will be in `req.body`. and the res(Response) will be the backend Response to Frontend
-   const { username, password } = req.body; // get values of username and password (destruct it from the object)
+   // try if you can get the data from the frontend if you can't(catch the error)
+   try {
+      const { username, password } = req.body; // get values of username and password (destruct it from the object)
 
-   res.status(200).json({
-      message: `Successfully received login for user ${username} ${password}`,
-   });
+      const checkUserExists = `SELECT id,username,password_hash FROM users WHERE username = $1`;
+      const { rows: users } = await pool.query(checkUserExists, [username]);
+      if (users.length === 0) {
+         return res.status(401).json({
+            message: `Invalid username or password`,
+            error: `Invalid username or password`,
+         });
+      }
+      // if reached this it means that we found a user with that username so pick the first index in that JSON (since it will only have one)
+      const user = users[0];
+      //? check password entered with the hashed one in the database (password the user just typed in, hash it again, and then compare the two hashes.)
+      const isPasswordCorrect = await bcrypt.compare(password, user.password_hash);
+      if (isPasswordCorrect === true) {
+         // Login Session (kinda like giving the user ID card for the server to remember him later on)
+         const payload = {
+            userId: user.id,
+            username: user.username,
+         };
+         const secret = process.env.JWT_SECRET;
+         if (!secret) {
+            throw new Error("JWT_SECRET is not defined in .env file");
+         }
+         // create the token
+         const token = jwt.sign(payload, secret, { expiresIn: "8h" });
+
+         // Send the token back to the frontend
+         return res
+            .status(200)
+            .json({ message: `Logged In Token`, displayMessage: `Logged in Successfully`, token: token }); // The frontend will need token!
+      } else {
+         return res
+            .status(401)
+            .json({ message: `Invalid username or password`, error: `Invalid username or password` });
+      }
+   } catch (error) {
+      console.error("Login Error:", error);
+      res.status(500).json({ error: `An internal server error occurred.` });
+   }
 });
 // . API to create a new user (register)
 app.post("/api/register", async (req: Request, res: Response) => {
@@ -75,13 +113,23 @@ app.post("/api/register", async (req: Request, res: Response) => {
       // Store the new user in the database
       // the "$1", "$2" etc are the placeholders to prevent SQL injection attack (it's where i place what's to pass in the query)
 
-      const newUserQuery = `INSET INTO users (username,password_hash,email) VALUES($1,$2,$3)`;
-      const { rows } = await pool.query(newUserQuery, [username, hashedPassword, email]);
+      const newUserQuery = `INSERT INTO users (username,password_hash,email) VALUES($1,$2,$3) RETURNING *`; //? Insert the new users and get me the other columns
+      // that i didn't select (other than password,username etc (meaning i want ID etc of that user back))
+      // to save bandwidth and get everything back instead of querying for the ID and other info
 
-      res.status(201).json({ message: `got these ${username} ${email}`, user: rows[0] });
+      const { rows: userRows } = await pool.query(newUserQuery, [username, hashedPassword, email]); // destruct the rows and give it alias userRows
+      // 'rows[0]' will now contain the new user object { id: ..., username: ..., email: ... }
+      const newUser = userRows[0];
+
+      return res.status(201).json({
+         message: `got these ${username} ${email}`,
+         user: newUser,
+         displayMessage: `Account Created Successfully`,
+      });
    } catch (error) {
       console.error("Registration error", error); // console.log is for the backend and res(is for the frontend)
       res.status(500).json({ error: "An error occurred during registration" });
+      return;
    }
 });
 
