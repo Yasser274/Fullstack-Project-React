@@ -18,6 +18,10 @@ const port = process.env.API_PORT || 3001;
 
 app.use(cors()); // Sets up CORS so my React frontend can talk to it.
 app.use(express.json()); // This is crucial for modern APIs. // It parses incoming request bodies that are in JSON format (e.g. POST requests with JSON payloads)
+//? Serve static files from the 'public' directory
+// you can access your image directly in the browser via a URL.
+// The URL is formed by taking my server address(localhost:3001) and appending the path to the file inside the public folder. The public part itself is invisible in the URL. (localhost:3001/images/default-avatar.png)
+app.use(express.static("public"));
 
 // PostgreSQL connection pool get from .env(it hides DB details) file
 const pool = new Pool({
@@ -45,7 +49,7 @@ app.post("/api/login", async (req: Request, res: Response) => {
    try {
       const { username, password } = req.body; // get values of username and password (destruct it from the object)
 
-      const checkUserExists = `SELECT id,username,password_hash FROM users WHERE username = $1`;
+      const checkUserExists = `SELECT id,username,password_hash,profile_picture_url,email FROM users WHERE username = $1`;
       const { rows: users } = await pool.query(checkUserExists, [username]);
       if (users.length === 0) {
          return res.status(401).json({
@@ -58,10 +62,12 @@ app.post("/api/login", async (req: Request, res: Response) => {
       //? check password entered with the hashed one in the database (password the user just typed in, hash it again, and then compare the two hashes.)
       const isPasswordCorrect = await bcrypt.compare(password, user.password_hash);
       if (isPasswordCorrect === true) {
-         // Login Session (kinda like giving the user ID card for the server to remember him later on)
+         // Login Session (kinda like giving the user ID card for the server to remember him later on) (include stuff to be stored in that token like profile pic)
          const payload = {
             userId: user.id,
             username: user.username,
+            profilePictureURL: user.profile_picture_url,
+            email: user.email
          };
          const secret = process.env.JWT_SECRET;
          if (!secret) {

@@ -5,11 +5,17 @@ import { Outlet, Link, NavLink } from "react-router-dom";
 import Modal from "./common/Modal";
 import AuthModalContent from "./common/AuthModalContent";
 
+// Context (global state access) (this one for login and auth)
+import { useAuth } from "../context/AuthContext";
+
 const Layout = () => {
    // useState to close down and open the login/register modal(overlay)
    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
    // to switch modal title
    const [switchModalTitle, setSwitchModalTitle] = useState<1 | 0>(0);
+
+   const { user, logout } = useAuth();
+   console.log("Current user object:", user);
 
    return (
       <div className={styles.layoutContainer}>
@@ -41,9 +47,25 @@ const Layout = () => {
                   >
                      Profile
                   </NavLink>
-                  <button className={styles.loginBtn} onClick={() => setIsLoginModalOpen(true)}>
-                     Login
-                  </button>
+                  {user ? (
+                     // if user is logged in (true)
+                     <div className={styles.navProfilePicCon}>
+                        <Link to={"/profile"}>
+                           <img
+                              src={user.profilePictureURL}
+                              alt="Profile Picture of the user"
+                              className={styles.navProfilePicImg}
+                           />
+                        </Link>
+                        <button onClick={logout} className={styles.logoutBtn}>Logout</button>
+                     </div>
+                  ) : (
+                     // if not show the login button
+                     <button className={styles.loginBtn} onClick={() => setIsLoginModalOpen(true)}>
+                        Login
+                     </button>
+                  )}
+
                   {/* when clicked on it will update state of IsLoginModalOpen to true */}
                   <Modal
                      setResetTitle={setSwitchModalTitle} // so when i close the modal on the register render it will reset the title back to "Login"

@@ -3,6 +3,9 @@ import Form, { type FormData } from "./Form";
 import RegisterForm, { type RegisterFormData } from "./RegisterForm";
 import styles from "../common/common.module.css";
 
+// get stuff from the global state (context) (this one is for login and auth)
+import { useAuth } from "../../context/AuthContext";
+
 //. This is to handle both login and register and send it to API
 interface AuthModalProps {
    currentTitle: number;
@@ -14,6 +17,9 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
 
    const [error, setError] = useState<string | null>(null); // holds either string or null and null means no error from the backend
    const [showMessage, setShowMessage] = useState<string | null>(null);
+
+   //. get the login function from that context global component
+   const { login } = useAuth();
 
    //. login in function (API)
    const handleLoginSubmit = async ({ username, password }: FormData) => {
@@ -48,8 +54,7 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
          }
 
          if (data.token) {
-            localStorage.setItem("token", data.token); // store the token in localStorage so it keeps user logged in (kinda like his ID)
-
+            login(data.token); // store the token in localStorage so it keeps user logged in (kinda like his ID)
             setShowMessage(data.displayMessage);
 
             setTimeout(() => {
