@@ -15,13 +15,17 @@ const Layout = () => {
    const [switchModalTitle, setSwitchModalTitle] = useState<1 | 0>(0);
 
    const { user, logout } = useAuth();
-   console.log("Current user object:", user);
+
+   // get the URL for the backend server from the env file
+   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
    return (
       <div className={styles.layoutContainer}>
          <header>
             <nav className={styles.navBarCon}>
-               <h1>My App</h1>
+               <Link to={""}>
+                  <img src={"../../public/website-logo.png"} className={styles.websiteLogo}></img>
+               </Link>
                <div className={styles.navBarItemsCon}>
                   <NavLink
                      to="/"
@@ -57,7 +61,9 @@ const Layout = () => {
                               className={styles.navProfilePicImg}
                            />
                         </Link>
-                        <button onClick={logout} className={styles.logoutBtn}>Logout</button>
+                        <button onClick={logout} className={styles.logoutBtn}>
+                           Logout
+                        </button>
                      </div>
                   ) : (
                      // if not show the login button

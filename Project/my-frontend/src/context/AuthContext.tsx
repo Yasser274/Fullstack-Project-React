@@ -8,7 +8,7 @@ interface User {
    userId: number;
    username: string;
    profilePictureURL: string;
-   email:string
+   email: string;
 }
 // Define the shape of the context's value
 interface AuthContextType {
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const token = localStorage.getItem("token");
       if (token) {
          const decodedUser: User = jwtDecode(token);
-         console.log(decodedUser);
+         //  console.log(decodedUser);
          setUser(decodedUser);
       }
 
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    //  Login Function
    const login = (token: string) => {
       localStorage.setItem("token", token);
-      const decodedUser: User = jwtDecode(token);
+      // const decodedUser: User = jwtDecode(token);
       setUser(decodedUser);
    };
 
