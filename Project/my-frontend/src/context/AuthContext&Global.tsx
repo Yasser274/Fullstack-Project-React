@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    //  Login Function
    const login = (token: string) => {
       localStorage.setItem("token", token);
-      // const decodedUser: User = jwtDecode(token);
+      const decodedUser: User = jwtDecode(token);
       setUser(decodedUser);
    };
 
@@ -51,9 +51,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => {
-   const context = useContext(AuthContext);
+   const context = useContext(AuthContext); // open the portal so any components can access it no matter if it's a child grandchild etc
    if (!context) {
       throw new Error("useAuth must be used within an AuthProvider");
    }
    return context;
 };
+

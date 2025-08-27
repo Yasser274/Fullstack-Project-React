@@ -4,7 +4,10 @@ import RegisterForm, { type RegisterFormData } from "./RegisterForm";
 import styles from "../common/common.module.css";
 
 // get stuff from the global state (context) (this one is for login and auth)
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext&Global";
+
+// import API URL so i don't have to keep writing it
+import { API_BASE_URL } from "../../config/config";
 
 //. This is to handle both login and register and send it to API
 interface AuthModalProps {
@@ -28,7 +31,7 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
       setShowMessage(null);
 
       try {
-         const response = await fetch("http://localhost:3001/api/login", {
+         const response = await fetch(`${API_BASE_URL}/api/login`, {
             //* method: I'm SENDING data to the server to be processed, so i used 'POST'.
             // 'GET' is for retrieving data.
             method: "POST",
@@ -43,6 +46,7 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
             body: JSON.stringify({ username, password }),
          });
          const data = await response.json(); // Parse the JSON response from the server.
+
 
          if (!response.ok) {
             // if the response wasn't ok catch the server side error (if i send a bad request (400) or if the server crashes (500) (like res.status(400))).
@@ -74,7 +78,7 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
       setShowMessage(null);
 
       try {
-         const response = await fetch("http://localhost:3001/api/register", {
+         const response = await fetch(`${API_BASE_URL}/api/register`, {
             method: "POST",
             headers: {
                "Content-Type": "application/json",

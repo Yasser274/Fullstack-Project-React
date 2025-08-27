@@ -135,3 +135,12 @@
    display: flex;
    flex: 1;
 }
+
+/*. Responsive design */
+
+/* (mobile size) */
+@media (width <= 480px) {
+   .restaurantsCardsCon{
+      flex-direction: column;
+   }
+}

@@ -2,7 +2,7 @@ import styles from "../components/styles/Home.module.css";
 import ProfileNav from "../components/ProfileNav";
 import { Outlet } from "react-router-dom";
 
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext&Global";
 
 const ProfilePage = () => {
    const { user } = useAuth();

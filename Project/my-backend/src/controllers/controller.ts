@@ -1,0 +1,121 @@
+import express, { type Request, type Response } from "express";
+import { pool } from "../config/database.js";
+
+// to hash passwords from users
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken"; // (for Login session)
+
+//* function Login user in
+export const loginUser = async (req: Request, res: Response) => {
+   // The data from the frontend will be in `req.body`. and the res(Response) will be the backend Response to Frontend
+   // try if you can get the data from the frontend if you can't(catch the error)
+   try {
+      const { username, password } = req.body; // get values of username and password (destruct it from the object)
+
+      const checkUserExists = `SELECT id,username,password_hash,profile_picture_url,email FROM users WHERE username = $1`;
+      const { rows: users } = await pool.query(checkUserExists, [username]);
+      if (users.length === 0) {
+         return res.status(401).json({
+            message: `Invalid username or password`,
+            error: `Invalid username or password`,
+         });
+      }
+      // if reached this it means that we found a user with that username so pick the first index in that JSON (since it will only have one)
+      const user = users[0];
+      //? check password entered with the hashed one in the database (password the user just typed in, hash it again, and then compare the two hashes.)
+      const isPasswordCorrect = await bcrypt.compare(password, user.password_hash);
+      if (isPasswordCorrect === true) {
+         // Login Session (kinda like giving the user ID card for the server to remember him later on) (include stuff to be stored in that token like profile pic)
+         const payload = {
+            userId: user.id,
+            username: user.username,
+            profilePictureURL: user.profile_picture_url,
+            email: user.email,
+         };
+         const secret = process.env.JWT_SECRET;
+         if (!secret) {
+            throw new Error("JWT_SECRET is not defined in .env file");
+         }
+         // create the token
+         const token = jwt.sign(payload, secret, { expiresIn: "8h" });
+
+         // Send the token back to the frontend
+         return res
+            .status(200)
+            .json({ message: `Logged In Token`, displayMessage: `Logged in Successfully`, token: token }); // The frontend will need token!
+      } else {
+         return res
+            .status(401)
+            .json({ message: `Invalid username or password`, error: `Invalid username or password` });
+      }
+   } catch (error) {
+      console.error("Login Error:", error);
+      res.status(500).json({ error: `An internal server error occurred.` });
+   }
+};
+
+//. function register a user in
+export const registerUser = async (req: Request, res: Response) => {
+   try {
+      const { username, password, confirmPassword, email } = req.body;
+
+      // - VALIDATION CHECKS -
+
+      // 1. Check if passwords match
+      if (password !== confirmPassword) {
+         // '400 Bad Request' for invalid user input.
+         // Send a JSON object with an 'error' key. so that the frontend can display this "error" back to the user
+         return res.status(400).json({ error: "Passwords do not match." });
+      }
+      // 2. Check if the email already exists in the database
+      const existingUserQuery = "SELECT * FROM users WHERE email = $1 OR username = $2";
+      const { rows: existingUsers } = await pool.query(existingUserQuery, [email, username]);
+      if (existingUsers.length > 0) {
+         return res.status(409).json({ error: `An account with this email/username already exists.` });
+      }
+
+      // - IF ALL CHECKS PASS, PROCEED -
+
+      // hash the password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Store the new user in the database
+      // the "$1", "$2" etc are the placeholders to prevent SQL injection attack (it's where i place what's to pass in the query)
+
+      const newUserQuery = `INSERT INTO users (username,password_hash,email) VALUES($1,$2,$3) RETURNING *`; //? Insert the new users and get me the other columns
+      // that i didn't select (other than password,username etc (meaning i want ID etc of that user back))
+      // to save bandwidth and get everything back instead of querying for the ID and other info
+
+      const { rows: userRows } = await pool.query(newUserQuery, [username, hashedPassword, email]); // destruct the rows and give it alias userRows
+      // 'rows[0]' will now contain the new user object { id: ..., username: ..., email: ... }
+      const newUser = userRows[0];
+
+      return res.status(201).json({
+         message: `got these ${username} ${email}`,
+         user: newUser,
+         displayMessage: `Account Created Successfully`,
+      });
+   } catch (error) {
+      console.error("Registration error", error); // console.log is for the backend and res(is for the frontend)
+      res.status(500).json({ error: "An error occurred during registration" });
+      return;
+   }
+};
+
+// * get restaurants list function
+export const restaurants = async (req: Request, res: Response) => {
+   try {
+      const restaurantsList = `SELECT id,restaurantName,restaurantLogo,description,upvotes,downvotes,(upvotes - downvotes) AS score FROM restaurants ORDER BY score DESC`;
+      const { rows: restaurants } = await pool.query(restaurantsList);
+
+      if (restaurants.length <= 0) {
+         return res.status(205).json({ message: `Nothing exists in the restaurants database` });
+      }
+      console.log(restaurants);
+      res.status(200).json({ message: `Sent successfully`, restaurantsData: restaurants });
+   } catch (error) {
+      console.error("Getting restaurants query went wrong", error);
+      res.status(500).json({ error: "An error occurred while getting restaurants" });
+   }
+};

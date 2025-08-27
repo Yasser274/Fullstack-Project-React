@@ -1,6 +1,6 @@
 import styles from "./styles/Profile.module.css";
 
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext&Global";
 
 const ProfileData = () => {
    // Get the user directly from the global context. This is the single source of truth.

@@ -17,7 +17,7 @@ function App() {
          <Route path="/" element={<Layout></Layout>}>
             {/* Layout has many links inside it that's why i nested these route below it so when the path is /about we get the AboutPage Component */}
             {/* Nested Paths inside Layout */}
-            <Route index element={<HomePage sectionTitle="Trending Restaurants"></HomePage>}></Route>
+            <Route index element={<HomePage></HomePage>}></Route>
             <Route path="/about" element={<AboutPage></AboutPage>}></Route>
             <Route path="/contact" element={<ContactPage></ContactPage>}></Route>
             <Route path="/profile" element={<ProfilePage></ProfilePage>}>

@@ -20,8 +20,10 @@
    display: flex;
    flex-direction: column;
    min-height: 100vh;
+   overflow-x: hidden;
+   
 }
-.websiteLogo{
+.websiteLogo {
    width: 84px;
 }
 
@@ -29,8 +31,8 @@
    display: flex;
    position: sticky;
    top: 1rem;
-   left: 50%;
-   transform: translateX(-50%);
+   margin-left: auto;
+   margin-right: auto;
    width: 50vw;
    z-index: 10;
    align-items: center;
@@ -56,6 +58,26 @@
 }
 .navBarCon h1 {
    margin-right: 20px;
+}
+.hamburgerBtn {
+   display: none;
+   cursor: pointer;
+   background-color: transparent;
+   color: none;
+   border: none;
+}
+.hamburgerMenuIcon,
+.hamburgerMenuIconInsideSide {
+   stroke: white;
+   transition: all 0.1s ease-in-out;
+   cursor: pointer;
+}
+.hamburgerMenuIcon:hover,
+.hamburgerMenuIconInsideSide:hover {
+   filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.568));
+}
+.holdHamburgerBtn {
+   filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.884));
 }
 .navBarItemsCon {
    display: flex;
@@ -182,4 +204,72 @@
 }
 .footerLinks a {
    text-decoration: none;
+}
+
+/*. Responsive design */
+
+/* (mobile size) */
+@media (width <= 480px) {
+}
+/* (table size) */
+@media (width <= 768px) {
+}
+/* (small desktop size) */
+@media (width <= 1024px) {
+}
+/* (desktop size) */
+@media (width <= 1280px) {
+   /* this will active when the user press the hamburger button */
+   .navBarMenuMobile {
+      transform: translateX(70%) !important;
+   }
+   .hamburgerBtn {
+      display: flex;
+      z-index: 501;
+   }
+   .layoutContainer {
+        position: relative;
+    }
+   .navBarItemsCon {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 50vw;
+      max-width: 500px;
+      height: 100vh;
+      background-color: rgb(80, 161, 87);
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.397);
+      gap: 2rem;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 6rem 0rem 0rem 2rem;
+
+      transform: translateX(190%);
+      transition: transform 0.3s ease-in-out;
+      z-index: 500;
+      background-color: var(--surface-1);
+
+      background: linear-gradient(158deg, rgb(21, 15, 39) 0%, rgb(10, 8, 10) 51%, rgba(2, 0, 4, 1) 100%)
+            padding-box,
+         linear-gradient(var(--border-1), var(--border-2));
+   }
+   .navProfilePicCon {
+      flex-direction: column;
+   }
+   .aboutSection {
+      display: flex;
+      flex-direction: column;
+   }
+}
+@media (width >= 1280px) {
+   .navBarCon {
+      width: calc(60vw - 2rem);
+   }
+}
+/* (larger desktop size) */
+@media (width <= 1440px) {
+}
+
+@media (width >= 1700px) {
 }
