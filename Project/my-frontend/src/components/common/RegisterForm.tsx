@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import styles from "../../components/common/common.module.css";
 // Import SVGs icons
 import UsernameIcon from "../../assets/icons/UsernameSVG"; // so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
@@ -20,27 +19,21 @@ interface RegisterFormProps {
 }
 
 const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage }: RegisterFormProps) => {
-   const [username, setUsername] = useState("");
-   const [password, setPassword] = useState("");
-   const [confirmPassword, setConfirmPassword] = useState("");
-   const [email, setEmail] = useState("");
-
-   const savedRegisterInfo = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+   const savedRegisterInfo = async (formData: FormData) => {
+      const username = formData.get("username") as string; // get the name="username" from inside the form and set its type as string so it goes with our interface type
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      const confirmPassword = formData.get("confirmPassword") as string;
       try {
          // NOW wait for the parent function to finish completely.
          await OnSubmitRegister({ username, password, confirmPassword, email });
-
-         setPassword(""); // empty out the value of the field
-         setConfirmPassword("");
       } catch (error) {
-         console.error("Submission Error",error)
+         console.error("Submission Error", error);
       }
    };
 
    return (
-      <form className={styles.formCon} onSubmit={savedRegisterInfo}>
+      <form className={styles.formCon} action={savedRegisterInfo}>
          {/* render this when the backend returns an error(meaning not null(a string message means an error)) if there is no error return null(nothing) */}
          {errorMes !== null ? <p className={styles.modalErrorMessage}>{errorMes}</p> : null}
          {displayMessage !== null ? <p className={styles.modalDisplayMessage}>{displayMessage}</p> : null}
@@ -49,30 +42,26 @@ const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage
                <UsernameIcon className={styles.formIcons}></UsernameIcon>
                <label>Username</label>
             </div>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+            <input type="text" name="username" />
          </div>
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <EmailSVG className={styles.formIcons}></EmailSVG>
                <label>Email</label>
             </div>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input type="email" name="email" />
          </div>
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <PasswordIcon className={styles.formIcons}></PasswordIcon>
                <label>Password</label>
             </div>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input type="password" name="password" />
             <div className={styles.formDetailsLabel}>
                <PasswordIcon className={styles.formIcons}></PasswordIcon>
                <label>Confirm Password</label>
             </div>
-            <input
-               type="password"
-               value={confirmPassword}
-               onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <input type="password" name="confirmPassword" />
          </div>
          <div className={styles.formBtnCon}>
             <button type="submit">

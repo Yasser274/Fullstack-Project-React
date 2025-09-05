@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Form, { type FormData } from "./Form";
+import Form, { type FormDataTy } from "./Form";
 import RegisterForm, { type RegisterFormData } from "./RegisterForm";
 import styles from "../common/common.module.css";
 
@@ -25,7 +25,7 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
    const { login } = useAuth();
 
    //. login in function (API)
-   const handleLoginSubmit = async ({ username, password }: FormData) => {
+   const handleLoginSubmit = async ({ username, password }: FormDataTy) => {
       // Clear previous messages on a new submission
       setError(null);
       setShowMessage(null);
@@ -46,7 +46,6 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
             body: JSON.stringify({ username, password }),
          });
          const data = await response.json(); // Parse the JSON response from the server.
-
 
          if (!response.ok) {
             // if the response wasn't ok catch the server side error (if i send a bad request (400) or if the server crashes (500) (like res.status(400))).

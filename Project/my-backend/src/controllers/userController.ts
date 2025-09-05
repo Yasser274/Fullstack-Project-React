@@ -102,20 +102,3 @@ export const registerUser = async (req: Request, res: Response) => {
       return;
    }
 };
-
-// * get restaurants list function
-export const restaurants = async (req: Request, res: Response) => {
-   try {
-      const restaurantsList = `SELECT id,restaurantName,restaurantLogo,description,upvotes,downvotes,(upvotes - downvotes) AS score FROM restaurants ORDER BY score DESC`;
-      const { rows: restaurants } = await pool.query(restaurantsList);
-
-      if (restaurants.length <= 0) {
-         return res.status(205).json({ message: `Nothing exists in the restaurants database` });
-      }
-      console.log(restaurants);
-      res.status(200).json({ message: `Sent successfully`, restaurantsData: restaurants });
-   } catch (error) {
-      console.error("Getting restaurants query went wrong", error);
-      res.status(500).json({ error: "An error occurred while getting restaurants" });
-   }
-};

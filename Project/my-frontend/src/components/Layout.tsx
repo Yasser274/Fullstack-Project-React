@@ -42,8 +42,6 @@ const Layout = () => {
 
    const { user, logout } = useAuth();
 
-   // get the URL for the backend server from the env file
-   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
    // Call the hook here to get the location object (my path /profile for example)
    const location = useLocation();

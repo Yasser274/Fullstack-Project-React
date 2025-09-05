@@ -11,9 +11,8 @@ export interface Restaurant {
    restaurantlogo: string;
    description: string;
    tags?: string[];
-   upvotes: number;
-   downvotes: number;
-   score: number;
+   rating_count: number;
+   average_rating: number;
 }
 
 // just an example on how to extract and use just one type in an interfae
@@ -22,10 +21,11 @@ export interface Restaurant {
 const HomePage = () => {
    // State to hold the list of restaurants
    const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-   const [tags, setTags] = useState([]);
 
    const [isLoading, setIsLoading] = useState<boolean>(true);
    const [error, setError] = useState<string | null>(null);
+
+   const [sortBy, setSortBy] = useState<string>("");
 
    // useEffect to fetch the data(json) from api of restaurants and use setRestaurants to store the data in the state
    useEffect(() => {
@@ -41,7 +41,6 @@ const HomePage = () => {
             if (restaurantsArray.length <= 0) {
                setError("Nothing in the database yet");
             }
-
             setRestaurants(restaurantsArray);
          } catch (error: any) {
             setError(error);
@@ -53,13 +52,48 @@ const HomePage = () => {
       fetchRestaurantsList();
    }, []);
 
+   const handleVoteUpdate = (updatedRestaurantDataFromServer: Partial<Restaurant>) => {
+      setRestaurants((currentRestaurants) => {
+         return currentRestaurants.map((restaurant) => {
+            if (restaurant.id === updatedRestaurantDataFromServer.id) {
+               return { ...restaurant, ...updatedRestaurantDataFromServer };
+            }
+            return restaurant;
+         });
+      });
+   };
+
    return (
       <div className={styles.homeContentCon}>
          <title>Home</title>
          {error ? error : ""}
-         {isLoading ? <h2>Loading...</h2> : <h2>Trending Restaurants</h2>}
+         {isLoading ? (
+            <h2>Loading...</h2>
+         ) : (
+            <div className={styles.titleAndSort}>
+               <h2 style={{ textAlign: "center" }}>
+                  Trending Restaurants <br />
+                  this Month
+               </h2>
+               <select name="sorting">
+                  <option value="" disabled>
+                     Sort by..
+                  </option>
+                  <option value="mostVotes">Most Votes</option>
+                  <option value="mostVotes">Most Likes Votes</option>
+                  <option value="mostVotes">Most Dislike Votes</option>
+               </select>
+            </div>
+         )}
          {restaurants.map((restaurant, index: number) => {
-            return <RestaurantCard key={restaurant.id} restaurant={restaurant} rank={index + 1}></RestaurantCard>;
+            return (
+               <RestaurantCard
+                  key={restaurant.id}
+                  restaurantList={restaurant}
+                  rank={index + 1}
+                  handleVoteUpdate={handleVoteUpdate}
+               ></RestaurantCard>
+            );
          })}
       </div>
    );
