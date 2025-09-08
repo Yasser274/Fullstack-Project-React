@@ -7,12 +7,24 @@ import { API_BASE_URL } from "../config/config";
 // export the types of restaurants in useState
 export interface Restaurant {
    id: string; // Or number, but string is safer for database IDs
-   restaurantname: string;
-   restaurantlogo: string;
+   restaurant_name: string;
+   restaurant_logo: string;
    description: string;
    tags?: string[];
    rating_count: number;
    average_rating: number;
+   reviews: Review[];
+}
+
+export interface Review {
+   comment?: string | null;
+   rating: number;
+   reviewedAt: string;
+   user: {
+      username: string;
+      profilePictureURL: string;
+      id: number;
+   };
 }
 
 // just an example on how to extract and use just one type in an interfae

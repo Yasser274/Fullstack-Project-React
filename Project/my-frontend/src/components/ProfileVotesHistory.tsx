@@ -7,6 +7,9 @@ interface rateHistoryT {
    restaurant_id: number;
    rating: number;
    reviewed_at: string;
+   restaurant_name: string;
+   restaurant_logo: string;
+   comment?: string;
 }
 
 const ProfileVotesHistory = () => {
@@ -66,9 +69,32 @@ const ProfileVotesHistory = () => {
             rateHistory.map((rateH, index) => {
                return (
                   <div className={styles.eachRateHistory} key={index}>
-                     <div>ID: {rateH.restaurant_id}</div>
-                     <div>Rating: {rateH.rating}</div>
-                     <div>Timestamp: {rateH.reviewed_at}</div>
+                     <div className={styles.topHistoryDetails}>
+                        <div className={styles.resLogoCon}>
+                           <img
+                              src={rateH.restaurant_logo}
+                              alt={`logo of ${rateH.restaurant_name}`}
+                              className={styles.historyLogo}
+                           />
+                        </div>
+                        <div className={styles.timeHistoryCon}>
+                           Timestamp:{" "}
+                           {new Date(rateH.reviewed_at).toLocaleString([], {
+                              hour12: true,
+                           })}
+                        </div>
+                     </div>
+                     <div className={styles.bottomHistoryDetails}>
+                        <div className={styles.resturVoteInfo}>
+                           {" "}
+                           <div>Name: {rateH.restaurant_name}</div>
+                           <div>Rated: {rateH.rating}</div>
+                        </div>
+                        <div className={styles.resturReviewCommentCon}>
+                           {rateH.comment ? "Comment:" : "No comment"}
+                           <p>{rateH.comment}</p>
+                        </div>
+                     </div>
                   </div>
                );
             })

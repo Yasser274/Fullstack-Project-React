@@ -46,12 +46,12 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
       // If the token is valid, the 'user' variable will be the decoded payload.
       // We attach this payload to the request object.
       req.user = user as DecodedUser;
-   });
 
-   //  The bouncer lets you into the club.
-   //  "This middleware is done. Move on to the next function in the list for this route,"
-   //  Pass control to the next function in the chain (your controller).
-   next();
+      //  The bouncer lets you into the club.
+      //  "This middleware is done. Move on to the next function in the list for this route,"
+      //  Pass control to the next function in the chain (your controller).
+      next();
+   });
 };
 
 export default authenticateToken;

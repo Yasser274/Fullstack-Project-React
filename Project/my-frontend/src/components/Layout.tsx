@@ -1,7 +1,7 @@
 // Import styling CSS for this component
 import { useState, useEffect } from "react";
 import styles from "../components/styles/Layout.module.css";
-import { Outlet, Link, NavLink,useLocation } from "react-router-dom";
+import { Outlet, Link, NavLink, useLocation } from "react-router-dom";
 import Modal from "./common/Modal";
 import AuthModalContent from "./common/AuthModalContent";
 
@@ -40,8 +40,7 @@ const Layout = () => {
    // for mobile view
    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<false | true>(false);
 
-   const { user, logout } = useAuth();
-
+   const { user, logout, isSessionExpired, closeModalSession } = useAuth();
 
    // Call the hook here to get the location object (my path /profile for example)
    const location = useLocation();
@@ -66,6 +65,16 @@ const Layout = () => {
                      <HamburgerIcon className={styles.hamburgerMenuIcon}></HamburgerIcon>
                   </button>
                </div>
+
+               {/* Show the session expiration modal when the flag is true */}
+               {isSessionExpired ? (
+                  <Modal isOpen={isSessionExpired} title="Session Expired" onClose={closeModalSession}>
+                     {/* the content of this modal */}
+                     <div>
+                        <p style={{ textAlign: "center" }}>Please log in again, your session expired.</p>
+                     </div>
+                  </Modal>
+               ) : null}
 
                <div className={`${styles.navBarItemsCon} ${isMobileMenuOpen ? styles.navBarMenuMobile : ""}`}>
                   <button

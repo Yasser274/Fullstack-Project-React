@@ -4,12 +4,63 @@ import { pool } from "../config/database.js";
 // * get restaurants list function
 export const restaurants = async (req: Request, res: Response) => {
    try {
-      const restaurantsList = `SELECT r.id, r.restaurantname, r.restaurantlogo, r.description, r.rating_count, r.average_rating, COALESCE(ARRAY_AGG(t.tagName)
-      FILTER (WHERE t.tagName IS NOT NULL), '{}') AS tags FROM restaurants AS r
-      LEFT JOIN restaurant_tags AS rt ON r.id = rt.restaurant_id 
-      LEFT JOIN tags AS t ON t.id = rt.tag_id 
-      GROUP BY r.id 
-      ORDER BY r.average_rating DESC, r.rating_count DESC`;
+      const restaurantsList = `WITH
+  tags_agg AS (
+    -- Step 1: Create a temporary table with each restaurant's tags pre-aggregated into an array.
+    SELECT
+      rt.restaurant_id,
+      ARRAY_AGG(t.tagName) AS tags
+    FROM
+      restaurant_tags AS rt
+      JOIN tags AS t ON t.id = rt.tag_id
+    GROUP BY
+      rt.restaurant_id
+  ),
+  reviews_agg AS (
+    -- Step 2: Create another temporary table with each restaurant's reviews pre-aggregated into a JSON array.
+    SELECT
+      rw.restaurant_id,
+      JSON_AGG(
+        JSON_BUILD_OBJECT(
+          'comment',
+          rw.comment,
+          'rating',
+          rw.rating,
+          'reviewedAt',
+          rw.reviewed_at,
+          'user',
+          JSON_BUILD_OBJECT('username', u.username, 'profilePictureURL', u.profile_picture_url, 'userID', u.id)
+        )
+        ORDER BY
+          rw.reviewed_at DESC -- Good practice to order reviews
+      ) AS reviews
+    FROM
+      restaurant_reviews AS rw
+      JOIN users AS u ON rw.user_id = u.id
+    GROUP BY
+      -- This is crucial: we group all rows by the restaurant id so just one row for each restaurant
+      rw.restaurant_id
+  )
+  -- Step 3: Now, join the main restaurants table to your pre-aggregated results.
+  -- These are now clean one-to-one joins, preventing any row duplication.
+SELECT
+  r.id,
+  r.restaurant_name,
+  r.restaurant_logo,
+  r.description,
+  r.rating_count,
+  r.average_rating,
+  COALESCE(ta.tags, '{}') AS tags,
+  COALESCE(ra.reviews, '[]'::json) AS reviews
+FROM
+  restaurants AS r
+  LEFT JOIN tags_agg AS ta ON r.id = ta.restaurant_id
+  LEFT JOIN reviews_agg AS ra ON r.id = ra.restaurant_id
+ORDER BY
+  -- As a tie-breaker, the one with more ratings is ranked higher (more trustworthy).
+  r.average_rating DESC,
+  r.rating_count DESC;
+`;
       const { rows: restaurants } = await pool.query(restaurantsList);
       console.log(restaurants);
 
@@ -25,8 +76,13 @@ export const restaurants = async (req: Request, res: Response) => {
 
 // .Voting Restaurants
 export const ratingRestaurants = async (req: Request, res: Response) => {
-   const restaurantId = req.params.id; // clicked restaurant ID
-   const { ratingAmount } = req.body; // destruct the json and only get voteType from it
+   type restaurantRatingComment = {
+      ratingAmount: number;
+      comment: string;
+   };
+
+   const restaurantId: number = Number(req.params.id); // clicked restaurant ID
+   const { ratingAmount, comment }: restaurantRatingComment = req.body; // destruct the json and only get voteType from it
 
    // This is the secure user ID from my middleware
    const userId = req.user!.userId; // the ! means it absolutely exists and don't worry TS it will never be undefined (no Object is possibly 'undefined'.)
@@ -35,6 +91,9 @@ export const ratingRestaurants = async (req: Request, res: Response) => {
    // Input validation
    if (!Number.isInteger(ratingAmount) || ratingAmount < 1 || ratingAmount > 5) {
       return res.status(400).json({ message: "Rating must be an integer between 1 and 5." });
+   }
+   if (comment.length > 1300) {
+      return res.status(401).json({ message: "Passed Character Limit" });
    }
    const client = await pool.connect();
    try {
@@ -51,11 +110,11 @@ export const ratingRestaurants = async (req: Request, res: Response) => {
       //? If this is the user's first time voting for this restaurant, this INSERT succeeds
       // ON CONFLICT Check when it finds out that user_id and restaurant_id exist(both are primary keys and both create unique row) if so update the old rating with the new
       // EXCLUDED.rating Take the new rating that the user just submitted and use it to overwrite the old rating in the existing row.
-      const reviewQuery = `INSERT INTO restaurant_reviews (user_id,restaurant_id,rating) VALUES ($1,$2,$3)
-        ON CONFLICT (user_id,restaurant_id) DO UPDATE SET rating = EXCLUDED.rating
+      const reviewQuery = `INSERT INTO restaurant_reviews (user_id,restaurant_id,rating,comment) VALUES ($1,$2,$3,$4)
+        ON CONFLICT (user_id,restaurant_id) DO UPDATE SET rating = EXCLUDED.rating,reviewed_at = CURRENT_TIMESTAMP,comment = EXCLUDED.comment
         RETURNING *`; // RETURNING * so i got all the other columns data on the same query saving bandwidth
 
-      await client.query(reviewQuery, [userId, restaurantId, ratingAmount]);
+      await client.query(reviewQuery, [userId, restaurantId, ratingAmount, comment]);
 
       // this updates restaurants table after receiving the review from a user also calculating average rating for this restaurant
       const updateRestaurantQuery = `WITH new_stats AS (
@@ -93,7 +152,18 @@ export const getUserRatingHistory = async (req: Request, res: Response) => {
    // get user ID
    const userID = req.user!.userId;
    try {
-      const RatingHistory = `SELECT restaurant_id,rating,reviewed_at FROM restaurant_reviews WHERE user_id = $1`;
+      const RatingHistory = `SELECT
+        rr.restaurant_id,
+        rr.rating,
+        rr.reviewed_at,
+        rr.comment,
+        r.restaurant_name,
+        r.restaurant_logo
+      FROM
+        restaurant_reviews AS rr
+        JOIN restaurants AS r ON rr.restaurant_id = r.id
+      WHERE
+        user_id = $1;`;
 
       const { rows: dbRatingHistory } = await pool.query(RatingHistory, [userID]);
 

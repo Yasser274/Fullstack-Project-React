@@ -52,6 +52,7 @@
 .restDesc {
    font-size: 1.1rem;
    flex-wrap: wrap;
+   margin-bottom: 8px;
 }
 .restLabels div {
    background-color: goldenrod;
@@ -71,13 +72,66 @@
    gap: 20px;
    flex: 1;
 }
-.restaurantLogo {
+.restaurant_logo {
    width: 160px;
    display: flex;
    align-self: flex-end;
 }
-.restaurantLogo img {
+.restaurant_logo img {
    width: 100%;
+}
+
+.reviewCommentsCon {
+   margin-left: 12px;
+   display: flex;
+   align-items: flex-end;
+   gap: 8px;
+   flex: 1;
+}
+.reviewCommentsIcon {
+   width: 48px;
+   cursor: pointer;
+   filter: drop-shadow(0 0 5px rgba(26, 26, 26, 0.856));
+   transition: all 0.2s ease-in-out;
+}
+.reviewCommentsIcon:hover {
+   filter: drop-shadow(0 0 10px rgba(26, 26, 26, 0.856));
+}
+
+.reviewFormCon {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 1.8rem;
+   margin-top: 0.8rem;
+}
+.reviewFormCon textarea {
+   width: 75%;
+   height: 6rem;
+   border: gray 1px solid;
+   padding: 4px 8px;
+   border-radius: 8px;
+   font-weight: 700;
+   font-size: 1.1rem;
+}
+.reviewFormCon button {
+   cursor: pointer;
+   font-weight: 800;
+   font-size: 1.06rem;
+   padding: 4px 10px;
+   border-radius: 8px;
+}
+.charReviewLimitW {
+   color: red;
+}
+.charReviewLimitW,
+.charReviewLimitN {
+   font-weight: 600;
+   font-size: 1.07rem;
+}
+.disabledBtn {
+   pointer-events: none;
+   cursor: default;
 }
 
 .ratingCon {
@@ -99,7 +153,7 @@
    cursor: pointer;
    filter: drop-shadow(0px 0px 7px rgba(0, 0, 0, 0.322));
    transition: all 0.1s ease-in-out;
-   color: #ffc107
+   color: #ffc107;
 }
 .filledStar:hover {
    transform: scale(1.1);
@@ -168,6 +222,59 @@
    flex: 1;
 }
 
+/* profile views history */
+.eachRateHistory {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   background-color: gray;
+   margin-top: 10px;
+   border-radius: 8px;
+   width: 100%;
+   padding: 10px 14px;
+}
+.topHistoryDetails {
+   display: flex;
+}
+.resLogoCon {
+   display: flex;
+   flex: 2;
+}
+.timeHistoryCon {
+   display: flex;
+   flex: 1;
+   justify-content: flex-end;
+}
+.votesHistoryCon {
+   width: 100%;
+}
+.bottomHistoryDetails {
+   display: flex;
+   align-items: center;
+}
+.resturVoteInfo {
+   display: flex;
+   flex-direction: column;
+   flex: 1;
+}
+.resturReviewCommentCon {
+   display: flex;
+   flex-direction: column;
+   flex: 3;
+   gap: 0.6rem;
+   font-size: 1.1rem;
+   font-weight: 700;
+   align-items: center;
+}
+.resturReviewCommentCon p {
+   margin-bottom: 0;
+   margin-top: 0;
+   font-size: 1.0rem;
+   font-weight: 400;
+}
+.historyLogo {
+   width: 120px;
+}
 /*. Responsive design */
 
 /* (mobile size) */
