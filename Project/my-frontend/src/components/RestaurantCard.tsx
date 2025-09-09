@@ -1,6 +1,7 @@
 import type { Restaurant, Review } from "../pages/HomePage";
+import type { User } from "../context/AuthContext&Global";
 import styles from "../components/styles/Home.module.css";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 // get the types of restaurant
 interface RestaurantCardProps {
@@ -26,7 +27,6 @@ import ReviewCommentsIcon from "../assets/icons/ReviewCommentsIcon";
 import ReviewComments from "./ReviewComments";
 
 const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCardProps) => {
-   console.log(restaurantList);
    // function to votes and affect the ranking
    // State to hold the current rating. 0 means no stars are selected.
    const [rating, setRating] = useState<number>(0);
@@ -45,12 +45,22 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
 
    // open review comments modal
    const [reviewCommentsModal, setReviewCommentsModal] = useState<boolean>(false);
-   console.log(reviewCommentsModal);
 
    const totalStars = 5;
 
    // get userID (using global context)
    const { user } = useAuth();
+
+   //? Find the specific review left by the current user.
+   // useMemo ensures this .find() operation only runs again if the user or the reviews list changes.
+   const userReview = useMemo(() => {
+      // if user isn't logged in there is no user review to get
+      if (!user) {
+         return;
+      }
+      // look through reviews array and find one that has the user id of the currently logged user then return that so i can use userReview
+      return restaurantList.reviews.find((review) => review.user.username === user.username);
+   }, [user, restaurantList.reviews]);
 
    const popUpReviewModal = (uRatingA: RatingAmountT, restId: number) => {
       setReviewModal(true);
@@ -192,57 +202,76 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
             </Modal>
          ) : null}
          {/* //.RESTAURANTS LISTS */}
-         <div className={styles.restaurantsCardsCon}>
-            <div className={styles.leftRestaurantsContentCon}>
-               <div className={styles.rankName}>
-                  <span>{rank}</span>
-                  <h1>{restaurantList.restaurant_name}</h1>
-               </div>
-               <div className={styles.restLabels}>
-                  {restaurantList.tags?.map((tag) => {
-                     return <div key={tag}>{tag.charAt(0).toUpperCase() + tag.slice(1)}</div>; // return inside a function ends the function and gives back a value. // JSX map code, return provides the rendered element for each item, which is collected into a new array to be displayed.
-                  })}
-               </div>
-               <span className={styles.restDesc}>{restaurantList.description}</span>
-               <div className={styles.reviewCommentsCon}>
-                  <ReviewCommentsIcon
-                     className={styles.reviewCommentsIcon}
-                     onClickModal={() => setReviewCommentsModal(true)}
-                  ></ReviewCommentsIcon>
-                  <span>({restaurantList.reviews.length})</span>
-               </div>
-            </div>
-            <div className={styles.rightRestaurantsContentCon}>
-               <div className={styles.restaurant_logo}>
-                  <img src={restaurantList.restaurant_logo} alt={`${restaurantList.restaurant_name} logo`} />
-               </div>
-               <div className={styles.ratingCon}>
-                  <div className={styles.ratingDetails}>
-                     <div className={styles.starsCon}>
-                        {[...Array(totalStars)].map((_, index: number) => {
-                           const ratingValue: RatingAmountT = index + 1;
-                           const isFilled = ratingValue <= Math.round(restaurantList.average_rating);
+         <div className={`${styles.card} restaurantsEle`}>
+            <div className={styles.cardRank}>#{rank}</div>
 
-                           return (
-                              <Star
-                                 key={index}
-                                 filled={isFilled}
-                                 // now the ratingValue will be first star(1) until last star 5 and when clicked this function will grab the id and which star user clicked
-                                 // * onClick={() => rateRestaurant(Number(restaurantList.id), ratingValue)}
-                                 onClick={() => {
-                                    popUpReviewModal(ratingValue, Number(restaurantList.id));
-                                 }}
-                                 disabled={isVoting}
-                              ></Star>
-                           );
-                        })}
-                     </div>
-                     <div className={styles.ratingInfo}>
-                        <span>{restaurantList.average_rating}</span>
-                        <span>({restaurantList.rating_count})</span>
+            <div className={styles.cardContent}>
+               <header className={styles.cardHeader}>
+                  <div className={styles.cardHeaderText}>
+                     <h2 className={styles.cardTitle}>{restaurantList.restaurant_name}</h2>
+                     <div className={styles.cardTags}>
+                        {restaurantList.tags?.map((tag) => (
+                           <span key={tag} className={styles.tag}>
+                              {tag.charAt(0).toUpperCase() + tag.slice(1)}
+                           </span>
+                        ))}
                      </div>
                   </div>
-               </div>
+                  <div className={styles.cardLogo}>
+                     <img
+                        src={restaurantList.restaurant_logo}
+                        alt={`${restaurantList.restaurant_name} logo`}
+                     />
+                  </div>
+               </header>
+
+               <p className={styles.cardDescription}>{restaurantList.description}</p>
+
+               <footer className={styles.cardFooter}>
+                  {/* The onClick is now on the parent div for a larger click area */}
+                  <div className={styles.cardReviews} onClick={() => setReviewCommentsModal(true)}>
+                     <ReviewCommentsIcon className={styles.reviewCommentsIcon} />
+                     <span>
+                        {restaurantList.reviews.length === 1
+                           ? `${restaurantList.reviews.length} Review`
+                           : `${restaurantList.reviews.length} Reviews`}
+                     </span>
+                  </div>
+
+                  <div className={styles.cardRating}>
+                     {userReview && (
+                        <div className={styles.userRatingDisplay}>
+                           <span>Your rating:</span>
+                           <div className={styles.stars}>
+                              {[...Array(userReview.rating)].map((_, index) => (
+                                 // **FIX:** Using standard `className` prop instead of custom `classNameUser`
+                                 <Star key={index} filled={true} classNameUser={styles.smallStar} />
+                              ))}
+                           </div>
+                        </div>
+                     )}
+                     <div className={styles.averageRating}>
+                        <div className={styles.stars}>
+                           {[...Array(totalStars)].map((_, index) => {
+                              const ratingValue = index + 1;
+                              const filledOrNot = ratingValue <= Math.round(restaurantList.average_rating);
+                              return (
+                                 <Star
+                                    key={index}
+                                    filled={filledOrNot}
+                                    onClick={() => popUpReviewModal(ratingValue, Number(restaurantList.id))}
+                                    disabled={isVoting}
+                                 />
+                              );
+                           })}
+                        </div>
+                        <div className={styles.ratingInfo}>
+                           <strong>{Number(restaurantList.average_rating || 0).toFixed(1)}</strong>
+                           <span>({restaurantList.rating_count})</span>
+                        </div>
+                     </div>
+                  </div>
+               </footer>
             </div>
          </div>
       </>

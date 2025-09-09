@@ -1,6 +1,6 @@
 interface SVGProps {
    className: string;
-   onClickModal: () => void;
+   onClickModal?: () => void;
 }
 const ReviewCommentsIcon = ({ className, onClickModal }: SVGProps) => {
    return (

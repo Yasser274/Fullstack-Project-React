@@ -120,21 +120,48 @@ export const ratingRestaurants = async (req: Request, res: Response) => {
       const updateRestaurantQuery = `WITH new_stats AS (
         SELECT 
           AVG(rating)::NUMERIC(3,2) as new_average, 
-          COUNT(rating) as new_count 
+          COUNT(rating) as new_count
       FROM restaurant_reviews 
       WHERE restaurant_id = $1) 
       UPDATE restaurants SET average_rating = (SELECT new_average FROM new_stats), rating_count = (SELECT new_count FROM new_stats) 
       WHERE id = $1 RETURNING *;`;
 
-      const { rows: updatedRestaurants } = await client.query(updateRestaurantQuery, [restaurantId]);
+      await client.query(updateRestaurantQuery, [restaurantId]);
 
       // Step 3: If both queries succeeded, commit the changes to the database.
       await client.query("COMMIT");
+      const finalDataQuery = `
+         SELECT
+            r.*, -- Select all columns from the restaurants table
+            -- Use json_agg to gather all associated reviews into a single JSON array
+            -- COALESCE ensures we get an empty array '[]' if there are no reviews, not NULL
+            COALESCE(
+               (SELECT json_agg(json_build_object(
+                  'rating', rr.rating,
+                  'comment', rr.comment,
+                  'reviewedAt', rr.reviewed_at,
+                  'user', json_build_object(
+                     'id', u.id,
+                     'username', u.username,
+                     'profilePictureURL', u.profile_picture_url
+                  )
+               ))
+               FROM restaurant_reviews rr
+               JOIN users u ON rr.user_id = u.id
+               WHERE rr.restaurant_id = r.id),
+            '[]'::json
+            ) as reviews
+         FROM restaurants r
+         WHERE r.id = $1;
+      `;
+
+      const { rows: completeRestaurantData } = await client.query(finalDataQuery, [restaurantId]);
 
       return res.status(200).json({
          message: `You Rated successfully`,
          displayMessage: `You Rated Successfully`,
-         restaurantsData: updatedRestaurants,
+         // Send the new, complete data object
+         restaurantsData: completeRestaurantData,
       });
    } catch (error) {
       // if something goes wrong with the DB query above ROLLBACK everything
