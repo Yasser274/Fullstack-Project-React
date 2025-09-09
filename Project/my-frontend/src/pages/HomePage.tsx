@@ -123,11 +123,14 @@ const HomePage = () => {
             </select>
          </div>
          <div className={styles.restaurantsCon}>
+            {/* if isLoading is true it will display the loading animation  */}
             {isLoading ? (
-               <div style={{ justifyContent: "center", display: "flex",marginTop:'20px' }}>
+               <div style={{ justifyContent: "center", display: "flex", marginTop: "20px" }}>
                   <Loading></Loading>
                </div>
-            ) : (
+            ) : //if not it will check filteredRestaurants if it has stuff in it will display the restaurants
+            //  if not after user searches for something and the state became empty it will display nothing was found
+            filteredRestaurants.length >= 1 ? (
                filteredRestaurants.map((restaurant) => {
                   return (
                      <RestaurantCard
@@ -138,6 +141,11 @@ const HomePage = () => {
                      ></RestaurantCard>
                   );
                })
+            ) : (
+               <div style={{ marginTop: "3.1rem" }}>
+                  <h2>No Matches Found</h2>
+                  <p>Try searching for a different restaurant name.</p>
+               </div>
             )}
          </div>
       </div>

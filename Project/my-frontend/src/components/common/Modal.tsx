@@ -9,9 +9,10 @@ interface ModalProps {
    children: React.ReactNode; // Represents all of the things React can render. it can take in anything in it and many things
    title: string;
    setResetTitle?: (val: 0 | 1) => void;
+   error?: string | null;
 }
 
-const Modal = ({ isOpen, onClose, children, title, setResetTitle }: ModalProps) => {
+const Modal = ({ isOpen, onClose, children, title, setResetTitle, error }: ModalProps) => {
    // destruct(get values(the types)) inside the interface directly
    if (!isOpen) {
       // if it's false don't return anything
@@ -59,6 +60,18 @@ const Modal = ({ isOpen, onClose, children, title, setResetTitle }: ModalProps) 
             <div className={styles.modalTitle}>
                <h3>{title}</h3>
             </div>
+            {error === null ? null : (
+               <div
+                  style={{
+                     textAlign: "center",
+                     color: "rgba(255, 43, 43, 1)",
+                     fontSize: "1.1rem",
+                     fontWeight: "600",
+                  }}
+               >
+                  <span style={{ textShadow: "0 0 7px rgba(0, 0, 0, 0.88)" }}>{error}</span>
+               </div>
+            )}
             <div>{children}</div>
          </div>
       </div>,

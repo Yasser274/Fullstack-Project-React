@@ -95,6 +95,15 @@ export const ratingRestaurants = async (req: Request, res: Response) => {
    if (comment.length > 1300) {
       return res.status(401).json({ message: "Passed Character Limit" });
    }
+
+   // if user already has rated this restaurant the same amount of rating like already rated 2 stars then went back to rate 2 stars again
+   const checkRatedSameAlready = `SELECT rating FROM restaurant_reviews WHERE user_id = $1 AND restaurant_id = $2`;
+   const { rows: checkRatedSameAlreadyDB } = await pool.query(checkRatedSameAlready, [userId, restaurantId]);
+   if (checkRatedSameAlreadyDB[0].rating === ratingAmount) {
+      console.error("You already rated the same value");
+      return;
+   }
+
    const client = await pool.connect();
    try {
       /* // ?A transaction prevents this. It works like this:

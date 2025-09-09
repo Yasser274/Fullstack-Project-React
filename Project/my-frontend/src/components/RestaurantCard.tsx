@@ -46,6 +46,9 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
    // open review comments modal
    const [reviewCommentsModal, setReviewCommentsModal] = useState<boolean>(false);
 
+   // error if rated the same amount again
+   const [errorSameAmount, setErrorSameAmount] = useState<string | null>(null);
+
    const totalStars = 5;
 
    // get userID (using global context)
@@ -92,6 +95,13 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
          return;
       }
 
+      if (rateValue === userReview?.rating) {
+         console.log("you already voted the same amount");
+         setErrorSameAmount(
+            `You have already given this restaurant a rating of ${userReview?.rating} stars.`
+         );
+         return;
+      }
       setIsVoting(true);
       try {
          const response = await fetch(`${API_BASE_URL}/api/restaurants/${id}/rate`, {
@@ -149,6 +159,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                onClose={() => {
                   setReviewModal(false);
                }}
+               error={errorSameAmount}
             >
                <div>
                   <form
