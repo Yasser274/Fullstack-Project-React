@@ -7,6 +7,9 @@ import AuthModalContent from "./common/AuthModalContent";
 
 // Context (global state access) (this one for login and auth)
 import { useAuth } from "../context/AuthContext&Global";
+import { useTheme } from "../context/ThemeContext";
+import ThemeMandSIcon from "../assets/icons/ThemeMandSIcon";
+import TrendBitesLogo from "../assets/icons/TrendBitesLogo";
 
 // type for hamburgerIcon
 interface HamburgerIconProps {
@@ -42,6 +45,8 @@ const Layout = () => {
 
    const { user, logout, isSessionExpired, closeModalSession } = useAuth();
 
+   const { toggleTheme } = useTheme();
+
    // Call the hook here to get the location object (my path /profile for example)
    const location = useLocation();
    // Close the mobile menu when the route changes (when user clicks any of the navs and changes url)
@@ -54,7 +59,7 @@ const Layout = () => {
          <header>
             <nav className={styles.navBarCon}>
                <Link to={""}>
-                  <img src={"../../website-logo.png"} className={styles.websiteLogo}></img>
+                  <TrendBitesLogo className={styles.logoSVG}></TrendBitesLogo>
                </Link>
                {/* //* for mobile menu hamburger menu */}
                <div>
@@ -132,6 +137,9 @@ const Layout = () => {
                         Login
                      </button>
                   )}
+                  <div>
+                     <ThemeMandSIcon></ThemeMandSIcon>
+                  </div>
 
                   {/* when clicked on it will update state of IsLoginModalOpen to true */}
                   <Modal

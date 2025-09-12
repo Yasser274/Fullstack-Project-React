@@ -1,17 +1,44 @@
 /* * Profile Data Section */
-.profileDataCon{
-  display: flex;
-  flex-direction: column;
+.profileDataCon {
+   display: flex;
+   flex-direction: column;
 }
-.profileDetails1{
-  display: flex;
-  gap: 10px;
-  align-items: center;
+.profileDetails1 {
+   display: flex;
+   gap: 10px;
+   align-items: center;
 }
-.profileDetails1 img{
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center;
-} 
+.profileDetails1 img {
+   width: 200px;
+   height: 200px;
+   border-radius: 50%;
+   object-fit: cover;
+   object-position: center;
+}
+
+/* * Profile settings section */
+.formProfileSett {
+   display: flex;
+   flex-direction: column;
+   gap: 1.4rem;
+   justify-content: center;
+}
+.oldPassCon {
+   display: flex;
+   flex-direction: column;
+}
+.newPassCon {
+   display: flex;
+   flex-direction: column;
+   gap: 0.7rem;
+}
+.newPassConWrong{
+  border: red 2px solid;
+}
+.errorMessage {
+   text-shadow: 0 0 7px rgba(0, 0, 0, 0.88);
+   text-align: center;
+   color: rgba(255, 43, 43, 1);
+   font-size: 1.1rem;
+   font-weight: 600;
+}

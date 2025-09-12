@@ -1,0 +1,28 @@
+/* .Dark and light theme */
+
+/* Define a consistent color palette and design */
+/* for light theme (default) */
+:root {
+   --card-bg: #ffffff;
+   --card-border-color: #e9ecef;
+   --text-primary: #212529;
+   --text-secondary: #6c757d;
+   --accent-color: #007bff;
+   --accent-color-light: #e7f3ff;
+   --star-color: #ffc107;
+   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+   --card-hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+   --border-radius: 16px;
+   --card-leftRanking: #f8f9fa;
+   --background-color-secondary: #ffffff;
+}
+/* for dark theme */
+[data-theme="dark"] {
+   --accent-color-light: #424446;
+   --card-bg: #141414;
+   --text-primary: #d6d9db;
+   --text-secondary: #6c757d;
+   --card-border-color: #262727;
+   --card-leftRanking: #252525;
+   --background-color-secondary: #353535;
+}

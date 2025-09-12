@@ -102,3 +102,59 @@ export const registerUser = async (req: Request, res: Response) => {
       return;
    }
 };
+
+//. Change password api function
+export const changePassword = async (req: Request, res: Response) => {
+
+   interface changePasswordTypes {
+      oldPassword: string;
+      newPassword: string;
+      newConfPassword: string;
+   }
+   try {
+      const { oldPassword, newPassword, newConfPassword }: changePasswordTypes = req.body;
+
+      // This is the secure user ID from my middleware
+      const userId = req.user!.userId;
+      // - VALIDATION CHECKS -
+      if (!oldPassword || !newPassword || !newConfPassword) {
+         return res.status(400).json({ message: "All password fields are required." });
+      }
+
+      if (newPassword !== newConfPassword) {
+         return res.status(400).json({ message: `New password and new password confirmation doesn't match` });
+      }
+      // Get the current user's hashed password from the DB
+      const getCurrentPasswordHashQ = `SELECT password_hash FROM users WHERE id = $1`;
+      const { rows: dbGetCurrentPasswordHash } = await pool.query(getCurrentPasswordHashQ, [userId]);
+      // if user not found
+      if (dbGetCurrentPasswordHash.length === 0) {
+         return res.status(404).json({ message: `User not found` });
+      }
+
+      // compare current password hash with the new password entered by user
+      const currentHashedPassword = dbGetCurrentPasswordHash[0].password_hash;
+      const isOldPasswordCorrect = await bcrypt.compare(oldPassword, currentHashedPassword);
+
+      // if it matches update the new password
+      if (isOldPasswordCorrect === true) {
+         const saltRounds = 10;
+         const newPasswordHashed = await bcrypt.hash(newPassword, saltRounds);
+         const updatePasswordQuery = `UPDATE users SET password_hash = $1 WHERE id = $2`;
+         await pool.query(updatePasswordQuery, [newPasswordHashed, userId]);
+         console.dir(dbGetCurrentPasswordHash);
+
+         return res.status(200).json({ message: "Changed password successfully" });
+      } else {
+         // - Passwords DO NOT Match: Send an error ---
+         console.error("Not same password");
+         return res
+            .status(401)
+            .json({ message: "Old password is not correct", displayMessage: `Incorrect old password` });
+      }
+   } catch (error) {
+      console.error("Error whiling changing user password");
+      res.status(500).json({ error: "An error occurred during changing password" });
+      return;
+   }
+};

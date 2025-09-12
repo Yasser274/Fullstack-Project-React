@@ -23,6 +23,7 @@ declare global {
 
 // This middleware file we are creating is the Bouncer at the door of the VIP area
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+   console.log("--- 🛡️  AUTHENTICATION MIDDLEWARE 🛡️ ---");
    // Get the token from the request header. The format is "Bearer TOKEN"
    const authHeader = req.headers["authorization"];
    const token = authHeader && authHeader.split(" ")[1];

@@ -3,8 +3,36 @@ import { pool } from "../config/database.js";
 
 // * get restaurants list function
 export const restaurants = async (req: Request, res: Response) => {
+   // Get current page and limit from query params(like ?page=1),default values
+
+   const page = parseInt(req.query.page as string) || 1; // since we will be getting the page from the url it will be a string so convert it to number
+   const limit = parseInt(req.query.limit as string) || 1;
+   const sortByQuery = (req.query.sortBy as string)?.toUpperCase(); // grab param and uppercase it
+
+   // if user entered value to search
+   const searchTerm = req.query.searchT;
+   let searchPattern: string | undefined = "";
+   if (searchTerm) {
+      // If the user searched for something, wrap it in wildcards
+      // % means “match any sequence of characters”.
+      // %% means “match anything at all” → so it will return every row.
+
+      searchPattern = `%${searchTerm}%`;
+   } else {
+      // If the user did not search for anything ignore filtering
+      searchPattern = `%%`;
+   }
+
+   const allowedSortValues = ["DESC", "ASC"];
+   const sort = allowedSortValues.includes(sortByQuery) ? sortByQuery : "DESC"; // if sortByQuery value is inside allowedSortValues use it if not default to DESC
+
+   // Calculate the OFFSET for the database
+   // This is the number of rows to skip. For page 1, we skip 0. For page 2, we skip 10.
+   const offset = (page - 1) * limit;
    try {
-      const restaurantsList = `WITH
+      // Modified my main query to include LIMIT and OFFSET instead of getting all restaurants at one time
+      // it's important that LIMIT and OFFSET comes after ORDER BY clause
+      const restaurantsListQuery = `WITH
   tags_agg AS (
     -- Step 1: Create a temporary table with each restaurant's tags pre-aggregated into an array.
     SELECT
@@ -51,23 +79,59 @@ SELECT
   r.rating_count,
   r.average_rating,
   COALESCE(ta.tags, '{}') AS tags,
-  COALESCE(ra.reviews, '[]'::json) AS reviews
+  COALESCE(ra.reviews, '[]'::json) AS reviews,
+
+  -- It calculates the rank over the entire ordered dataset
+  RANK() OVER (ORDER BY r.average_rating DESC, r.rating_count DESC) as rank
 FROM
   restaurants AS r
   LEFT JOIN tags_agg AS ta ON r.id = ta.restaurant_id
   LEFT JOIN reviews_agg AS ra ON r.id = ra.restaurant_id
+  WHERE r.restaurant_name ILIKE $1
 ORDER BY
   -- As a tie-breaker, the one with more ratings is ranked higher (more trustworthy).
-  r.average_rating DESC,
-  r.rating_count DESC;
+  r.average_rating ${sort},
+  r.rating_count DESC   
+  -- LIMIT the top amount(like 4 (top 4)) and OFFSET (skip the first row for example 1) now this example will show not the top 4 but the top 2-3-4-5
+  LIMIT $2 OFFSET $3;
 `;
-      const { rows: restaurants } = await pool.query(restaurantsList);
-      console.log(restaurants);
+      // another query to get the total number of restaurants and so frontend knows how many pages are there (how many rows are in restaurants table)
+      const countQuery = `SELECT COUNT(*) from restaurants WHERE restaurant_name ILIKE $1`;
+
+      // Execute both queries. Using Promise.all is slightly more efficient
+      // as it runs them in parallel.
+      const [restaurantsResult, countResult] = await Promise.all([
+         pool.query(restaurantsListQuery, [searchPattern, limit, offset]),
+         pool.query(countQuery, [searchPattern]),
+      ]);
+
+      const { rows: restaurants } = restaurantsResult;
+      const totalItems = parseInt(countResult.rows[0].count);
+
+      // Calculate total pages
+      const totalPage = Math.ceil(totalItems / limit);
+
+      if (restaurants.length <= 0 && page > 1) {
+         // This can happen if the user requests a page that doesn't exist
+         return res.status(404).json({ message: `Page not found` });
+      }
 
       if (restaurants.length <= 0) {
-         return res.status(205).json({ message: `Nothing exists in the restaurants database` });
+         return res
+            .status(200)
+            .json({
+               message: `No restaurants found matching your search.`,
+               restaurantsData: [],
+               totalPage: 0,
+               totalItems: 0,
+            });
       }
-      res.status(200).json({ message: `Sent successfully`, restaurantsData: restaurants });
+      res.status(200).json({
+         message: `Sent successfully`,
+         restaurantsData: restaurants,
+         totalPages: totalPage,
+         totalItemsCount: totalItems,
+      });
    } catch (error) {
       console.error("Getting restaurants query went wrong", error);
       res.status(500).json({ error: "An error occurred while getting restaurants" });
@@ -99,12 +163,16 @@ export const ratingRestaurants = async (req: Request, res: Response) => {
    // if user already has rated this restaurant the same amount of rating like already rated 2 stars then went back to rate 2 stars again
    const checkRatedSameAlready = `SELECT rating FROM restaurant_reviews WHERE user_id = $1 AND restaurant_id = $2`;
    const { rows: checkRatedSameAlreadyDB } = await pool.query(checkRatedSameAlready, [userId, restaurantId]);
-   if (checkRatedSameAlreadyDB[0].rating === ratingAmount) {
-      console.error("You already rated the same value");
-      return;
+   if (checkRatedSameAlreadyDB.length >= 1) {
+      const existingRating = checkRatedSameAlreadyDB[0].rating;
+      if (existingRating === ratingAmount) {
+         console.error("You already rated the same value");
+         return res.status(409).json({ message: `You have already submitted this rating` });
+      }
    }
 
    const client = await pool.connect();
+   console.log(`---------- STARTING RATING`);
    try {
       /* // ?A transaction prevents this. It works like this:
             BEGIN TRANSACTION: Tell the bank, "I'm starting a sensitive operation."

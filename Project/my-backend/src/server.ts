@@ -2,7 +2,6 @@ import express, { type Request, type Response } from "express";
 import cors from "cors";
 import "dotenv/config"; // Loads environment variables from .env into process.env
 
-
 //* import routes (where the path lies)
 import userRouter from "./routes/userRoutes.js";
 import restaurantRouter from "./routes/restaurantRoutes.js";
@@ -23,14 +22,15 @@ app.use(express.json()); // This is crucial for modern APIs. // It parses incomi
 // The URL is formed by taking my server address(localhost:3001) and appending the path to the file inside the public folder. The public part itself is invisible in the URL. (localhost:3001/images/default-avatar.png)
 app.use(express.static("public"));
 
+// . API to fetch the restaurants list from the Database
+// ? Any request starting with '/api/restaurants' will be handled by the restaurantRoutes file.
+app.use("/api/restaurants", restaurantRouter);
+
+
 
 // . API to get the login/register value from frontend (login)
 //? Any request starting with '/api' will be handled by the userRoutes file.
 app.use("/api", userRouter);
-
-// . API to fetch the restaurants list from the Database
-// ? Any request starting with '/api/restaurants' will be handled by the restaurantRoutes file.
-app.use("/api/restaurants", restaurantRouter);
 
 // //? the function is "async" meaning i can use await to wait for the database response after requesting a query
 // app.get("/api/user", async (req: Request, res: Response) => {

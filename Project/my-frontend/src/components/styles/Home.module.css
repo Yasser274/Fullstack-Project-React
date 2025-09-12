@@ -1,20 +1,6 @@
 /* =================================================================== */
 /* ===         MODERN RESTAURANT CARD STYLING (NEW DESIGN)         === */
 /* =================================================================== */
-
-/* Define a consistent color palette and design */
-:root {
-   --card-bg: #ffffff;
-   --card-border-color: #e9ecef;
-   --text-primary: #212529;
-   --text-secondary: #6c757d;
-   --accent-color: #007bff;
-   --accent-color-light: #e7f3ff;
-   --star-color: #ffc107;
-   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-   --card-hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-   --border-radius: 16px;
-}
 .homeContentCon {
    width: 100%;
 }
@@ -28,6 +14,10 @@
    flex-direction: column;
    align-items: center;
    gap: 10px;
+}
+.titleAndSort h2 {
+   color: var(--text-primary);
+   transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 .searchBarCon {
    display: flex;
@@ -52,20 +42,21 @@
    -webkit-appearance: none;
    -moz-appearance: none;
 
-
-   display: flex; 
-   height: 100%; 
+   display: flex;
+   height: 100%;
    padding: 12px 40px 12px 16px; /* Top/Bottom/Left match the input. Right is larger for the arrow. */
    border-radius: 12px;
    border: 1px solid #ccc;
-   background-color: #fff;
+   background-color: var(--background-color-secondary);
+   transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out,
+      box-shadow 0.2s ease-in-out;
    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
    box-sizing: border-box;
    font-size: 1rem;
    font-weight: 500;
-   color: #333;
+   color: var(--text-primary);
    line-height: 1.5; /* Ensures text is vertically centered */
-   
+
    /* This is a self-contained SVG for a chevron arrow. No extra files needed! */
    /* You can change the stroke='%236b7280' to change the arrow color. */
    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -73,10 +64,8 @@
    background-position: right 1rem center; /* Position the arrow on the right */
    background-size: 1em; /* Size the arrow relative to the font size */
 
-
    cursor: pointer;
    outline: none; /* Remove the default focus outline */
-   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Hover State: Subtle border color change */
@@ -103,7 +92,7 @@
    align-items: center;
    transition: all 0.2s ease-in-out;
 }
-.searchBarDivCon:hover{
+.searchBarDivCon:hover {
    transform: translateY(-2px);
 }
 .searchBarS {
@@ -117,9 +106,12 @@
    box-shadow: 0 3px 9px rgba(36, 36, 36, 0.575);
    outline: none;
    box-sizing: border-box;
+   color: var(--text-primary);
+   background-color: var(--background-color-secondary);
+   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .searchBarS:focus {
-   outline: black 2px solid;
+   outline: var(--accent-color) 2px solid;
 }
 /* --- Base Card Styling --- */
 .card {
@@ -130,7 +122,8 @@
    border: 1px solid var(--card-border-color);
    box-shadow: var(--card-shadow);
    margin-top: 20px;
-   transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+   transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out, background-color 0.3s ease-in-out,
+      color 0.3s ease-in-out, border-color 0.3s ease-in-out;
    color: var(--text-primary);
 }
 
@@ -149,9 +142,10 @@
    padding: 0 24px;
    color: var(--accent-color);
    border-right: 1px solid var(--card-border-color);
-   background-color: #f8f9fa;
+   background-color: var(--card-leftRanking);
    border-top-left-radius: var(--border-radius);
    border-bottom-left-radius: var(--border-radius);
+   transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 /* . Main Content Area (Right Side) --- */
@@ -196,6 +190,7 @@
    border-radius: 20px;
    font-size: 0.85rem;
    font-weight: 600;
+   transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .cardLogo {
@@ -205,6 +200,7 @@
    border-radius: 12px;
    overflow: hidden;
    border: 1px solid var(--card-border-color);
+   transition: border 0.3s ease-in-out;
 }
 
 .cardLogo img {
@@ -228,6 +224,7 @@
    margin-top: auto; /* Pushes footer to the bottom of the card */
    padding-top: 12px;
    border-top: 1px solid var(--card-border-color);
+   transition: border-top 0.3s ease-in-out;
 }
 
 .cardReviews {
@@ -282,15 +279,16 @@
    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
    transition: transform 0.1s ease-in-out;
 }
-.unfilledStar{
+.unfilledStar {
    color: black;
    cursor: pointer;
    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
    transition: transform 0.1s ease-in-out;
-    width: 28px;
+   width: 28px;
    height: 28px;
 }
-.filledStar:hover,.unfilledStar:hover {
+.filledStar:hover,
+.unfilledStar:hover {
    transform: scale(1.1);
 }
 /* Modifier class for the smaller user rating stars */
@@ -312,6 +310,147 @@
    font-size: 1.2rem;
    font-weight: 700;
 }
+
+/**=============
+/*. Pagination
+================*/
+
+.paginationCon{
+   display: flex;
+   gap: 1.2rem;
+   margin-top: 1.2rem;
+   list-style: none;
+}
+.pageButton{
+   background-color: green;
+   border: none;
+   padding: 8px 18px;
+   font-size: 1.1rem;
+   font-weight: 900;
+   border-radius: 18px;
+   cursor: pointer;
+   transition: all 0.3s ease-in-out;
+}
+.pageButton:hover{
+   background-color: darkgreen;
+}
+.activePage{
+   background-color: yellow;
+}
+
+/* .Profile CSS */
+/* *Profile Section */
+.profileSection {
+   display: flex;
+   width: 50vw;
+   gap: 44px;
+}
+.profileLeftSection {
+   display: flex;
+   flex-shrink: 0;
+}
+.profileNavCon {
+   display: inline-flex;
+   flex-shrink: 0;
+}
+.profileNavCon ul {
+   list-style: none;
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   padding: 0;
+   margin: 0;
+}
+.innerProfileNavDefault,
+.innerProfileNavAct {
+   display: block;
+   width: 130px;
+   text-decoration: none;
+   background-color: purple;
+   color: #525252;
+   padding: 10px 50px 10px 10px;
+   transition: all 0.2s ease-in-out;
+   border-top-left-radius: 10px;
+   border-bottom-left-radius: 10px;
+   border-top-right-radius: 30px;
+   border-bottom-right-radius: 30px;
+   box-shadow: 0px 4px 7px rgba(0, 0, 0, 0.329);
+}
+.innerProfileNavDefault:hover {
+   padding-right: 80px;
+}
+.innerProfileNavAct {
+   color: white;
+   padding-right: 80px;
+   box-shadow: 3px 2px 15px rgba(0, 0, 0, 0.603);
+}
+.profileRightSection {
+   display: flex;
+   flex: 1;
+}
+
+/* profile views history */
+.eachRateHistory {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   background-color: var(--card-bg);
+   margin-top: 10px;
+   border-radius: 8px;
+   width: 100%;
+   padding: 10px 14px;
+   border-radius: var(--border-radius);
+   transition: all 0.3s ease-in-out;
+}
+.topHistoryDetails {
+   display: flex;
+}
+.resLogoCon {
+   display: flex;
+   flex: 2;
+}
+.timeHistoryCon {
+   display: flex;
+   flex: 1;
+   justify-content: flex-end;
+   color: var(--text-primary);
+   transition: all 0.3s ease-in-out;
+}
+.votesHistoryCon {
+   width: 100%;
+}
+.bottomHistoryDetails {
+   display: flex;
+   align-items: center;
+}
+.resturVoteInfo {
+   display: flex;
+   flex-direction: column;
+   flex: 1;
+   color: var(--text-primary);
+   transition: all 0.3s ease-in-out;
+}
+.resturReviewCommentCon {
+   display: flex;
+   flex-direction: column;
+   flex: 3;
+   gap: 0.6rem;
+   font-size: 1.1rem;
+   font-weight: 700;
+   align-items: center;
+   color: var(--text-primary);
+   transition: all 0.3s ease-in-out;
+}
+.resturReviewCommentCon p {
+   margin-bottom: 0;
+   margin-top: 0;
+   font-size: 1.0rem;
+   font-weight: 400;
+}
+.historyLogo {
+   width: 120px;
+}
+
 
 /* =================================================================== */
 /*                 RESPONSIVE DESIGN                                   */

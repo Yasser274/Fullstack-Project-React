@@ -5,7 +5,7 @@ interface searchBarProps {
    placeholderText: string;
    searchBarIcon?: string;
    onChangeText: (searchBarText: string) => void;
-   searchBarText: string;
+   searchBarText: string | null;
    classNameStyle?: string;
    classNameCon?: string;
 }
