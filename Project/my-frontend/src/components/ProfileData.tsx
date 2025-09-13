@@ -21,7 +21,7 @@ const ProfileData = () => {
             />
             <h2>{user.username}</h2>
          </div>
-         <div>
+         <div className={styles.emailProfileCon}>
             <p>{user.email}</p>
          </div>
       </div>

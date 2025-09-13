@@ -113,6 +113,17 @@
 .searchBarS:focus {
    outline: var(--accent-color) 2px solid;
 }
+
+/* errors */
+.notFoundRestaurant {
+   text-align: center;
+   color: var(--text-primary);
+}
+.notFoundRestaurantM {
+   margin-top: 4rem;
+   text-align: center;
+   color: var(--text-primary);
+}
 /* --- Base Card Styling --- */
 .card {
    display: flex;
@@ -279,6 +290,23 @@
    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
    transition: transform 0.1s ease-in-out;
 }
+.halfEmptyStar {
+   width: 28px;
+   height: 28px;
+   color: var(--star-color);
+   cursor: pointer;
+   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+   transition: transform 0.1s ease-in-out;
+}
+.filledStarProfile {
+   width: 28px;
+   height: 28px;
+   color: var(--star-color);
+   cursor: pointer;
+   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+   transition: transform 0.1s ease-in-out;
+   pointer-events: none;
+}
 .unfilledStar {
    color: black;
    cursor: pointer;
@@ -288,7 +316,8 @@
    height: 28px;
 }
 .filledStar:hover,
-.unfilledStar:hover {
+.unfilledStar:hover,
+.halfEmptyStar:hover {
    transform: scale(1.1);
 }
 /* Modifier class for the smaller user rating stars */
@@ -296,6 +325,9 @@
    width: 18px !important;
    height: 18px !important;
    pointer-events: none;
+   color: var(--star-color);
+   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+   margin-right: 3px;
 }
 .ratingInfo {
    display: flex;
@@ -315,27 +347,55 @@
 /*. Pagination
 ================*/
 
-.paginationCon{
+.paginationCon {
    display: flex;
    gap: 1.2rem;
    margin-top: 1.2rem;
    list-style: none;
 }
-.pageButton{
-   background-color: green;
-   border: none;
-   padding: 8px 18px;
-   font-size: 1.1rem;
-   font-weight: 900;
-   border-radius: 18px;
+.pageButton {
+   padding: 15px 25px;
+   border: unset;
+   border-radius: 15px;
+   z-index: 1;
+   background: var(--pagination-background-color);
+   color: var(--text-primary);
+   position: relative;
+   font-weight: 1000;
+   font-size: 17px;
+   -webkit-box-shadow: 4px 8px 19px -3px var(--pagination-shadow);
+   box-shadow: 4px 8px 19px -3px var(--pagination-shadow);
+   transition: all 250ms;
+   overflow: hidden;
    cursor: pointer;
-   transition: all 0.3s ease-in-out;
 }
-.pageButton:hover{
-   background-color: darkgreen;
+.pageButton::before {
+   content: "";
+   position: absolute;
+   top: 0;
+   left: 0;
+   height: 100%;
+   width: 0;
+   border-radius: 15px;
+   background-color: #212121;
+   z-index: -1;
+   -webkit-box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+   box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+   transition: all 250ms;
 }
-.activePage{
-   background-color: yellow;
+.pageButton:hover {
+   color: var(--pagination-number-color-active);
+}
+.pageButton:hover::before {
+   width: 100%;
+   height: 100%;
+}
+.activePage {
+   color: var(--pagination-number-color-active);
+   background-color: var(--pagination-background-color-active);
+}
+.activePage:hover {
+   color: var(--pagination-number-color-active);
 }
 
 /* .Profile CSS */
@@ -366,7 +426,7 @@
    display: block;
    width: 130px;
    text-decoration: none;
-   background-color: purple;
+   background-color: var(--accent-color);
    color: #525252;
    padding: 10px 50px 10px 10px;
    transition: all 0.2s ease-in-out;
@@ -430,6 +490,19 @@
    color: var(--text-primary);
    transition: all 0.3s ease-in-out;
 }
+.resturVoteName {
+   font-size: 1.2rem;
+   margin-top: 10px;
+   font-weight: 800;
+}
+.resturVoteRatingCon {
+   margin-top: 14px;
+}
+.resturVoteInfoRating {
+   display: flex;
+   align-items: center;
+   gap: 0.3rem;
+}
 .resturReviewCommentCon {
    display: flex;
    flex-direction: column;
@@ -444,17 +517,48 @@
 .resturReviewCommentCon p {
    margin-bottom: 0;
    margin-top: 0;
-   font-size: 1.0rem;
+   font-size: 1rem;
    font-weight: 400;
 }
 .historyLogo {
    width: 120px;
 }
 
-
 /* =================================================================== */
 /*                 RESPONSIVE DESIGN                                   */
 /* =================================================================== */
+
+@media (width <= 1650px) {
+   .profileLeftSection {
+      width: calc(100% + 4rem);
+   }
+   .profileNavCon {
+      width: 100%;
+   }
+   .profileNavCon ul {
+      width: 100%;
+   }
+   .profileSection {
+      flex-direction: column;
+   }
+   .innerProfileNavDefault {
+      width: 75%;
+   }
+   .innerProfileNavAct {
+      width: 85%;
+   }
+}
+@media (width <= 1024px) {
+   .searchBarCon {
+      flex-direction: column-reverse;
+      align-items: center;
+      gap: 1.7rem;
+   }
+   .searchBarDivCon {
+      margin: 0;
+      width: calc(100% - 15rem);
+   }
+}
 
 @media (width <= 768px) {
    .card {
@@ -489,16 +593,20 @@
    .averageRating {
       align-items: center;
    }
-}
-@media (width <= 1024px) {
-   .searchBarCon {
-      flex-direction: column-reverse;
-      align-items: center;
-      gap: 1.7rem;
+   .innerProfileNavDefault {
+      width: 60%;
    }
-   .searchBarDivCon {
-      margin: 0;
-      width: calc(100% - 15rem);
+   .innerProfileNavAct {
+      width: 65%;
+   }
+   .profileSection {
+      width: 95%;
+   }
+   .votesHistoryCon {
+      width: 85%;
+   }
+   .profileRightSection {
+      justify-content: center;
    }
 }
 

@@ -96,7 +96,7 @@ const HomePage = () => {
             sort = "DESC";
          }
 
-         // this stores all params for me to use in the API URL
+         // this stores all params for me to use in the API URL (just the same setSearchParams but in URL form (string query))
          const params = new URLSearchParams({
             page: currentPage.toString(),
             limit: "15", // how many restaurants to show in a page
@@ -104,6 +104,8 @@ const HomePage = () => {
          });
          // when nothing is inside the search bar doesn't run what's inside this useEffect
 
+         //-- search delay so it doesn't hit the API instantly (debounce)
+         // i've decided to not debounce and delay the query
          if (searchTerm) {
             params.append("searchT", searchTerm.toString());
             params.set("page", "1");
@@ -205,7 +207,7 @@ const HomePage = () => {
             </select>
          </div>
          <div className={styles.restaurantsCon}>
-            {error ? <div style={{ textAlign: "center" }}>{error}</div> : ""}
+            {error ? <div className={styles.notFoundRestaurant}>{error}</div> : ""}
 
             {/* if isLoading is true it will display the loading animation  */}
             {isLoading ? (
@@ -226,7 +228,7 @@ const HomePage = () => {
                   );
                })
             ) : (
-               <div style={{ marginTop: "3.1rem" }}>{nothingFound}</div>
+               <div className={styles.notFoundRestaurantM}>{nothingFound}</div>
             )}
             {isLoading ? null : PaginationFun()}
          </div>

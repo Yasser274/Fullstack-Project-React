@@ -1,19 +1,18 @@
 import styles from "../../components/styles/Home.module.css";
 
 interface StarProps {
-   filled: boolean;
    onClick?: () => void;
    disabled?: boolean;
-   classNameUser?: string
+   classNameUser: string;
 }
 
-const Star = ({ filled, onClick, disabled,classNameUser = styles.filledStar }: StarProps) => {
+const Star = ({ onClick, disabled, classNameUser = styles.filledStar }: StarProps) => {
    return (
       <svg
          version="1.1"
          xmlns="http://www.w3.org/2000/svg"
          viewBox="0 0 512 512"
-         className={filled ? classNameUser : styles.unfilledStar}
+         className={classNameUser}
          onClick={onClick}
          style={{ cursor: disabled ? "not-allowed" : "pointer" }}
       >

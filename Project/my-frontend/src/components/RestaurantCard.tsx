@@ -25,6 +25,7 @@ import { useAuth } from "../context/AuthContext&Global";
 import Modal from "./common/Modal";
 import ReviewCommentsIcon from "../assets/icons/ReviewCommentsIcon";
 import ReviewComments from "./ReviewComments";
+import HalfEmptyStar from "../assets/icons/HalfEmptyStar";
 
 const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCardProps) => {
    // function to votes and affect the ranking
@@ -249,6 +250,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                      </span>
                   </div>
 
+                  {/* User's rating for the restaurant */}
                   <div className={styles.cardRating}>
                      {userReview && (
                         <div className={styles.userRatingDisplay}>
@@ -256,24 +258,54 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                            <div className={styles.stars}>
                               {[...Array(userReview.rating)].map((_, index) => (
                                  // **FIX:** Using standard `className` prop instead of custom `classNameUser`
-                                 <Star key={index} filled={true} classNameUser={styles.smallStar} />
+                                 <Star key={index} classNameUser={styles.smallStar} />
                               ))}
                            </div>
                         </div>
                      )}
+                     {/* Restaurant Average Rating */}
                      <div className={styles.averageRating}>
                         <div className={styles.stars}>
                            {[...Array(totalStars)].map((_, index) => {
                               const ratingValue = index + 1;
-                              const filledOrNot = ratingValue <= Math.round(restaurantList.average_rating);
-                              return (
-                                 <Star
-                                    key={index}
-                                    filled={filledOrNot}
-                                    onClick={() => popUpReviewModal(ratingValue, Number(restaurantList.id))}
-                                    disabled={isVoting}
-                                 />
-                              );
+                              const avgRating = restaurantList.average_rating; // The raw value, e.g., 3.5
+
+                              // This is the click handler for ANY star
+                              const handleStarClick = () => {
+                                 popUpReviewModal(ratingValue, Number(restaurantList.id));
+                              };
+
+                              if (avgRating >= ratingValue) {
+                                 // return full star if avgRating is more than ratingValue except when it's EX: 3.5 >= 4 (no go to the else if)
+                                 return (
+                                    <Star
+                                       key={index}
+                                       classNameUser={styles.filledStar}
+                                       onClick={handleStarClick}
+                                       disabled={isVoting}
+                                    />
+                                 );
+                                 // then avgRating is 3.5 > 3
+                              } else if (avgRating > ratingValue - 1) {
+                                 // render half star
+                                 return (
+                                    <HalfEmptyStar
+                                       key={index}
+                                       className={styles.halfEmptyStar}
+                                       onClick={handleStarClick}
+                                    ></HalfEmptyStar>
+                                 );
+                              } else {
+                                 // render empty star
+                                 return (
+                                    <Star
+                                       key={index}
+                                       classNameUser={styles.unfilledStar}
+                                       disabled={isVoting}
+                                       onClick={handleStarClick}
+                                    ></Star>
+                                 );
+                              }
                            })}
                         </div>
                         <div className={styles.ratingInfo}>

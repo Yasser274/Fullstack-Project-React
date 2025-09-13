@@ -10,8 +10,8 @@ export const restaurants = async (req: Request, res: Response) => {
    const sortByQuery = (req.query.sortBy as string)?.toUpperCase(); // grab param and uppercase it
 
    // if user entered value to search
-   const searchTerm = req.query.searchT;
-   let searchPattern: string | undefined = "";
+   const searchTerm = await req.query.searchT;
+   let searchPattern: string | undefined =  "";
    if (searchTerm) {
       // If the user searched for something, wrap it in wildcards
       // % means “match any sequence of characters”.
@@ -22,6 +22,7 @@ export const restaurants = async (req: Request, res: Response) => {
       // If the user did not search for anything ignore filtering
       searchPattern = `%%`;
    }
+
 
    const allowedSortValues = ["DESC", "ASC"];
    const sort = allowedSortValues.includes(sortByQuery) ? sortByQuery : "DESC"; // if sortByQuery value is inside allowedSortValues use it if not default to DESC

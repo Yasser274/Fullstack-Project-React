@@ -13,16 +13,30 @@
    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
    --card-hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
    --border-radius: 16px;
-   --card-leftRanking: #f8f9fa;
+   --card-leftRanking: #ebebeb;
    --background-color-secondary: #ffffff;
+   --main-background-color: #f0f0f0;
+   --pagination-number-color: #212529;
+   --pagination-number-color-active: #007bff;
+   --pagination-background-color: #ffffff;
+   --pagination-background-color-active: #212529;
+   --pagination-shadow: rgba(0, 0, 0, 0.27);
+   --input-login-background-color: #242424dc;
 }
 /* for dark theme */
 [data-theme="dark"] {
    --accent-color-light: #424446;
-   --card-bg: #141414;
+   --card-bg: #222222;
    --text-primary: #d6d9db;
-   --text-secondary: #6c757d;
+   --text-secondary: #abacad;
    --card-border-color: #262727;
-   --card-leftRanking: #252525;
+   --card-leftRanking: #303030;
    --background-color-secondary: #353535;
+   --main-background-color: #131313;
+   --pagination-number-color: #212529;
+   --pagination-number-color-active: #007bff;
+   --pagination-background-color: #212529;
+   --pagination-background-color-active: #e7f3ff;
+   --pagination-shadow: rgba(189, 189, 189, 0.27);
+   --input-login-background-color: #cecece3f;
 }

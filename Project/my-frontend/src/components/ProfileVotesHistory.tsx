@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "../components/styles/Home.module.css";
 import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
+import StarFilled from "../assets/icons/StarFilled";
 
 interface rateHistoryT {
    restaurant_id: number;
@@ -67,6 +68,13 @@ const ProfileVotesHistory = () => {
             <div>{error}</div>
          ) : (
             rateHistory.map((rateH, index) => {
+               const showStarsRating = () => {
+                  const ratingUserArrayLength = [...Array(rateH.rating)];
+                  const ratingStars = ratingUserArrayLength.map((_,index) => (
+                     <StarFilled key={index} className={styles.filledStarProfile}></StarFilled>
+                  ));
+                  return ratingStars;
+               };
                return (
                   <div className={styles.eachRateHistory} key={index}>
                      <div className={styles.topHistoryDetails}>
@@ -86,9 +94,11 @@ const ProfileVotesHistory = () => {
                      </div>
                      <div className={styles.bottomHistoryDetails}>
                         <div className={styles.resturVoteInfo}>
-                           {" "}
-                           <div>Name: {rateH.restaurant_name}</div>
-                           <div>Rated: {rateH.rating}</div>
+                           <div className={styles.resturVoteName}>{rateH.restaurant_name}</div>
+                           <div className={styles.resturVoteRatingCon}>
+                              <div className={styles.resturVoteInfoRating}>Rated:</div>
+                              <div className={styles.resturVoteInfoRating}>{showStarsRating()}</div>
+                           </div>
                         </div>
                         <div className={styles.resturReviewCommentCon}>
                            {rateH.comment ? "Comment:" : "No comment"}

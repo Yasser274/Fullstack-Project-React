@@ -1,0 +1,74 @@
+.smallStar {
+   width: 18px !important;
+   height: 18px !important;
+   pointer-events: none;
+   color: var(--star-color);
+   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+   margin-right: 3px;
+}
+
+.reviewCard {
+   padding: 0.5rem 1rem;
+}
+
+/*  the last review in the modal */
+.reviewCard:last-child {
+   padding-bottom: 1rem;
+}
+
+.reviewHeader {
+   display: flex;
+   align-items: flex-start; /* Aligns items to the top */
+   gap: 0.8rem; /* Space between avatar and text content */
+   margin-bottom: 0.75rem;
+   align-items: center;
+}
+
+.profilePictureReview {
+   width: 40px;
+   height: 40px;
+   border-radius: 50%;
+   object-fit: cover; /* Prevents the image from being stretched or squashed */
+   background-color: transparent; /* A light gray fallback while the image loads */
+}
+
+.reviewMeta {
+   display: flex;
+   flex-direction: column;
+   flex-grow: 1; /* Allows this element to take up the remaining space */
+}
+
+.metaTopRow {
+   display: flex;
+   flex-wrap: wrap; /* Allows stars to wrap to a new line on very small screens */
+   align-items: center;
+   gap: 0.75rem;
+   margin-bottom: 3px;
+}
+
+.username {
+   font-size: 1rem;
+   font-weight: 600;
+   color: white; /* Darker text for better contrast */
+}
+.starRating {
+   display: flex;
+   align-items: center;
+}
+.reviewDate {
+   font-size: 0.8rem;
+   color: #8e9499; /* Softer color for secondary information */
+}
+.reviewComment {
+   font-size: 0.95rem;
+   line-height: 1.6;
+   color: white;
+   /* These properties help handle long text without breaking the layout */
+   word-wrap: break-word;
+   white-space: pre-wrap; /* This respects newlines in the user's comment */
+}
+/* Style for when no comment is provided */
+.noComment {
+  font-style: italic;
+  color: #adb5bd;
+}

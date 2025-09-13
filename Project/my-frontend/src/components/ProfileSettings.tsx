@@ -3,6 +3,7 @@ import styles from "../components/styles/Profile.module.css";
 import { useState } from "react";
 import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
+import EditIcon from "../assets/icons/EditIcon";
 
 const ProfileSettings = () => {
    const [error, setError] = useState<string | null>(null);
@@ -10,7 +11,7 @@ const ProfileSettings = () => {
 
    const [passwordsMismatch, setPasswordsMismatch] = useState<boolean>(false);
 
-   const { logout } = useAuth();
+   const { logout, user } = useAuth();
 
    const changePassword = async (e: React.FormEvent<HTMLFormElement>) => {
       const authToken = localStorage.getItem("token");
@@ -79,8 +80,9 @@ const ProfileSettings = () => {
    };
 
    return (
-      <div>
-         <form className={styles.formProfileSett} onSubmit={changePassword}>
+      <div className={styles.profileSettingsCon}>
+         <h2 className={styles.profileSecTitle}>Change Password:</h2>
+         <form className={styles.formProfilePassword} onSubmit={changePassword}>
             {done ? <span className={styles.doneMessage}>{done}</span> : null}
             {error ? <span className={styles.errorMessage}>{error}</span> : null}
             <div className={styles.oldPassCon}>
@@ -110,7 +112,14 @@ const ProfileSettings = () => {
                   className={passwordsMismatch ? styles.newPassConWrong : styles.newPassInput}
                />
             </div>
-            <button>Change password</button>
+            <button className={styles.changePassBtn}>Change password</button>
+         </form>
+         <h2 className={styles.profileSecTitleB}>Change Profile Picture:</h2>
+         <form>
+            <div className={styles.changeProfilePicCon}>
+               <img src={user?.profilePictureURL} alt="User's Profile Picture" className={styles.changeProfilePic} />
+               <EditIcon className={styles.editIconProfile}></EditIcon>
+            </div>
          </form>
       </div>
    );

@@ -40,6 +40,8 @@
    flex-direction: column;
    min-height: 100vh;
    overflow-x: hidden;
+   background-color: var(--main-background-color);
+   transition: background-color 0.3s ease-in-out;
 }
 .logoSVG {
    width: 248px;
@@ -232,13 +234,17 @@
 /* (table size) */
 @media (width <= 768px) {
    .logoSVG {
-   width: 182px;
-}
-.navBarCon{
-   margin: 0;
-   width: calc(100vw - 2rem);
-   padding: 12px 16px;
-}
+      width: 182px;
+   }
+
+   .mainCon {
+      justify-content: flex-start !important;
+   }
+   .navBarCon {
+      margin: 0;
+      width: calc(100vw - 2rem);
+      padding: 12px 16px;
+   }
 }
 /* (small desktop size) */
 @media (width <= 1024px) {
