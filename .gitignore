@@ -42,3 +42,6 @@ dist/
 # Ignore SQL session query
 *session.sql
 
+# ignore New users profile picture files that's inside the folder but don't ignore the folder
+profilePicUsers/*
+!profilePicUsers/.gitkeep
