@@ -65,7 +65,7 @@ const ProfileVotesHistory = () => {
    return (
       <div className={styles.votesHistoryCon}>
          {rateHistory === null || rateHistory.length <= 0 ? (
-            <div>{error}</div>
+            <div className={styles.emptyVoteHistory}>You haven’t rated any restaurants.</div>
          ) : (
             rateHistory.map((rateH, index) => {
                const showStarsRating = () => {

@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext&Global";
 import { useTheme } from "../context/ThemeContext";
 import ThemeMandSIcon from "../assets/icons/ThemeMandSIcon";
 import TrendBitesLogo from "../assets/icons/TrendBitesLogo";
+import { API_BASE_URL } from "../config/config";
 
 // type for hamburgerIcon
 interface HamburgerIconProps {
@@ -43,9 +44,9 @@ const Layout = () => {
    // for mobile view
    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<false | true>(false);
 
-   const { user, logout, isSessionExpired, closeModalSession } = useAuth();
+   const { user, logout, isSessionExpired, closeModalSession,profileImageUrl } = useAuth();
 
-   const { toggleTheme } = useTheme();
+
 
    // Call the hook here to get the location object (my path /profile for example)
    const location = useLocation();
@@ -122,7 +123,7 @@ const Layout = () => {
                      <div className={styles.navProfilePicCon}>
                         <Link to={"/profile"}>
                            <img
-                              src={user.profilePictureURL}
+                              src={profileImageUrl}
                               alt="Profile Picture of the user"
                               className={styles.navProfilePicImg}
                            />

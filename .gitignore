@@ -43,5 +43,5 @@ dist/
 *session.sql
 
 # ignore New users profile picture files that's inside the folder but don't ignore the folder
-profilePicUsers/*
-!profilePicUsers/.gitkeep
+Project/my-backend/profilePicUsers/*
+!Project/my-backend/profilePicUsers/.gitkeep

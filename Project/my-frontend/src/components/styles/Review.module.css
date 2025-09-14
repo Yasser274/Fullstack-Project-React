@@ -30,6 +30,7 @@
    border-radius: 50%;
    object-fit: cover; /* Prevents the image from being stretched or squashed */
    background-color: transparent; /* A light gray fallback while the image loads */
+   object-position: center;
 }
 
 .reviewMeta {

@@ -200,10 +200,12 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
          {/* //. Open review comments modal */}
          {reviewCommentsModal ? (
             <Modal isOpen={reviewCommentsModal} onClose={() => setReviewCommentsModal(false)} title="Reviews">
-               {restaurantList.reviews.map((review) => {
+               {restaurantList.reviews.map((review,index) => {
+                  // Combine two unique IDs to create a new unique string
+                  const uniqueKey = `${index}-${review.user.id}`;
                   return (
                      <ReviewComments
-                        key={review.user.id}
+                        key={uniqueKey}
                         reviewedAt={review.reviewedAt}
                         comment={review.comment}
                         user={review.user}

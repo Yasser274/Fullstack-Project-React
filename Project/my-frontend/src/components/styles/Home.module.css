@@ -479,6 +479,16 @@
 .votesHistoryCon {
    width: 100%;
 }
+.emptyVoteHistory{
+   text-align: center;
+   color: var(--text-primary);
+   font-size: 1.2rem;
+   font-weight: 900;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100%;
+}
 .bottomHistoryDetails {
    display: flex;
    align-items: center;

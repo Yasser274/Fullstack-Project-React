@@ -1,8 +1,18 @@
 // .Context makes this component widely accessed by all other components (this component is to check for user login status)
 
-import { createContext, useState, useContext, type ReactNode, useEffect } from "react";
+import {
+   createContext,
+   useState,
+   useContext,
+   type ReactNode,
+   useEffect,
+   type Dispatch,
+   type SetStateAction,
+} from "react";
 import { jwtDecode } from "jwt-decode";
 import { isTokenExpired } from "../utils/tokenUtils";
+
+import { API_BASE_URL } from "../config/config";
 
 // Defining the shape of the user data gotten from the token
 export interface User {
@@ -19,6 +29,8 @@ interface AuthContextType {
    logout: () => void;
    isSessionExpired: boolean; // to signal the modal
    closeModalSession: () => void; // To close the modal
+   setUser: Dispatch<SetStateAction<User | null>>;
+   profileImageUrl: string;
 }
 // This is to toggle between null(user not logged in) and (AuthContextType data type which has user info)
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -85,8 +97,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsSessionExpired(false);
    };
 
+   const profileImageUrl = user?.profilePictureURL
+      ? user.profilePictureURL.includes("/")
+         ? // YES: It's the default path. Just join with the base URL.
+           `${API_BASE_URL}/${user.profilePictureURL}`
+         : // // NO: It's an uploaded filename. Add the '/uploads/' prefix.
+           `${API_BASE_URL}/uploads/${user.profilePictureURL}`
+      : `${API_BASE_URL}/images/default-avatar.png`;
+
    return (
-      <AuthContext.Provider value={{ user, login, logout, isSessionExpired, closeModalSession }}>
+      <AuthContext.Provider
+         value={{ user, login, logout, isSessionExpired, closeModalSession, setUser, profileImageUrl }}
+      >
          {children}
       </AuthContext.Provider>
    );

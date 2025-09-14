@@ -1,6 +1,6 @@
 import type React from "react";
 import styles from "../components/styles/Profile.module.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
 import EditIcon from "../assets/icons/EditIcon";
@@ -9,9 +9,27 @@ const ProfileSettings = () => {
    const [error, setError] = useState<string | null>(null);
    const [done, setDone] = useState<string | null>(null);
 
+   const imageSelector = useRef<HTMLInputElement>(null);
+
    const [passwordsMismatch, setPasswordsMismatch] = useState<boolean>(false);
 
-   const { logout, user } = useAuth();
+   const { logout, user, setUser,profileImageUrl } = useAuth();
+
+
+   // .Functions
+   const handleClickImg = () => {
+      // when user clicked on <img>
+      // trigger the ref input and make it clicked so the select file pop up appears
+      imageSelector.current?.click();
+   };
+
+   // Called when a file is selected
+   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files === null) return;
+
+      const file = event.target.files[0];
+      changeProfilePicture(file);
+   };
 
    const changePassword = async (e: React.FormEvent<HTMLFormElement>) => {
       const authToken = localStorage.getItem("token");
@@ -79,6 +97,44 @@ const ProfileSettings = () => {
       console.log(`old ${getOldPasswordVal} new: ${getNewPasswordVal} newConf: ${getNewConfPasswordVal}`);
    };
 
+   // Change profile Picture API
+   const changeProfilePicture = async (file: File) => {
+      const authToken = localStorage.getItem("token");
+      if (!authToken) {
+         console.error("Authentication error: Token not found");
+         setError("You are not logged in."); // Show a user-friendly error
+         return;
+      }
+      // Create a FormData object. This is how you send files.
+      const formData = new FormData();
+      // Append the file to the FormData object.
+      formData.append("newPicture", file);
+
+      try {
+         const response = await fetch(`${API_BASE_URL}/api/changePic`, {
+            method: "PATCH",
+            headers: {
+               Authorization: `Bearer ${authToken}`,
+            },
+            body: formData,
+         });
+         const data = await response.json();
+
+         if (!response.ok) {
+            throw new Error(data.message || "Changing Profile Picture went wrong");
+         }
+
+         console.dir(data);
+
+         if (user) {
+            console.log("ran");
+            setUser({ ...user, profilePictureURL: data.newImageUrl });
+         }
+      } catch (error) {
+         console.error("Changing Picture went wrong-", error);
+      }
+   };
+
    return (
       <div className={styles.profileSettingsCon}>
          <h2 className={styles.profileSecTitle}>Change Password:</h2>
@@ -117,7 +173,13 @@ const ProfileSettings = () => {
          <h2 className={styles.profileSecTitleB}>Change Profile Picture:</h2>
          <form>
             <div className={styles.changeProfilePicCon}>
-               <img src={user?.profilePictureURL} alt="User's Profile Picture" className={styles.changeProfilePic} />
+               <input type="file" ref={imageSelector} onChange={handleFileChange} accept="image/*" />
+               <img
+                  src={profileImageUrl}
+                  alt="User's Profile Picture"
+                  className={styles.changeProfilePic}
+                  onClick={handleClickImg}
+               />
                <EditIcon className={styles.editIconProfile}></EditIcon>
             </div>
          </form>

@@ -1,6 +1,8 @@
 import express, { type Request, type Response } from "express";
 import { pool } from "../config/database.js";
 
+// to read files format etc
+import path from "path";
 // to hash passwords from users
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"; // (for Login session)
@@ -74,8 +76,6 @@ export const registerUser = async (req: Request, res: Response) => {
          return res.status(409).json({ error: `An account with this email/username already exists.` });
       }
 
-      // - IF ALL CHECKS PASS, PROCEED -
-
       // hash the password
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -89,7 +89,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
       const { rows: userRows } = await pool.query(newUserQuery, [username, hashedPassword, email]); // destruct the rows and give it alias userRows
       // 'rows[0]' will now contain the new user object { id: ..., username: ..., email: ... }
-      const newUser = userRows[0];
+      const newUser = userRows[0]; // This newUser object will automatically contain the default profile_picture_url from the DB.
 
       return res.status(201).json({
          message: `got these ${username} ${email}`,
@@ -105,7 +105,6 @@ export const registerUser = async (req: Request, res: Response) => {
 
 //. Change password api function
 export const changePassword = async (req: Request, res: Response) => {
-
    interface changePasswordTypes {
       oldPassword: string;
       newPassword: string;
@@ -156,5 +155,34 @@ export const changePassword = async (req: Request, res: Response) => {
       console.error("Error whiling changing user password");
       res.status(500).json({ error: "An error occurred during changing password" });
       return;
+   }
+};
+
+//. Change profile picture api function
+export const changeProfilePic = async (req: Request, res: Response) => {
+   try {
+      // After Multer runs, the file is NOT in req.body. It's in req.file!
+      if (!req.file) {
+         return res.status(400).json({ message: `No File was uploaded.` });
+      }
+
+      const userId = req.user!.userId; // From my JWT middleware
+      const newPicturePath = req.file.filename; // Get the filename where Multer saved the file (e.g., "newPicture-167888...png")
+
+      // Update user's profile picture path in database with the new path of the image he just uploaded and return the path so frontend can get it
+      // This now saves the filename to the database then the
+      const updateUserPicQuery = `UPDATE users SET profile_picture_url = $1 WHERE id = $2 RETURNING profile_picture_url`;
+      const { rows: updatedPic } = await pool.query(updateUserPicQuery, [newPicturePath, userId]);
+
+      if (updatedPic.length === 0) {
+         return res.status(404).json({ message: `User not found.` });
+      }
+      return res.status(200).json({
+         message: `Profile picture updated successfully!`,
+         newImageUrl: updatedPic[0].profile_picture_url,
+      });
+   } catch (error) {
+      console.error("Error Changing profile picture:", error);
+      res.status(500).json({ error: `An internal server error occurred.` });
    }
 };

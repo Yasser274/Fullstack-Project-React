@@ -1,6 +1,9 @@
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 import "dotenv/config"; // Loads environment variables from .env into process.env
+// use these built in package so i can access path of files etc
+import path from "path";
+import { fileURLToPath } from "url";
 
 //* import routes (where the path lies)
 import userRouter from "./routes/userRoutes.js";
@@ -10,6 +13,11 @@ import restaurantRouter from "./routes/restaurantRoutes.js";
 const app = express();
 const port = process.env.API_PORT || 3001;
 
+// - Get absolute path to the current directory ---
+// This code figures out the full, exact path to the folder where your server.ts file lives.
+const __filename = fileURLToPath(import.meta.url); // Gets the complete path to the current file, like /Users/YourName/Projects/my-backend/src/server.ts.
+const __dirname = path.dirname(__filename); // Takes that full file path and just gives you the directory part: /Users/YourName/Projects/my-backend/src.
+
 //. Middleware
 // It's a security mechanism that browsers use. Since my React frontend(App.tsx) (e.g., on localhost:5173)
 // and my Express backend(this server.ts) (e.g., on localhost:3001) are on different "origins", this
@@ -17,16 +25,23 @@ const port = process.env.API_PORT || 3001;
 
 app.use(cors()); // Sets up CORS so my React frontend can talk to it.
 app.use(express.json()); // This is crucial for modern APIs. // It parses incoming request bodies that are in JSON format (e.g. POST requests with JSON payloads)
-//? Serve static files from the 'public' directory
-// you can access your image directly in the browser via a URL.
-// The URL is formed by taking my server address(localhost:3001) and appending the path to the file inside the public folder. The public part itself is invisible in the URL. (localhost:3001/images/default-avatar.png)
-app.use(express.static("public"));
+
+// ? Static File Serving ---
+// 1. Serve general public assets (logo, default avatar, etc.)
+app.use(express.static(path.join(__dirname, "..", "public")));
+// Start at my current folder (__dirname, which is /src). Go up one level (.., which takes you to /my-backend). then Go into the public folder. The result is path: /Users/YourName/Projects/my-backend/public.
+// express.static(...): This is the key. It unlocks the folder at that perfect path.
+// "If a browser requests a file like /logo.png or /images/default-avatar.png, look for it inside the public folder. If you find it, send it back immediately. The word 'public' itself is invisible in the URL."
+
+// ? Serve user-uploaded content from a dedicated URL prefix
+//  This creates the URL `http://.../uploads/filename.png`
+const uploadsPath = path.join(__dirname, "..", "profilePicUsers");
+app.use("/uploads", express.static(uploadsPath));
+// Only if a URL starts with /uploads should you use this key. When you do, take the rest of the URL (e.g., my-picture.png) and look for it inside the profilePicUsers folder."
 
 // . API to fetch the restaurants list from the Database
 // ? Any request starting with '/api/restaurants' will be handled by the restaurantRoutes file.
 app.use("/api/restaurants", restaurantRouter);
-
-
 
 // . API to get the login/register value from frontend (login)
 //? Any request starting with '/api' will be handled by the userRoutes file.

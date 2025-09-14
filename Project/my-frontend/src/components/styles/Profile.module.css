@@ -99,7 +99,9 @@
    align-items: center;
    color: var(--text-primary);
    position: relative;
-   cursor: pointer;
+}
+.changeProfilePicCon input{
+   display: none;
 }
 .changeProfilePic {
    width: 200px;
@@ -107,6 +109,7 @@
    border-radius: 50%;
    object-fit: cover;
    object-position: center;
+   cursor: pointer;
 }
 .editIconProfile {
    position: absolute;
@@ -114,4 +117,5 @@
    right: 20px;
    width: 48px;
    height: 48px;
+   pointer-events: none;
 }
