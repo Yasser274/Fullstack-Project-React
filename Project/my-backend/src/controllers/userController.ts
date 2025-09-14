@@ -171,15 +171,31 @@ export const changeProfilePic = async (req: Request, res: Response) => {
 
       // Update user's profile picture path in database with the new path of the image he just uploaded and return the path so frontend can get it
       // This now saves the filename to the database then the
-      const updateUserPicQuery = `UPDATE users SET profile_picture_url = $1 WHERE id = $2 RETURNING profile_picture_url`;
+      const updateUserPicQuery = `UPDATE users SET profile_picture_url = $1 WHERE id = $2 RETURNING *`;
       const { rows: updatedPic } = await pool.query(updateUserPicQuery, [newPicturePath, userId]);
 
       if (updatedPic.length === 0) {
          return res.status(404).json({ message: `User not found.` });
       }
+
+      const updatedUser = updatedPic[0];
+      // Create a new payload for the new token
+      const payload = {
+         userId: updatedUser.id,
+         username: updatedUser.username,
+         profilePictureURL: updatedUser.profile_picture_url, // The new URL!
+         email: updatedUser.email,
+      };
+      // Sign the new token
+      const secret = process.env.JWT_SECRET;
+      if (!secret) throw new Error("JWT_SECRET is not defined");
+      const token = jwt.sign(payload, secret, { expiresIn: "8h" });
+
+      // Send the new token back in the response
       return res.status(200).json({
          message: `Profile picture updated successfully!`,
-         newImageUrl: updatedPic[0].profile_picture_url,
+         newImageUrl: updatedUser.profile_picture_url,
+         token: token,
       });
    } catch (error) {
       console.error("Error Changing profile picture:", error);

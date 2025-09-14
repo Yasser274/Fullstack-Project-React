@@ -13,8 +13,7 @@ const ProfileSettings = () => {
 
    const [passwordsMismatch, setPasswordsMismatch] = useState<boolean>(false);
 
-   const { logout, user, setUser,profileImageUrl } = useAuth();
-
+   const { logout, user, setUser, profileImageUrl, login } = useAuth();
 
    // .Functions
    const handleClickImg = () => {
@@ -126,9 +125,15 @@ const ProfileSettings = () => {
 
          console.dir(data);
 
-         if (user) {
+         if (data.token) {
             console.log("ran");
-            setUser({ ...user, profilePictureURL: data.newImageUrl });
+            //update the new token so it contains the new profile picture
+            login(data.token);
+            setDone("Profile picture updated successfully!");
+         } else {
+            if (user) {
+               setUser({ ...user, profilePictureURL: data.newImageUrl });
+            }
          }
       } catch (error) {
          console.error("Changing Picture went wrong-", error);
