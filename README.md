@@ -42,7 +42,7 @@ npm install --prefix my-frontend
 
 #### Before running the application you must configure the database connection.
 
-### 1. Ensure you are in the 'Project/my-backend' directory
+### 2. Ensure you are in the 'Project/my-backend' directory
 
 ```bash
 cd my-backend
