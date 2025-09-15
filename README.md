@@ -1,6 +1,6 @@
 # My Fullstack Project (React(TS) + ExpressJS + PostgreSQL) Trend Bites
 
-#### Video Demo: .
+#### Video Demo: (https://www.youtube.com/watch?v=kpDFoljGSl8)
 
 #### Description:
 
