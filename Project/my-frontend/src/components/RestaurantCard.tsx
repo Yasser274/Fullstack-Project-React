@@ -8,7 +8,7 @@ interface RestaurantCardProps {
    restaurantList: Restaurant;
    // ranking
    rank: number;
-   handleVoteUpdate: (data: Restaurant) => void;
+   handleVoteUpdate: (data: Restaurant[]) => void;
 }
 
 interface restauAndRatingVProps {
@@ -123,7 +123,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
          const updatedRestaurant = await response.json();
          console.dir(updatedRestaurant);
          console.log("Sent", updatedRestaurant);
-         handleVoteUpdate(updatedRestaurant.restaurantsData[0]);
+         handleVoteUpdate(updatedRestaurant.restaurantsData);
       } catch (error) {
          console.error("Error submitting vote:", error);
          if (error instanceof Error) {

@@ -40,6 +40,11 @@
    gap: 1.4rem;
    justify-content: center;
 }
+.doneMessage{
+   color: var(--text-primary);
+   font-size: 1.1rem;
+   font-weight: 800;
+}
 .oldPassCon {
    display: flex;
    flex-direction: column;

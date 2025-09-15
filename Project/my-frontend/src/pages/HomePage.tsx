@@ -32,7 +32,7 @@ export interface Review {
    };
 }
 
-// just an example on how to extract and use just one type in an interfae
+// just an example on how to extract and use just one type in an interface
 // type RestaurantID = Restaurant["id"]
 
 const HomePage = () => {
@@ -120,6 +120,7 @@ const HomePage = () => {
             }
             const data = await response.json(); // Get the full object first
             const restaurantsArray: [] = data.restaurantsData; // Then extract the array from the 'restaurantsData' property
+            console.log(restaurantsArray)
             if (restaurantsArray.length <= 0) {
                setNothingFound("No restaurants found matching your search.");
                console.log(restaurantsArray);
@@ -149,12 +150,19 @@ const HomePage = () => {
    //    return rest.restaurant_name.toLowerCase().includes(searchBarV.toLowerCase());
    // });
 
-   const handleVoteUpdate = (updatedRestaurantDataFromServer: Partial<Restaurant>) => {
+   const handleVoteUpdate = (updatedRestaurantDataFromServer: Restaurant[]) => {
+      if (!updatedRestaurantDataFromServer || updatedRestaurantDataFromServer.length === 0) {
+         return; // Guard against empty or null data
+      }
+
+      const updatedRestaurant = updatedRestaurantDataFromServer[0]; // Get the object from the array
+      console.log(updatedRestaurant)
+
       setRestaurants((currentRestaurants) => {
          return currentRestaurants.map((restaurant) => {
-            if (restaurant.id === updatedRestaurantDataFromServer.id) {
-               console.log(updatedRestaurantDataFromServer);
-               return { ...restaurant, ...updatedRestaurantDataFromServer };
+            if (restaurant.id === updatedRestaurant.id) {
+               console.log(updatedRestaurant);
+               return { ...restaurant, ...updatedRestaurant};
             }
             return restaurant;
          });

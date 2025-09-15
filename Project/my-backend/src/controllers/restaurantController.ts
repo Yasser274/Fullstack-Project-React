@@ -11,7 +11,7 @@ export const restaurants = async (req: Request, res: Response) => {
 
    // if user entered value to search
    const searchTerm = await req.query.searchT;
-   let searchPattern: string | undefined =  "";
+   let searchPattern: string | undefined = "";
    if (searchTerm) {
       // If the user searched for something, wrap it in wildcards
       // % means “match any sequence of characters”.
@@ -22,7 +22,6 @@ export const restaurants = async (req: Request, res: Response) => {
       // If the user did not search for anything ignore filtering
       searchPattern = `%%`;
    }
-
 
    const allowedSortValues = ["DESC", "ASC"];
    const sort = allowedSortValues.includes(sortByQuery) ? sortByQuery : "DESC"; // if sortByQuery value is inside allowedSortValues use it if not default to DESC
@@ -69,8 +68,15 @@ export const restaurants = async (req: Request, res: Response) => {
     GROUP BY
       -- This is crucial: we group all rows by the restaurant id so just one row for each restaurant
       rw.restaurant_id
+  ),
+  -- Step 3: Pre rank all restaurants 
+  ranked_restaurants AS (
+  SELECT *,
+  -- It calculates the rank over the entire ordered dataset
+  RANK() OVER (ORDER BY average_rating DESC, rating_count DESC) as rank
+  FROM restaurants
   )
-  -- Step 3: Now, join the main restaurants table to your pre-aggregated results.
+  -- Step 4: Now, join the main restaurants table to your pre-aggregated results.
   -- These are now clean one-to-one joins, preventing any row duplication.
 SELECT
   r.id,
@@ -79,15 +85,15 @@ SELECT
   r.description,
   r.rating_count,
   r.average_rating,
+  r.rank, -- The rank is now just a column we can select
   COALESCE(ta.tags, '{}') AS tags,
-  COALESCE(ra.reviews, '[]'::json) AS reviews,
-
-  -- It calculates the rank over the entire ordered dataset
-  RANK() OVER (ORDER BY r.average_rating DESC, r.rating_count DESC) as rank
+  COALESCE(ra.reviews, '[]'::json) AS reviews
+  
 FROM
-  restaurants AS r
+  ranked_restaurants AS r
   LEFT JOIN tags_agg AS ta ON r.id = ta.restaurant_id
   LEFT JOIN reviews_agg AS ra ON r.id = ra.restaurant_id
+  -- The search filter is now applied *after* the ranking was calculated
   WHERE r.restaurant_name ILIKE $1
 ORDER BY
   -- As a tie-breaker, the one with more ratings is ranked higher (more trustworthy).
@@ -118,14 +124,12 @@ ORDER BY
       }
 
       if (restaurants.length <= 0) {
-         return res
-            .status(200)
-            .json({
-               message: `No restaurants found matching your search.`,
-               restaurantsData: [],
-               totalPage: 0,
-               totalItems: 0,
-            });
+         return res.status(200).json({
+            message: `No restaurants found matching your search.`,
+            restaurantsData: [],
+            totalPage: 0,
+            totalItems: 0,
+         });
       }
       res.status(200).json({
          message: `Sent successfully`,
