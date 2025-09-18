@@ -113,6 +113,110 @@
 .searchBarS:focus {
    outline: var(--accent-color) 2px solid;
 }
+.mySwiperSponsorCon {
+   display: flex;
+   overflow: hidden; /* Important for keeping rounded corners */
+   margin-top: 4px;
+   align-items: center;
+   justify-content: center;
+   max-width: 1200px;
+   box-sizing: border-box;
+   border-radius: 12px;
+   position: relative;
+   width: calc(100vw - 2rem);
+}
+.autoplayProgress {
+   position: absolute;
+   right: 16px;
+   bottom: 16px;
+   z-index: 10;
+   width: 48px;
+   height: 48px;
+}
+.autoplayProgress span {
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%);
+   color: white;
+   font-size: 0.7rem;
+}
+.autoplayProgress svg {
+   position: absolute;
+   left: 0;
+   top: 0;
+   z-index: 10;
+   width: 100%;
+   height: 100%;
+   transform: rotate(-90deg); /* Start the circle from the top */
+}
+
+.progressTrack {
+   stroke-width: 4px;
+   stroke: rgba(255, 255, 255, 0.2); /* Faint track color */
+   fill: none;
+}
+.progressRing {
+   stroke-width: 4px;
+   stroke: #ffffff; /* Solid white for the progress */
+   fill: none;
+   stroke-linecap: round; /* Gives the line a nice rounded end */
+   stroke-dasharray: 125.6;
+   stroke-dashoffset: calc(125.6 * (1 - var(--progress)));
+   transition: stroke-dashoffset 0.1s linear; /* Smooth animation */
+}
+.sponsoredBox {
+   width: 100%;
+   border-radius: 12px;
+   height: 200px;
+   margin: auto;
+   display: flex;
+   justify-content: space-between;
+   color: var(--text-primary);
+   background-size: cover;
+   background-position: center;
+   display: flex;
+   padding-left: 8px;
+   padding-bottom: 8px;
+}
+.sponsoredOverlay {
+   position: absolute;
+   width: 100%;
+   top: 0;
+   border-radius: 12px;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background-color: rgba(0, 0, 0, 0.4);
+   display: flex;
+   align-items: flex-end;
+   padding-left: 8px;
+   padding-bottom: 8px;
+}
+.sponsoredDetails {
+   display: flex;
+   align-items: center;
+}
+.sponsoredDetails img {
+   width: 48px;
+   margin-right: 0.64rem;
+}
+.sponsoredLeft {
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
+   color: var(--text-primary);
+   z-index: 1;
+   margin-left: 10px;
+}
+.sponsoredLeft span {
+   color: #e0e0e0 !important;
+   pointer-events: none;
+}
+.sponsoredRight img {
+   width: 180px;
+   border-radius: 8px;
+}
 
 /* errors */
 .notFoundRestaurant {
@@ -479,7 +583,7 @@
 .votesHistoryCon {
    width: 100%;
 }
-.emptyVoteHistory{
+.emptyVoteHistory {
    text-align: center;
    color: var(--text-primary);
    font-size: 1.2rem;

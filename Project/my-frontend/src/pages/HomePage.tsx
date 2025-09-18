@@ -7,6 +7,7 @@ import { API_BASE_URL } from "../config/config";
 import SearchBar from "../components/common/SearchBar";
 import Loading from "../assets/icons/Loading";
 import Pagination from "../components/Pagination";
+import Sponsored from "../components/Sponsored";
 
 // export the types of restaurants in useState
 export interface Restaurant {
@@ -32,6 +33,13 @@ export interface Review {
    };
 }
 
+export interface sponsorsProps {
+   id: number;
+   banner_image_url: string;
+   restaurant_name: string;
+   restaurant_logo: string;
+}
+
 // just an example on how to extract and use just one type in an interface
 // type RestaurantID = Restaurant["id"]
 
@@ -46,18 +54,16 @@ const HomePage = () => {
    const sortBy = searchParams.get("sortBy");
 
    const [totalPages, setTotalPages] = useState<number>(0);
-   // sort restaurants by ranking most high rating to least
-   // *TEMP
-   // const sortedRestaurants = [...restaurants].sort((a, b) => b.average_rating - a.average_rating);
-   // const rankedRestaurants = sortedRestaurants.map((restaurant) => {
-   //    return { ...restaurant };
-   // });
+
 
    const [isLoading, setIsLoading] = useState<boolean>(true);
    const [error, setError] = useState<string | null>(null);
    const [nothingFound, setNothingFound] = useState<string | null>(null);
 
    const [searchTerm, setSearchTerm] = useState<string | null>(null);
+
+   // store sponsors
+   const [sponsorsList, setSponsorsList] = useState<null | sponsorsProps[]>(null);
 
    // this will be passed into Pagination comp
    const handlePageChange = (pageNumber: number) => {
@@ -70,9 +76,28 @@ const HomePage = () => {
       });
    };
 
-   // const handleSortingChange = (sortMethod:string) => {
-   //    setSortBy({sort: })
-   // }
+   //* fetch sponsors
+   useEffect(() => {
+      const getSponsors = async () => {
+         try {
+            const response = await fetch(`${API_BASE_URL}/api/restaurants/sponsors`, {
+               method: "GET",
+               headers: {
+                  "Content-Type": "application/json",
+               },
+            });
+            const data = await response.json();
+            if (!response.ok) {
+               throw new Error(`Failed to fetch sponsors list`);
+            }
+            setSponsorsList(data.sponsorsData);
+         } catch (error) {
+            console.error("Retrieving sponsors went wrong", error);
+            return;
+         }
+      };
+      getSponsors();
+   }, []);
 
    // useEffect to fetch the data(json) from api of restaurants and use setRestaurants to store the data in the state
    useEffect(() => {
@@ -120,7 +145,7 @@ const HomePage = () => {
             }
             const data = await response.json(); // Get the full object first
             const restaurantsArray: [] = data.restaurantsData; // Then extract the array from the 'restaurantsData' property
-            console.log(restaurantsArray)
+            console.log(restaurantsArray);
             if (restaurantsArray.length <= 0) {
                setNothingFound("No restaurants found matching your search.");
                console.log(restaurantsArray);
@@ -140,15 +165,6 @@ const HomePage = () => {
       };
       fetchRestaurantsList();
    }, [currentPage, sortBy, searchTerm]);
-   // . filter by name (searchBar)
-
-   // * TEMP
-   // every time we set new value inside searchBarV(state) it renders so this runs with the new value inside the searchbar
-   // const filteredRestaurants: Restaurant[] = rankedRestaurants.filter((rest: Restaurant) => {
-   //    // return the new filtered array if searchbar is empty In JavaScript, anyString.includes("") is always true. An empty string is technically "found" at the beginning of any other string. Result: The function will return true for every single restaurant letting everything in the new array.
-   //    // but if it finds in searchbar closely matched something in restaurant_name it will return true for that one meaning let it in the new array
-   //    return rest.restaurant_name.toLowerCase().includes(searchBarV.toLowerCase());
-   // });
 
    const handleVoteUpdate = (updatedRestaurantDataFromServer: Restaurant[]) => {
       if (!updatedRestaurantDataFromServer || updatedRestaurantDataFromServer.length === 0) {
@@ -156,13 +172,13 @@ const HomePage = () => {
       }
 
       const updatedRestaurant = updatedRestaurantDataFromServer[0]; // Get the object from the array
-      console.log(updatedRestaurant)
+      console.log(updatedRestaurant);
 
       setRestaurants((currentRestaurants) => {
          return currentRestaurants.map((restaurant) => {
             if (restaurant.id === updatedRestaurant.id) {
                console.log(updatedRestaurant);
-               return { ...restaurant, ...updatedRestaurant};
+               return { ...restaurant, ...updatedRestaurant };
             }
             return restaurant;
          });
@@ -214,6 +230,7 @@ const HomePage = () => {
                <option value="lowestRating">Lowest Rating</option>
             </select>
          </div>
+         <Sponsored slidesList={sponsorsList} ></Sponsored>
          <div className={styles.restaurantsCon}>
             {error ? <div className={styles.notFoundRestaurant}>{error}</div> : ""}
 

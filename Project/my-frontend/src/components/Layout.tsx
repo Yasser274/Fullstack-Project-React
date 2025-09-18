@@ -11,6 +11,7 @@ import { useTheme } from "../context/ThemeContext";
 import ThemeMandSIcon from "../assets/icons/ThemeMandSIcon";
 import TrendBitesLogo from "../assets/icons/TrendBitesLogo";
 import { API_BASE_URL } from "../config/config";
+import { SocialIcon } from "react-social-icons";
 
 // type for hamburgerIcon
 interface HamburgerIconProps {
@@ -44,9 +45,7 @@ const Layout = () => {
    // for mobile view
    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<false | true>(false);
 
-   const { user, logout, isSessionExpired, closeModalSession,profileImageUrl } = useAuth();
-
-
+   const { user, logout, isSessionExpired, closeModalSession, profileImageUrl } = useAuth();
 
    // Call the hook here to get the location object (my path /profile for example)
    const location = useLocation();
@@ -167,13 +166,36 @@ const Layout = () => {
          </main>
 
          <footer className={styles.footerCon}>
-            <div className={styles.footerContent}>
-               <p>&copy; 2025 Company Name. All Rights Reserved.</p>
-               <nav className={styles.footerLinks}>
-                  <a href="/privacy-policy">Privacy Policy</a>
-                  <a href="/terms-of-service">Terms of Service</a>
-                  <Link to={"/contact"}>Contact</Link>
-               </nav>
+            <div className={styles.footerWhole}>
+               <div className={styles.footerContent}>
+                  <div>
+                     <TrendBitesLogo className={styles.footerLogo}></TrendBitesLogo>
+                  </div>
+                  <nav className={styles.footerLinks}>
+                     <div className={styles.legalFooterCon}>
+                        <h3>Legal</h3>
+                        <a href="/privacy-policy">Privacy Policy</a>
+                        <a href="/terms-of-service">Terms of Service</a>
+                     </div>
+                     <div className={styles.contactFooterCon}>
+                        <h3>Contact Us</h3>
+                        <Link to={"/contact"}>Contact</Link>
+                     </div>
+                  </nav>
+               </div>
+               <div className={styles.belowFooterCon}>
+                  <hr style={{ color: "black", width: "100%",border:'white 1px solid' }} />
+                  <div className={styles.belowFooterDetails}>
+                     <div className={styles.copyright}>
+                        <p>&copy; 2025 Trend Bites. All Rights Reserved.</p>
+                     </div>
+                     <div className={styles.socialMediaCon}>
+                        <SocialIcon network="github" url="https://www.github.com"></SocialIcon>
+                        <SocialIcon network="x" url="https://www.x.com"></SocialIcon>
+                        <SocialIcon network="youtube" url="https://www.youtube.com"></SocialIcon>
+                     </div>
+                  </div>
+               </div>
             </div>
          </footer>
       </div>

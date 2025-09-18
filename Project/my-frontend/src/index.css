@@ -22,6 +22,7 @@
    --pagination-background-color-active: #212529;
    --pagination-shadow: rgba(0, 0, 0, 0.27);
    --input-login-background-color: #242424dc;
+   --footer-background-color: #111827;
 }
 /* for dark theme */
 [data-theme="dark"] {
@@ -39,4 +40,5 @@
    --pagination-background-color-active: #e7f3ff;
    --pagination-shadow: rgba(189, 189, 189, 0.27);
    --input-login-background-color: #cecece3f;
+   --footer-background-color: #111827;
 }

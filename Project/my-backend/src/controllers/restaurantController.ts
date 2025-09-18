@@ -288,3 +288,27 @@ export const getUserRatingHistory = async (req: Request, res: Response) => {
       res.status(500).json({ message: `Fetching Rating history went wrong` });
    }
 };
+
+//. Sponsorship API
+export const SponsorshipRestaurant = async (req: Request, res: Response) => {
+   try {
+      const sponsersQuery = `SELECT
+  s.id,
+  s.banner_image_url,
+  r.restaurant_name,
+  r.restaurant_logo
+FROM
+  sponsorships AS s
+  LEFT JOIN restaurants AS r ON s.restaurant_id = r.id
+WHERE
+  s.is_active = TRUE
+ORDER BY
+  display_order DESC;`;
+      const { rows: sponsorsDb } = await pool.query(sponsersQuery);
+      console.log(sponsorsDb);
+      return res.status(200).json({ message: "Fetched sponsors successfully.", sponsorsData: sponsorsDb });
+   } catch (error) {
+      console.error(`Error while fetching sponsors`, error);
+      res.status(500).json({ message: `Fetching sponsors went wrong.` });
+   }
+};
