@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict liDXxSkc1pWLpPQRqcCYq4mKtgFK8THw1SIUdofyEkRVCXMhUE6o0E9hrFgAxDu
+\restrict CmLbs1hQyNGIs1N578nbDuanlmUjzgCDLggK900QrgD0pX7VtfaAiBFIDtt0xrp
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -25,11 +25,11 @@ SET row_security = off;
 
 CREATE FUNCTION public.update_updated_at_column() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-   NEW.updated_at = NOW(); 
-   RETURN NEW;
-END;
+    AS $$
+BEGIN
+   NEW.updated_at = NOW(); 
+   RETURN NEW;
+END;
 $$;
 
 
@@ -94,6 +94,40 @@ CREATE SEQUENCE public.restaurants_id_seq
 --
 
 ALTER SEQUENCE public.restaurants_id_seq OWNED BY public.restaurants.id;
+
+
+--
+-- Name: sponsorships; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sponsorships (
+    id integer NOT NULL,
+    restaurant_id integer NOT NULL,
+    banner_image_url text NOT NULL,
+    is_active boolean DEFAULT true,
+    display_order integer DEFAULT 0,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+--
+-- Name: sponsorships_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sponsorships_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sponsorships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sponsorships_id_seq OWNED BY public.sponsorships.id;
 
 
 --
@@ -170,6 +204,13 @@ ALTER TABLE ONLY public.restaurants ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: sponsorships id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sponsorships ALTER COLUMN id SET DEFAULT nextval('public.sponsorships_id_seq'::regclass);
+
+
+--
 -- Name: tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -213,6 +254,14 @@ ALTER TABLE ONLY public.restaurants
 
 ALTER TABLE ONLY public.restaurants
     ADD CONSTRAINT restaurants_restaurantname_key UNIQUE (restaurant_name);
+
+
+--
+-- Name: sponsorships sponsorships_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sponsorships
+    ADD CONSTRAINT sponsorships_pkey PRIMARY KEY (id);
 
 
 --
@@ -287,8 +336,16 @@ ALTER TABLE ONLY public.restaurant_tags
 
 
 --
+-- Name: sponsorships sponsorships_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sponsorships
+    ADD CONSTRAINT sponsorships_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict liDXxSkc1pWLpPQRqcCYq4mKtgFK8THw1SIUdofyEkRVCXMhUE6o0E9hrFgAxDu
+\unrestrict CmLbs1hQyNGIs1N578nbDuanlmUjzgCDLggK900QrgD0pX7VtfaAiBFIDtt0xrp
 
