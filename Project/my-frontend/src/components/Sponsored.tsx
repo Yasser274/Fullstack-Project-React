@@ -12,10 +12,8 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { Swiper as SwiperClass } from "swiper/types"; // Import Swiper's type for the callback
 import type { sponsorsProps } from "../pages/HomePage";
 
-
-
 const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
-   const progressCircle = useRef<HTMLDivElement | null>(null);
+   const progressCircle = useRef<SVGSVGElement | null>(null);
    const progressContent = useRef<HTMLSpanElement | null>(null);
 
    const onAutoplayTimeLeft = (s: SwiperClass, time: number, progress: number) => {
@@ -46,7 +44,7 @@ const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
             className={styles.mySwiperSponsorCon}
          >
             {slidesList
-               ? slidesList.map((slides:sponsorsProps) => {
+               ? slidesList.map((slides: sponsorsProps) => {
                     return (
                        <SwiperSlide key={slides.id}>
                           <div
@@ -73,8 +71,8 @@ const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
                     );
                  })
                : null}
-            <div className={styles.autoplayProgress} slot="container-end" ref={progressCircle}>
-               <svg viewBox="0 0 48 48">
+            <div className={styles.autoplayProgress} slot="container-end" >
+               <svg viewBox="0 0 48 48" ref={progressCircle}>
                   <circle cx="24" cy="24" r="20" className={styles.progressTrack}></circle>
 
                   {/* Circle 2: The animated progress ring that draws on top */}

@@ -1,12 +1,17 @@
 import styles from "../components/styles/Home.module.css";
 import ProfileNav from "../components/ProfileNav";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { useAuth } from "../context/AuthContext&Global";
 import Modal from "../components/common/Modal";
+import useInView from "../components/common/useInView";
 
 const ProfilePage = () => {
+   const [sectionRef, isSectionVisible] = useInView<HTMLDivElement>({
+      threshold: 0.1,
+      triggerOnce: true,
+   });
    const { user } = useAuth();
    const navigate = useNavigate();
 
@@ -29,7 +34,12 @@ const ProfilePage = () => {
             <div className={styles.profileLeftSection}>
                <ProfileNav></ProfileNav>
             </div>
-            <section className={styles.profileRightSection}>
+            <section
+               className={`${styles.profileRightSection} ${
+                  isSectionVisible ? styles.profileRightSectionVisible : ""
+               }`}
+               ref={sectionRef}
+            >
                <Outlet></Outlet>
                {/* context will pass down the API(object json) into the Outlet that has many components inside it */}
             </section>
@@ -49,7 +59,7 @@ const ProfilePage = () => {
       >
          {/* the content of this modal */}
          <div>
-            <p style={{textAlign:"center"}}>You must be logged in to view this page.</p>
+            <p style={{ textAlign: "center" }}>You must be logged in to view this page.</p>
          </div>
       </Modal>
    );

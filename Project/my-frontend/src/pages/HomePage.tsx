@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-
 import styles from "../components/styles/Home.module.css";
+// import the useInView hook i created for animations when section appear
+import useInView from "../components/common/useInView";
+
 import RestaurantCard from "../components/RestaurantCard";
 import { API_BASE_URL } from "../config/config";
 import SearchBar from "../components/common/SearchBar";
@@ -44,6 +46,25 @@ export interface sponsorsProps {
 // type RestaurantID = Restaurant["id"]
 
 const HomePage = () => {
+   // *for animation when section appears
+
+   // sectionRef is the ref to attach elements to and isSectionVisible is true or false gotten from useInView
+   const [sectionRef, isSectionVisible] = useInView<HTMLDivElement>({
+      threshold: 0.1, // Trigger when 10% of the element is visible
+      triggerOnce: true,
+   });
+   const [section2Ref, isSection2Visible] = useInView<HTMLDivElement>({
+      threshold: 0.1,
+      triggerOnce: true,
+   });
+   const [section3Ref, isSection3Visible] = useInView<HTMLDivElement>({
+      threshold: 0.1,
+      triggerOnce: true,
+   });
+   const [section4Ref, isSection4Visible] = useInView<HTMLDivElement>({
+      threshold: 0.1,
+      triggerOnce: true,
+   });
    // State to hold the list of restaurants FOR THE CURRENT PAGE
    const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
@@ -54,7 +75,6 @@ const HomePage = () => {
    const sortBy = searchParams.get("sortBy");
 
    const [totalPages, setTotalPages] = useState<number>(0);
-
 
    const [isLoading, setIsLoading] = useState<boolean>(true);
    const [error, setError] = useState<string | null>(null);
@@ -198,13 +218,19 @@ const HomePage = () => {
    return (
       <div className={styles.homeContentCon}>
          <title>Trend Bites</title>
-         <div className={styles.titleAndSort}>
+         <div
+            className={`${styles.titleAndSort} ${isSectionVisible ? styles.titleAndSortVisible : ""}`}
+            ref={sectionRef}
+         >
             <h2 style={{ textAlign: "center" }}>
                Trending Restaurants <br />
                this Month
             </h2>
          </div>
-         <div className={styles.searchBarCon}>
+         <div
+            className={`${styles.searchBarCon} ${isSection2Visible ? styles.searchBarConVisible : ""}`}
+            ref={section2Ref}
+         >
             <SearchBar
                searchBarText={searchTerm}
                onChangeText={setSearchTerm}
@@ -230,8 +256,13 @@ const HomePage = () => {
                <option value="lowestRating">Lowest Rating</option>
             </select>
          </div>
-         <Sponsored slidesList={sponsorsList} ></Sponsored>
-         <div className={styles.restaurantsCon}>
+         <div
+            ref={section3Ref}
+            className={`${styles.sponsoredDiv} ${isSection3Visible ? styles.sponsoredDivVisible : ""}`}
+         >
+            <Sponsored slidesList={sponsorsList}></Sponsored>
+         </div>
+         <div className={`${styles.restaurantsCon} ${isSection4Visible ? styles.restaurantsConVisible : ""}`} ref={section4Ref}>
             {error ? <div className={styles.notFoundRestaurant}>{error}</div> : ""}
 
             {/* if isLoading is true it will display the loading animation  */}
