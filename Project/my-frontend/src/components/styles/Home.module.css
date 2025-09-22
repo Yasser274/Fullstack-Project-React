@@ -223,6 +223,7 @@
    width: 24px;
    background-color: var(--accent-color);
    transition: all 0.15s ease-in-out;
+   border-radius: 20px;
 }
 .sponsoredBox {
    width: 100%;

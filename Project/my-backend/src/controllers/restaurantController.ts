@@ -305,7 +305,6 @@ WHERE
 ORDER BY
   display_order DESC;`;
       const { rows: sponsorsDb } = await pool.query(sponsersQuery);
-      console.log(sponsorsDb);
       return res.status(200).json({ message: "Fetched sponsors successfully.", sponsorsData: sponsorsDb });
    } catch (error) {
       console.error(`Error while fetching sponsors`, error);

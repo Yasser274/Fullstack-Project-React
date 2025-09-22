@@ -362,6 +362,9 @@
    .socialMediaCon {
       justify-content: center;
    }
+   .navBarMenuMobile{
+      transform: translateX(10%) !important;
+   }
 }
 /* (small desktop size) */
 @media (width <= 1024px) {
@@ -385,6 +388,8 @@
 @media (width <= 1700px) {
    .navProfilePicCon {
       flex-direction: column;
+      height: auto;
+      flex: 0;
    }
    .navBarItemsCon {
       position: fixed;
@@ -412,7 +417,7 @@
    }
    /* this will active when the user press the hamburger button */
    .navBarMenuMobile {
-      transform: translateX(70%) !important;
+      transform: translateX(70%);
    }
    .hamburgerBtn {
       display: flex;
