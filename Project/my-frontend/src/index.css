@@ -42,3 +42,13 @@
    --input-login-background-color: #cecece3f;
    --footer-background-color: #111827;
 }
+
+body {
+   font-family: "Nunito", Arial, Helvetica, sans-serif;
+   background-color: #333333;
+   margin: 0;
+}
+/* my arabic font lan */
+body:lang(ar) {
+   font-family: "Changa", Arial;
+}

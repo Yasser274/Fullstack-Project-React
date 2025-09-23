@@ -9,17 +9,16 @@ import TrendBitesLogo from "../assets/icons/TrendBitesLogo";
 import { SocialIcon } from "react-social-icons";
 import NavBar from "./NavBar";
 
-
-
 const Layout = () => {
    // useState to close down and open the login/register modal(overlay)
    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
    // to switch modal title
    const [switchModalTitle, setSwitchModalTitle] = useState<1 | 0>(0);
    // for mobile view
-   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<false | true>(false);
+   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
    const { user, logout, isSessionExpired, closeModalSession, profileImageUrl } = useAuth();
+
 
    // Call the hook here to get the location object (my path /profile for example)
    const location = useLocation();

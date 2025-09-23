@@ -10,6 +10,8 @@ import SearchBar from "../components/common/SearchBar";
 import Loading from "../assets/icons/Loading";
 import Pagination from "../components/Pagination";
 import Sponsored from "../components/Sponsored";
+// for translations
+import { useTranslation } from "react-i18next";
 
 // export the types of restaurants in useState
 export interface Restaurant {
@@ -84,6 +86,8 @@ const HomePage = () => {
 
    // store sponsors
    const [sponsorsList, setSponsorsList] = useState<null | sponsorsProps[]>(null);
+
+   const { t, i18n } = useTranslation();
 
    // this will be passed into Pagination comp
    const handlePageChange = (pageNumber: number) => {
@@ -222,10 +226,7 @@ const HomePage = () => {
             className={`${styles.titleAndSort} ${isSectionVisible ? styles.titleAndSortVisible : ""}`}
             ref={sectionRef}
          >
-            <h2 style={{ textAlign: "center" }}>
-               Trending Restaurants <br />
-               this Month
-            </h2>
+            <h2 style={{ textAlign: "center" }}>{t("TrendingRes")}</h2>
          </div>
          <div
             className={`${styles.searchBarCon} ${isSection2Visible ? styles.searchBarConVisible : ""}`}
@@ -234,7 +235,7 @@ const HomePage = () => {
             <SearchBar
                searchBarText={searchTerm}
                onChangeText={setSearchTerm}
-               placeholderText="Search for restaurant by name"
+               placeholderText={t("searchRestaurant")}
                classNameStyle={styles.searchBarS}
                classNameCon={styles.searchBarDivCon}
                searchBarIcon={styles.searchBarIcon}
@@ -250,10 +251,10 @@ const HomePage = () => {
                }
             >
                <option value="" disabled>
-                  Sort by..
+                  {t("sort")}
                </option>
-               <option value="highestRating">Highest Rating</option>
-               <option value="lowestRating">Lowest Rating</option>
+               <option value="highestRating">{t("sortByHighest")}</option>
+               <option value="lowestRating">{t("sortByLowest")}</option>
             </select>
          </div>
          <div
@@ -262,7 +263,10 @@ const HomePage = () => {
          >
             <Sponsored slidesList={sponsorsList}></Sponsored>
          </div>
-         <div className={`${styles.restaurantsCon} ${isSection4Visible ? styles.restaurantsConVisible : ""}`} ref={section4Ref}>
+         <div
+            className={`${styles.restaurantsCon} ${isSection4Visible ? styles.restaurantsConVisible : ""}`}
+            ref={section4Ref}
+         >
             {error ? <div className={styles.notFoundRestaurant}>{error}</div> : ""}
 
             {/* if isLoading is true it will display the loading animation  */}

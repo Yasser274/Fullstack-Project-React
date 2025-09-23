@@ -1,0 +1,16 @@
+{
+   "home": "Home",
+   "about": "About",
+   "contact": "Contact",
+   "profile": "Profile",
+   "login": "Login",
+   "logout": "Logout",
+   "sessionExpired": "Session Expired",
+   "sessionExpiredMessage": "Please log in again, your session expired.",
+   "TrendingRes": "Trending Restaurants this Month",
+   "aboutTrendBitesDesc": "Unlike Google Maps, Trend Bites focuses on dynamic, monthly trends, enabling small restaurants to rise quickly in popularity and helping users discover new dining experiences. This project showcases full-stack development, user authentication, database management, and responsive UI design, creating an engaging, community-driven platform for restaurant ratings.",
+   "sort": "Sort by..",
+   "sortByHighest": "Highest Rating",
+   "sortByLowest": "Lowest Rating",
+   "searchRestaurant": "Search for restaurant by name"
+}

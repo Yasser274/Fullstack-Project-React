@@ -1,11 +1,4 @@
-/* Font */
-@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 
-body {
-   font-family: "Nunito", Arial, Helvetica, sans-serif;
-   background-color: #333333;
-   margin: 0;
-}
 /* because these elements don't inherit the font-family from body */
 button,
 input,
@@ -13,4 +6,3 @@ textarea,
 select {
    font-family: inherit;
 }
-

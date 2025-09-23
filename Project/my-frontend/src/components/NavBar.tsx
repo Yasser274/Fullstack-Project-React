@@ -1,5 +1,5 @@
 import styles from "../components/styles/Layout.module.css";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import TrendBitesLogo from "../assets/icons/TrendBitesLogo";
 
 import Modal from "./common/Modal";
@@ -8,6 +8,8 @@ import ThemeMandSIcon from "../assets/icons/ThemeMandSIcon";
 import AuthModalContent from "./common/AuthModalContent";
 import type { User } from "../context/AuthContext&Global";
 
+// for translations
+import { useTranslation } from "react-i18next";
 // type for hamburgerIcon
 interface HamburgerIconProps {
    className?: string;
@@ -59,6 +61,26 @@ const NavBar = ({
    setIsLoginModalOpen,
    isLoginModalOpen,
 }: NavBarProps) => {
+   // Get the t function and the i18n instance from the hook
+   const { t, i18n } = useTranslation();
+   const navigate = useNavigate();
+   const location = useLocation();
+
+   const handleLanguageChange = () => {
+      const newLang = i18n.language === "en" ? "ar" : "en";
+
+      // This is a more robust way to get the current path after the language code
+      // It splits "/en/about/us" into ["", "en", "about", "us"]
+      const pathParts = location.pathname.split("/");
+
+      // It then takes everything *after* the language code and joins it back
+      // ["about", "us"] becomes "about/us"
+      const currentPath = pathParts.slice(2).join("/");
+
+      // Navigate to the new URL
+      navigate(`/${newLang}/${currentPath}`);
+   };
+
    return (
       <header>
          <nav className={styles.navBarCon}>
@@ -77,10 +99,10 @@ const NavBar = ({
 
             {/* Show the session expiration modal when the flag is true */}
             {isSessionExpired ? (
-               <Modal isOpen={isSessionExpired} title="Session Expired" onClose={closeModalSession}>
+               <Modal isOpen={isSessionExpired} title={t("sessionExpired")} onClose={closeModalSession}>
                   {/* the content of this modal */}
                   <div>
-                     <p style={{ textAlign: "center" }}>Please log in again, your session expired.</p>
+                     <p style={{ textAlign: "center" }}>{t("sessionExpiredMessage")}</p>
                   </div>
                </Modal>
             ) : null}
@@ -98,33 +120,35 @@ const NavBar = ({
                </button>
 
                <NavLink
-                  to="/"
+                  to={`/${i18n.language}`}
+                  end
                   className={({ isActive }) => (isActive ? styles.activeLink : styles.defaultLink)} // ? this means if isActive is true(means currently inside this page) run whats after the ? if not runs what after :
                >
-                  Home
+                  {t("home")}
                </NavLink>
                <NavLink
-                  to="/about"
+                  //  so the current language doesn't get messed up EX: en/about
+                  to={`/${i18n.language}/about`}
                   className={({ isActive }) => (isActive ? styles.activeLink : styles.defaultLink)}
                >
-                  About
+                  {t("about")}
                </NavLink>
                <NavLink
-                  to="/contact"
+                  to={`/${i18n.language}/contact`}
                   className={({ isActive }) => (isActive ? styles.activeLink : styles.defaultLink)}
                >
-                  Contact
+                  {t("contact")}
                </NavLink>
                <NavLink
-                  to="/profile"
+                  to={`/${i18n.language}/profile`}
                   className={({ isActive }) => (isActive ? styles.activeLink : styles.defaultLink)}
                >
-                  Profile
+                  {t("profile")}
                </NavLink>
                {user ? (
                   // if user is logged in (true)
                   <div className={styles.navProfilePicCon}>
-                     <Link to={"/profile"}>
+                     <Link to={`/${i18n.language}/profile`}>
                         <img
                            src={profileImageUrl}
                            alt="Profile Picture of the user"
@@ -132,20 +156,23 @@ const NavBar = ({
                         />
                      </Link>
                      <button onClick={logout} className={styles.logoutBtn}>
-                        Logout
+                        {t("logout")}
                      </button>
                   </div>
                ) : (
                   // if not show the login button
                   <button className={styles.loginBtn} onClick={() => setIsLoginModalOpen(true)}>
-                     Login
+                     {t("login")}
                   </button>
                )}
                <div>
                   <ThemeMandSIcon></ThemeMandSIcon>
                </div>
                <div>
-                  <ToggleSwitchBtn></ToggleSwitchBtn>
+                  <ToggleSwitchBtn
+                     onChangeFun={handleLanguageChange}
+                     checkLan={i18n.language}
+                  ></ToggleSwitchBtn>
                </div>
 
                {/* when clicked on it will update state of IsLoginModalOpen to true */}
