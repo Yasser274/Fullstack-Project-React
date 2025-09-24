@@ -1,4 +1,5 @@
 import styles from "../../components/common/common.module.css";
+import { useTranslation } from "react-i18next";
 // Import SVGs icons
 import UsernameIcon from "../../assets/icons/UsernameSVG"; // so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
 import PasswordIcon from "../../assets/icons/PasswordSVG";
@@ -19,6 +20,8 @@ interface RegisterFormProps {
 }
 
 const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage }: RegisterFormProps) => {
+   const { t } = useTranslation();
+
    const savedRegisterInfo = async (formData: FormData) => {
       const username = formData.get("username") as string; // get the name="username" from inside the form and set its type as string so it goes with our interface type
       const email = formData.get("email") as string;
@@ -40,26 +43,26 @@ const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <UsernameIcon className={styles.formIcons}></UsernameIcon>
-               <label>Username</label>
+               <label>{t("usernameTextField")}</label>
             </div>
             <input type="text" name="username" />
          </div>
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <EmailSVG className={styles.formIcons}></EmailSVG>
-               <label>Email</label>
+               <label>{t("emailTextField")}</label>
             </div>
             <input type="email" name="email" />
          </div>
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <PasswordIcon className={styles.formIcons}></PasswordIcon>
-               <label>Password</label>
+               <label>{t("passwordTextField")}</label>
             </div>
             <input type="password" name="password" />
             <div className={styles.formDetailsLabel}>
                <PasswordIcon className={styles.formIcons}></PasswordIcon>
-               <label>Confirm Password</label>
+               <label>{t("confPasswordTextField")}</label>
             </div>
             <input type="password" name="confirmPassword" />
          </div>

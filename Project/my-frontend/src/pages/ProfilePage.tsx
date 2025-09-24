@@ -6,8 +6,11 @@ import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext&Global";
 import Modal from "../components/common/Modal";
 import useInView from "../components/common/useInView";
+import { useTranslation } from "react-i18next";
 
 const ProfilePage = () => {
+   const { t, i18n } = useTranslation();
+
    const [sectionRef, isSectionVisible] = useInView<HTMLDivElement>({
       threshold: 0.1,
       triggerOnce: true,
@@ -51,7 +54,7 @@ const ProfilePage = () => {
    return (
       <Modal
          isOpen={isAuthModalOpen}
-         title="Authentication Required"
+         title={t("authReqMessageTitle")}
          onClose={() => {
             setIsAuthModalOpen(false);
             navigate("/");
@@ -59,7 +62,7 @@ const ProfilePage = () => {
       >
          {/* the content of this modal */}
          <div>
-            <p style={{ textAlign: "center" }}>You must be logged in to view this page.</p>
+            <p style={{ textAlign: "center" }}>{t("authReqMessageProfile")}</p>
          </div>
       </Modal>
    );

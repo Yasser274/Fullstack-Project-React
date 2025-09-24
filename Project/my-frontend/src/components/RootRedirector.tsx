@@ -5,6 +5,7 @@ const supportedLanguages = ["en", "ar"];
 const defaultLanguage = "en";
 
 const RootRedirector = () => {
+   // function that can be called to change the URL
    const navigate = useNavigate();
 
    useEffect(() => {

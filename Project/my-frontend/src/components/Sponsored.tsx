@@ -11,8 +11,12 @@ import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { Swiper as SwiperClass } from "swiper/types"; // Import Swiper's type for the callback
 import type { sponsorsProps } from "../pages/HomePage";
+import  { useTranslation } from "react-i18next";
 
 const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
+
+   const {t} = useTranslation()
+
    const progressCircle = useRef<SVGSVGElement | null>(null);
    const progressContent = useRef<HTMLSpanElement | null>(null);
 
@@ -56,7 +60,7 @@ const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
                           >
                              <div className={styles.sponsoredOverlay}>
                                 <div className={styles.sponsoredLeft}>
-                                   <span>Sponsored</span>
+                                   <span>{t("sponsored")}</span>
                                    <div className={styles.sponsoredDetails}>
                                       <img
                                          src={slides.restaurant_logo}

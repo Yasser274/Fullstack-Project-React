@@ -1,4 +1,5 @@
 import styles from "./common.module.css";
+import { useTranslation } from "react-i18next";
 
 // Import SVGs icons
 import UsernameIcon from "../../assets/icons/UsernameSVG"; // so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
@@ -18,6 +19,8 @@ interface FormProps {
 }
 
 const Form = ({ onSubmitP, buttonAction, errorMes, displayMessage }: FormProps) => {
+   const { t } = useTranslation();
+
    const handleSubmit = (formData: FormData) => {
       // grab the input datas from inside the <form>
       const username = formData.get("username") as string; // so it knows the type of username so it goes with FormDataTy
@@ -35,14 +38,14 @@ const Form = ({ onSubmitP, buttonAction, errorMes, displayMessage }: FormProps) 
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <UsernameIcon className={styles.formIcons}></UsernameIcon>
-               <label>Username</label>
+               <label>{t("usernameTextField")}</label>
             </div>
             <input type="text" name="username" />
          </div>
          <div className={styles.formDetailsDiv}>
             <div className={styles.formDetailsLabel}>
                <PasswordIcon className={styles.formIcons}></PasswordIcon>
-               <label>Password</label>
+               <label>{t("passwordTextField")}</label>
             </div>
             <input type="password" name="password" />
          </div>

@@ -362,8 +362,12 @@
    .socialMediaCon {
       justify-content: center;
    }
-   .navBarMenuMobile{
-      transform: translateX(10%) !important;
+   .navBarMenuMobile {
+      --navBarMobile-translateX: 10%;
+      transform: translateX(var(--navBarMobile-translateX)) !important;
+   }
+   [dir="rtl"] .navBarMenuMobile {
+      --navBarMobile-translateX: -10%;
    }
 }
 /* (small desktop size) */
@@ -392,9 +396,10 @@
       flex: 0;
    }
    .navBarItemsCon {
+      --navBarItemsCon-transformX: 190%;
       position: fixed;
       top: 0;
-      right: 0;
+      inset-inline-end: 0;
       width: 50vw;
       max-width: 500px;
       height: 100vh;
@@ -404,9 +409,10 @@
       flex-direction: column;
       justify-content: flex-start;
       align-items: flex-start;
-      padding: 6rem 0rem 0rem 2rem;
+      padding-top: 6rem;
+      padding-inline-start: 2rem;
 
-      transform: translateX(190%);
+      transform: translateX(var(--navBarItemsCon-transformX));
       transition: transform 0.3s ease-in-out;
       z-index: 500;
       background-color: var(--surface-1);
@@ -415,9 +421,16 @@
             padding-box,
          linear-gradient(var(--border-1), var(--border-2));
    }
+   [dir="rtl"] .navBarItemsCon {
+      --navBarItemsCon-transformX: -190%;
+   }
    /* this will active when the user press the hamburger button */
    .navBarMenuMobile {
-      transform: translateX(70%);
+      --navBarMenuMobile-translateX: 70%;
+      transform: translateX(var(--navBarMenuMobile-translateX));
+   }
+   [dir="rtl"] .navBarMenuMobile {
+      --navBarMenuMobile-translateX: -70%;
    }
    .hamburgerBtn {
       display: flex;

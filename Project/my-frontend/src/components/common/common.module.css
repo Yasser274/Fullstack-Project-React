@@ -34,7 +34,7 @@ h3 {
    position: fixed;
    background: rgba(0, 0, 0, 0.397);
    top: 0;
-   left: 0;
+   inset-inline-start: 0;
    z-index: 15;
    cursor: pointer;
    width: 100vw;
@@ -47,11 +47,15 @@ h3 {
    justify-content: center;
 }
 .modalContent {
+   /* - LTR/Default Value --- */
+   --translate-x: -50%;
    position: relative;
    top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   padding: 20px 40px;
+   inset-inline-start: 50%; /* so when it switches from rtl it doesn't mess up*/
+   transform: translate(var(--translate-x), -50%); /*  variable here */
+   padding-top: 20px;
+   padding-bottom: 20px;
+   padding-inline: 40px;
    z-index: 30;
    cursor: default;
    width: 75vw;
@@ -62,6 +66,9 @@ h3 {
 
    background: hsl(from var(--surface-3) h s l / 0.25);
    backdrop-filter: blur(12px);
+}
+[dir="rtl"] .modalContent {
+   --translate-x: 50%;
 }
 .modalContent::before {
    content: "";
@@ -164,7 +171,7 @@ h3 {
 .formBtnShadow {
    position: absolute;
    top: 0;
-   left: 0;
+   inset-inline-start: 0;
    width: 100%;
    height: 100%;
    background: rgba(0, 0, 0, 0.25);
@@ -175,7 +182,7 @@ h3 {
 .formBtnEdge {
    position: absolute;
    top: 0;
-   left: 0;
+   inset-inline-start: 0;
    width: 100%;
    height: 100%;
    border-radius: 8px;
@@ -236,11 +243,16 @@ h3 {
 /*. Toggle Switch BTN */
 /* The switch - the box around the slider */
 .switch {
+   /* variable on the parent */
+   --switch-translate-x: 1.6em;
    font-size: 17px;
    position: relative;
    display: inline-block;
    width: 3.5em;
    height: 2em;
+}
+[dir="rtl"] .switch {
+   --switch-translate-x: -1.6em;
 }
 
 /* Hide default HTML checkbox */
@@ -278,7 +290,7 @@ h3 {
 .switch input:checked + .slider::after {
    content: "ع";
    position: absolute;
-   left: 20%;
+   inset-inline-start: 20%;
    top: 12%;
    display: flex;
    justify-content: center;
@@ -291,7 +303,7 @@ h3 {
 .switch input + .slider::after {
    content: "E";
    position: absolute;
-   left: 65%;
+   inset-inline-start: 65%;
    top: 14%;
    display: flex;
    justify-content: center;
@@ -309,5 +321,5 @@ h3 {
 }
 
 .switch input:checked + .slider:before {
-   transform: translateX(1.6em);
+   transform: translateX(var(--switch-translate-x));
 }

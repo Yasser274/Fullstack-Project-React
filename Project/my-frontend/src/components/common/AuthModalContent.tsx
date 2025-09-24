@@ -8,6 +8,7 @@ import { useAuth } from "../../context/AuthContext&Global";
 
 // import API URL so i don't have to keep writing it
 import { API_BASE_URL } from "../../config/config";
+import { useTranslation } from "react-i18next";
 
 //. This is to handle both login and register and send it to API
 interface AuthModalProps {
@@ -16,6 +17,8 @@ interface AuthModalProps {
 }
 
 const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
+   const { t } = useTranslation();
+
    const [view, setview] = useState<"login" | "register">("login"); // < > is generic type script it can auto detect the type inside it and in this i'm saying it only accept login and register string
 
    const [error, setError] = useState<string | null>(null); // holds either string or null and null means no error from the backend
@@ -106,14 +109,14 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
       <div>
          {view === "login" ? (
             <Form
-               buttonAction="Login"
+               buttonAction={t("loginBtnText")}
                onSubmitP={handleLoginSubmit}
                errorMes={error}
                displayMessage={showMessage}
             ></Form>
          ) : (
             <RegisterForm
-               buttonAction="Register"
+               buttonAction={t("registerBtnText")}
                OnSubmitRegister={handleRegisterSubmit}
                errorMes={error}
                displayMessage={showMessage}
@@ -123,7 +126,7 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
          <div>
             {view === "login" ? (
                <div className={styles.switchAuthCon}>
-                  <span>Don't have an account?</span>
+                  <span>{t("switchToRegisterText")}</span>
                   <a
                      onClick={() => {
                         setview("register");
@@ -132,12 +135,12 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
                         setShowMessage(null);
                      }}
                   >
-                     Register
+                     {t("registerBtnText")}
                   </a>
                </div>
             ) : (
                <div className={styles.switchAuthCon}>
-                  <span>Already have an account?</span>
+                  <span>{t("switchToLoginText")}</span>
                   <a
                      onClick={() => {
                         setview("login");
@@ -146,7 +149,7 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
                         setShowMessage(null);
                      }}
                   >
-                     Login
+                     {t("loginBtnText")}
                   </a>
                </div>
             )}

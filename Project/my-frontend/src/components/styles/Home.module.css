@@ -53,7 +53,7 @@
    height: 20px;
    pointer-events: none;
    position: absolute;
-   left: 6px;
+   inset-inline-start: 6px;
    z-index: 10;
    top: 50%;
    transform: translateY(-50%);
@@ -161,7 +161,7 @@
 }
 .autoplayProgress {
    position: absolute;
-   right: 16px;
+   inset-inline-end: 16px;
    bottom: 16px;
    z-index: 10;
    width: 48px;
@@ -184,7 +184,7 @@
    --progress: 0;
    stroke-width: 4px;
    position: absolute;
-   left: 0;
+   inset-inline-start: 0;
    top: 0;
    z-index: 10;
    width: 100%;
@@ -235,7 +235,7 @@
    background-size: cover;
    background-position: center;
    display: flex;
-   padding-left: 8px;
+   padding-inline-start: 8px;
    padding-bottom: 8px;
 }
 .sponsoredOverlay {
@@ -243,13 +243,13 @@
    width: 100%;
    top: 0;
    border-radius: 12px;
-   left: 0;
-   right: 0;
+   inset-inline-start: 0;
+   inset-inline-end: 0;
    bottom: 0;
    background-color: rgba(0, 0, 0, 0.301);
    display: flex;
    align-items: flex-end;
-   padding-left: 8px;
+   padding-inline-start: 8px;
    padding-bottom: 8px;
 }
 .sponsoredDetails {
@@ -270,7 +270,7 @@
    gap: 6px;
    color: var(--text-primary);
    z-index: 1;
-   margin-left: 10px;
+   margin-inline-start: 10px;
 }
 .sponsoredLeft span {
    color: #e0e0e0 !important;
@@ -540,7 +540,7 @@
    content: "";
    position: absolute;
    top: 0;
-   left: 0;
+   inset-inline-start: 0;
    height: 100%;
    width: 0;
    border-radius: 15px;

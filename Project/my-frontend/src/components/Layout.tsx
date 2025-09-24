@@ -8,8 +8,12 @@ import { useAuth } from "../context/AuthContext&Global";
 import TrendBitesLogo from "../assets/icons/TrendBitesLogo";
 import { SocialIcon } from "react-social-icons";
 import NavBar from "./NavBar";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
+import TrendBitesLogoRTL from "../assets/icons/TrendBitesLogoRTL";
 
 const Layout = () => {
+   const { t } = useTranslation();
    // useState to close down and open the login/register modal(overlay)
    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
    // to switch modal title
@@ -19,8 +23,7 @@ const Layout = () => {
 
    const { user, logout, isSessionExpired, closeModalSession, profileImageUrl } = useAuth();
 
-
-   // Call the hook here to get the location object (my path /profile for example)
+   // Call the hook here to get the location object (my path /profile for example) (access to the current URL's information)
    const location = useLocation();
    // Close the mobile menu when the route changes (when user clicks any of the navs and changes url)
    useEffect(() => {
@@ -53,17 +56,22 @@ const Layout = () => {
             <div className={styles.footerWhole}>
                <div className={styles.footerContent}>
                   <div>
-                     <TrendBitesLogo className={styles.footerLogo}></TrendBitesLogo>
+                     {/*    // Determine the direction based on the current language. */}
+                     {i18n.dir(i18n.language) === "ltr" ? (
+                        <TrendBitesLogo className={styles.logoSVG}></TrendBitesLogo>
+                     ) : (
+                        <TrendBitesLogoRTL className={styles.logoSVG}></TrendBitesLogoRTL>
+                     )}
                   </div>
                   <nav className={styles.footerLinks}>
                      <div className={styles.legalFooterCon}>
-                        <h3>Legal</h3>
-                        <a href="/privacy-policy">Privacy Policy</a>
-                        <a href="/terms-of-service">Terms of Service</a>
+                        <h3>{t("legal")}</h3>
+                        <a href={`/${i18n.language}/privacy-policy`}>{t("privacyPolicy")}</a>
+                        <a href={`/${i18n.language}/terms-of-service`}>{t("termsOfSer")}</a>
                      </div>
                      <div className={styles.contactFooterCon}>
-                        <h3>Contact Us</h3>
-                        <Link to={"/contact"}>Contact</Link>
+                        <h3>{t("contactUs")}</h3>
+                        <Link to={`/${i18n.language}/contact`}>{t("contact")}</Link>
                      </div>
                   </nav>
                </div>
@@ -71,7 +79,7 @@ const Layout = () => {
                   <hr style={{ color: "black", width: "100%", border: "white 1px solid" }} />
                   <div className={styles.belowFooterDetails}>
                      <div className={styles.copyright}>
-                        <p>&copy; 2025 Trend Bites. All Rights Reserved.</p>
+                        <p>&copy; {t("rightsText")}</p>
                      </div>
                      <div className={styles.socialMediaCon}>
                         <SocialIcon network="github" url="https://www.github.com"></SocialIcon>

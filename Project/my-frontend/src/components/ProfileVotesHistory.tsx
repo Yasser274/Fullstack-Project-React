@@ -3,6 +3,7 @@ import styles from "../components/styles/Home.module.css";
 import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
 import StarFilled from "../assets/icons/StarFilled";
+import { useTranslation } from "react-i18next";
 
 interface rateHistoryT {
    restaurant_id: number;
@@ -14,6 +15,8 @@ interface rateHistoryT {
 }
 
 const ProfileVotesHistory = () => {
+   const { t } = useTranslation();
+
    const [rateHistory, setRateHistory] = useState<rateHistoryT[] | null>(null);
 
    const [error, setError] = useState<string>("");
@@ -70,7 +73,7 @@ const ProfileVotesHistory = () => {
             rateHistory.map((rateH, index) => {
                const showStarsRating = () => {
                   const ratingUserArrayLength = [...Array(rateH.rating)];
-                  const ratingStars = ratingUserArrayLength.map((_,index) => (
+                  const ratingStars = ratingUserArrayLength.map((_, index) => (
                      <StarFilled key={index} className={styles.filledStarProfile}></StarFilled>
                   ));
                   return ratingStars;
@@ -86,7 +89,7 @@ const ProfileVotesHistory = () => {
                            />
                         </div>
                         <div className={styles.timeHistoryCon}>
-                           Timestamp:{" "}
+                           {t("votingHistoryTimeStamp")}
                            {new Date(rateH.reviewed_at).toLocaleString([], {
                               hour12: true,
                            })}
@@ -96,12 +99,12 @@ const ProfileVotesHistory = () => {
                         <div className={styles.resturVoteInfo}>
                            <div className={styles.resturVoteName}>{rateH.restaurant_name}</div>
                            <div className={styles.resturVoteRatingCon}>
-                              <div className={styles.resturVoteInfoRating}>Rated:</div>
+                              <div className={styles.resturVoteInfoRating}>{t("votingHistoryRated")}</div>
                               <div className={styles.resturVoteInfoRating}>{showStarsRating()}</div>
                            </div>
                         </div>
                         <div className={styles.resturReviewCommentCon}>
-                           {rateH.comment ? "Comment:" : "No comment"}
+                           {rateH.comment ? t("votingHistoryComment") : t("votingHistoryNoComment")}
                            <p>{rateH.comment}</p>
                         </div>
                      </div>

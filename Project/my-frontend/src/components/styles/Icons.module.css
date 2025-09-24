@@ -27,14 +27,14 @@
 
 .threeBodyDot:nth-child(1) {
  bottom: 5%;
- left: 0;
+ inset-inline-start: 0;
  transform: rotate(60deg);
  transform-origin: 50% 85%;
 }
 
 .threeBodyDot:nth-child(1)::after {
  bottom: 0;
- left: 0;
+ inset-inline-start: 0;
  animation: wobble1 var(--uib-speed) infinite ease-in-out;
  animation-delay: calc(var(--uib-speed) * -0.3);
 }
@@ -48,20 +48,20 @@
 
 .threeBodyDot:nth-child(2)::after {
  bottom: 0;
- left: 0;
+ inset-inline-start: 0;
  animation: wobble1 var(--uib-speed) infinite
     calc(var(--uib-speed) * -0.15) ease-in-out;
 }
 
 .threeBodyDot:nth-child(3) {
  bottom: -5%;
- left: 0;
+ inset-inline-start: 0;
  transform: translateX(116.666%);
 }
 
 .threeBodyDot:nth-child(3)::after {
  top: 0;
- left: 0;
+ inset-inline-start: 0;
  animation: wobble2 var(--uib-speed) infinite ease-in-out;
 }
 

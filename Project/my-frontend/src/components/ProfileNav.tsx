@@ -1,8 +1,12 @@
 import styles from "../components/styles/Home.module.css";
 import { NavLink } from "react-router-dom";
 import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 
 const ProfileNav = () => {
+
+   const {t,i18n} = useTranslation()
+
    return (
       <div className={styles.profileNavCon}>
          <ul>
@@ -14,7 +18,7 @@ const ProfileNav = () => {
                      isActive ? styles.innerProfileNavAct : styles.innerProfileNavDefault
                   }
                >
-                  Data
+                  {t('profileData')}
                </NavLink>
             </li>
             <li>
@@ -24,7 +28,7 @@ const ProfileNav = () => {
                      isActive ? styles.innerProfileNavAct : styles.innerProfileNavDefault
                   }
                >
-                  Settings
+                  {t("profileSettings")}
                </NavLink>
             </li>
             <li>
@@ -34,7 +38,7 @@ const ProfileNav = () => {
                      isActive ? styles.innerProfileNavAct : styles.innerProfileNavDefault
                   }
                >
-                  Votes History
+                  {t("profileVotingHis")}
                </NavLink>
             </li>
          </ul>

@@ -1,6 +1,7 @@
 import styles from "../components/styles/Layout.module.css";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import TrendBitesLogo from "../assets/icons/TrendBitesLogo";
+import TrendBitesLogoRTL from "../assets/icons/TrendBitesLogoRTL";
 
 import Modal from "./common/Modal";
 import ToggleSwitchBtn from "./common/ToggleSwitchBtn";
@@ -85,7 +86,12 @@ const NavBar = ({
       <header>
          <nav className={styles.navBarCon}>
             <Link to={""}>
-               <TrendBitesLogo className={styles.logoSVG}></TrendBitesLogo>
+               {/*    // Determine the direction based on the current language. */}
+               {i18n.dir(i18n.language) === "ltr" ? (
+                  <TrendBitesLogo className={styles.logoSVG}></TrendBitesLogo>
+               ) : (
+                  <TrendBitesLogoRTL className={styles.logoSVG}></TrendBitesLogoRTL>
+               )}
             </Link>
             {/* //* for mobile menu hamburger menu */}
             <div>
@@ -179,7 +185,7 @@ const NavBar = ({
                <Modal
                   setResetTitle={setSwitchModalTitle} // so when i close the modal on the register render it will reset the title back to "Login"
                   isOpen={isLoginModalOpen} // if it's true it render the overlay if false it will not render it
-                  title={switchModalTitle === 0 ? "Login" : "Register"}
+                  title={switchModalTitle === 0 ? t("loginBtnText") : t("registerBtnText")}
                   children={
                      <AuthModalContent
                         currentTitle={switchModalTitle}

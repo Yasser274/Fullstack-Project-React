@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
 import EditIcon from "../assets/icons/EditIcon";
+import { useTranslation } from "react-i18next";
 
 const ProfileSettings = () => {
    const [error, setError] = useState<string | null>(null);
@@ -14,6 +15,8 @@ const ProfileSettings = () => {
    const [passwordsMismatch, setPasswordsMismatch] = useState<boolean>(false);
 
    const { logout, user, setUser, profileImageUrl, login } = useAuth();
+
+   const {t} = useTranslation()
 
    // .Functions
    const handleClickImg = () => {
@@ -142,40 +145,40 @@ const ProfileSettings = () => {
 
    return (
       <div className={styles.profileSettingsCon}>
-         <h2 className={styles.profileSecTitle}>Change Password:</h2>
+         <h2 className={styles.profileSecTitle}>{t("changePasswordTitle")}</h2>
          <form className={styles.formProfilePassword} onSubmit={changePassword}>
             {done ? <span className={styles.doneMessage}>{done}</span> : null}
             {error ? <span className={styles.errorMessage}>{error}</span> : null}
             <div className={styles.oldPassCon}>
-               <label htmlFor="oldPass">Old Password:</label>
+               <label htmlFor="oldPass">{t("oldPasswordTitle")}</label>
                <input
                   type="password"
                   id="oldPass"
-                  placeholder="Enter Your Old Password"
+                  placeholder={t("oldPasswordPlaceHolder")}
                   name="oldPassValue"
                />
             </div>
             <div className={styles.newPassCon}>
-               <label htmlFor="newPass">New Password:</label>
+               <label htmlFor="newPass">{t("newPasswordTitle")}</label>
                <input
                   type="password"
                   id="newPass"
-                  placeholder="Enter Your New Password"
+                  placeholder={t("newPasswordPlaceHolder")}
                   name="newPassValue"
                   className={passwordsMismatch ? styles.newPassConWrong : styles.newPassInput}
                />
-               <label htmlFor="newPassConf">Confirm New Password:</label>
+               <label htmlFor="newPassConf">{t("confirmNewPassword")}</label>
                <input
                   type="password"
                   id="newPassConf"
-                  placeholder="Re-enter New Password"
+                  placeholder={t("confirmNewPasswordPlaceHolder")}
                   name="newPassConfValue"
                   className={passwordsMismatch ? styles.newPassConWrong : styles.newPassInput}
                />
             </div>
-            <button className={styles.changePassBtn}>Change password</button>
+            <button className={styles.changePassBtn}>{t("changePasswordBtn")}</button>
          </form>
-         <h2 className={styles.profileSecTitleB}>Change Profile Picture:</h2>
+         <h2 className={styles.profileSecTitleB}>{t("changeProfilePicTitle")}</h2>
          <form>
             <div className={styles.changeProfilePicCon}>
                <input type="file" ref={imageSelector} onChange={handleFileChange} accept="image/*" />

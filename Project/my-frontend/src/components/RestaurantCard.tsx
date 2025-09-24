@@ -2,6 +2,7 @@ import type { Restaurant, Review } from "../pages/HomePage";
 import type { User } from "../context/AuthContext&Global";
 import styles from "../components/styles/Home.module.css";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 // get the types of restaurant
 interface RestaurantCardProps {
@@ -28,6 +29,8 @@ import ReviewComments from "./ReviewComments";
 import HalfEmptyStar from "../assets/icons/HalfEmptyStar";
 
 const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCardProps) => {
+   const { t } = useTranslation();
+
    // function to votes and affect the ranking
    // State to hold the current rating. 0 means no stars are selected.
    const [rating, setRating] = useState<number>(0);
@@ -142,21 +145,21 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
       <>
          <Modal
             isOpen={isAuthModalOpen}
-            title="Authentication Required"
+            title={t("authReqMessageTitle")}
             onClose={() => {
                setIsAuthModalOpen(false);
             }}
          >
             {/* the content of this modal */}
             <div>
-               <p style={{ textAlign: "center" }}>You must be logged in to rate.</p>
+               <p style={{ textAlign: "center" }}>{t("authReqMessage")}</p>
             </div>
          </Modal>
          {/* //. pop up to rate restaurants and add comment */}
          {reviewModal === true ? (
             <Modal
                isOpen={reviewModal}
-               title="Review Restaurant"
+               title={t("reviewRestaurantModalTitle")}
                onClose={() => {
                   setReviewModal(false);
                }}
@@ -172,7 +175,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                      <textarea
                         name="userReviewComment"
                         id="userReviewCommentID"
-                        placeholder="Optionally add a comment"
+                        placeholder={t("reviewRestaurantModalTextPlaceHolder")}
                         onChange={(e) => {
                            setReviewComm(e.target.value);
                         }}
@@ -183,15 +186,15 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                            reviewComm.length > 1300 ? styles.charReviewLimitW : styles.charReviewLimitN
                         }
                      >
-                        Character Limit: {reviewComm.length}/1300
+                        {t("reviewRestaurantModalCharLimit")} {reviewComm.length}/1300
                      </span>
-                     {reviewComm.length > 1300 ? <span>Passed the Character Limit</span> : null}
+                     {reviewComm.length > 1300 ? <span>{t("reviewRestaurantModalCharLimitPassedMsg")}</span> : null}
                      <button
                         type="submit"
                         disabled={reviewComm.length > 1300}
                         style={reviewComm.length > 1300 ? { pointerEvents: "none" } : undefined}
                      >
-                        Add Review
+                        {t("addReviewBtn")}
                      </button>
                   </form>
                </div>
@@ -199,8 +202,12 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
          ) : null}
          {/* //. Open review comments modal */}
          {reviewCommentsModal ? (
-            <Modal isOpen={reviewCommentsModal} onClose={() => setReviewCommentsModal(false)} title="Reviews">
-               {restaurantList.reviews.map((review,index) => {
+            <Modal
+               isOpen={reviewCommentsModal}
+               onClose={() => setReviewCommentsModal(false)}
+               title={t("reviewsTitleModal")}
+            >
+               {restaurantList.reviews.map((review, index) => {
                   // Combine two unique IDs to create a new unique string
                   const uniqueKey = `${index}-${review.user.id}`;
                   return (
@@ -247,8 +254,8 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                      <ReviewCommentsIcon className={styles.reviewCommentsIcon} />
                      <span>
                         {restaurantList.reviews.length === 1
-                           ? `${restaurantList.reviews.length} Review`
-                           : `${restaurantList.reviews.length} Reviews`}
+                           ? `${restaurantList.reviews.length} ${t("review")}`
+                           : `${restaurantList.reviews.length} ${t("reviews")}`}
                      </span>
                   </div>
 
@@ -256,7 +263,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                   <div className={styles.cardRating}>
                      {userReview && (
                         <div className={styles.userRatingDisplay}>
-                           <span>Your rating:</span>
+                           <span>{t("yourRating")}</span>
                            <div className={styles.stars}>
                               {[...Array(userReview.rating)].map((_, index) => (
                                  // **FIX:** Using standard `className` prop instead of custom `classNameUser`
