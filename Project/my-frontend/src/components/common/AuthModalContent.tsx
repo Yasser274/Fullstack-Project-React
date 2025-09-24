@@ -53,7 +53,8 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
          if (!response.ok) {
             // if the response wasn't ok catch the server side error (if i send a bad request (400) or if the server crashes (500) (like res.status(400))).
             if (response.status === 401) {
-               setError(data.error);
+               // will get auth.login.wrong(data.error) and then i'll use i18n translation.json in public/locale folder to look for the value of that key which is "Invalid username or password"
+               setError(t(data.error));
             } else {
                setError("An unexpected error occurred. Please try again.");
             }
@@ -61,7 +62,8 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
 
          if (data.token) {
             login(data.token); // store the token in localStorage so it keeps user logged in (kinda like his ID)
-            setShowMessage(data.displayMessage);
+            // will get auth.login.success(data.displayMessage) and then i'll use i18n translation.json in public/locale folder to look for the value of that key which is "Logged in Successfully"
+            setShowMessage(t(data.displayMessage));
 
             setTimeout(() => {
                window.location.reload(); // refresh the page after user logins in
@@ -91,14 +93,14 @@ const AuthModalContent = ({ onSwitchTitle }: AuthModalProps) => {
 
          if (!response.ok) {
             if (response.status === 409 || response.status === 400) {
-               setError(data.error);
+               setError(t(data.error));
             } else {
                setError("An unexpected error occurred. Please try again.");
             }
             return; // stop the function right here so that it doesn't go below and setError the next one
          }
 
-         setShowMessage(data.displayMessage); // when it all went well get the displayMessage(key) value (EX: "displayMessage": "Example...")
+         setShowMessage(t(data.displayMessage)); // when it all went well get the displayMessage(key) value (EX: "displayMessage": "Example...")
       } catch (error) {
          console.log("A problem happened while trying to fetch", error);
          setError("Could not connect to the server. Please try again later.");

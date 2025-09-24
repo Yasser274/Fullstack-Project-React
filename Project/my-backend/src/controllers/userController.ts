@@ -19,8 +19,9 @@ export const loginUser = async (req: Request, res: Response) => {
       if (users.length === 0) {
          return res.status(401).json({
             message: `Invalid username or password`,
-            error: `Invalid username or password`,
+            error: `auth.login.wrong`,
          });
+         // auth.login.wrong is in translation.json in frontend it will recognize that
       }
       // if reached this it means that we found a user with that username so pick the first index in that JSON (since it will only have one)
       const user = users[0];
@@ -44,11 +45,10 @@ export const loginUser = async (req: Request, res: Response) => {
          // Send the token back to the frontend
          return res
             .status(200)
-            .json({ message: `Logged In Token`, displayMessage: `Logged in Successfully`, token: token }); // The frontend will need token!
+            .json({ message: `Logged In Token`, displayMessage: `auth.login.success`, token: token }); // The frontend will need token!
+         // auth.login.success is in translation.json in frontend it will recognize that
       } else {
-         return res
-            .status(401)
-            .json({ message: `Invalid username or password`, error: `Invalid username or password` });
+         return res.status(401).json({ message: `Invalid username or password`, error: `auth.login.wrong` });
       }
    } catch (error) {
       console.error("Login Error:", error);
@@ -67,13 +67,13 @@ export const registerUser = async (req: Request, res: Response) => {
       if (password !== confirmPassword) {
          // '400 Bad Request' for invalid user input.
          // Send a JSON object with an 'error' key. so that the frontend can display this "error" back to the user
-         return res.status(400).json({ error: "Passwords do not match." });
+         return res.status(400).json({ error: "auth.register.passwordNotMatch" });
       }
       // 2. Check if the email already exists in the database
       const existingUserQuery = "SELECT * FROM users WHERE email = $1 OR username = $2";
       const { rows: existingUsers } = await pool.query(existingUserQuery, [email, username]);
       if (existingUsers.length > 0) {
-         return res.status(409).json({ error: `An account with this email/username already exists.` });
+         return res.status(409).json({ error: `auth.register.alreadyExist` });
       }
 
       // hash the password
@@ -94,7 +94,7 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(201).json({
          message: `got these ${username} ${email}`,
          user: newUser,
-         displayMessage: `Account Created Successfully`,
+         displayMessage: `auth.register.accountCreated`,
       });
    } catch (error) {
       console.error("Registration error", error); // console.log is for the backend and res(is for the frontend)

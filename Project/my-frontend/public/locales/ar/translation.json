@@ -54,5 +54,17 @@
    "contactUs": "اتصل بنا",
    "privacyPolicy": "سياسة الخصوصية",
    "termsOfSer": "شروط الخدمة",
-   "rightsText": "2025 Trend Bites. جميع الحقوق محفوظة"
+   "rightsText": "2025 Trend Bites. جميع الحقوق محفوظة",
+   "yourReview": "(انت)",
+   "auth": {
+      "login": {
+         "success": "تم تسجيل الدخول بنجاح",
+         "wrong": "اسم المستخدم أو كلمة المرور غير صالحين"
+      },
+      "register": {
+         "alreadyExist": "يوجد حساب بهذا البريد الإلكتروني/اسم المستخدم بالفعل.",
+         "passwordNotMatch": "كلمات المرور غير متطابقة.",
+         "accountCreated": "تم إنشاء الحساب بنجاح"
+      }
+   }
 }

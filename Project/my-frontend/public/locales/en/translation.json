@@ -54,5 +54,17 @@
    "contactUs": "Contact Us",
    "privacyPolicy": "Privacy Policy",
    "termsOfSer": "Terms of Service",
-   "rightsText": "2025 Trend Bites. All Rights Reserved."
+   "rightsText": "2025 Trend Bites. All Rights Reserved.",
+   "yourReview": "(YOU)",
+   "auth": {
+      "login": {
+         "success": "Logged in Successfully",
+         "wrong": "Invalid username or password"
+      },
+      "register": {
+         "alreadyExist": "An account with this email/username already exists.",
+         "passwordNotMatch": "Passwords do not match.",
+         "accountCreated": "Account Created Successfully"
+      }
+   }
 }

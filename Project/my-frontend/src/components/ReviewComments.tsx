@@ -3,6 +3,7 @@ import type { Restaurant } from "../pages/HomePage";
 import styles from "../components/styles/Review.module.css";
 import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
+import { useTranslation } from "react-i18next";
 
 // 1. Create a new type alias by "indexing" into the Restaurant type.
 //    - Restaurant['reviews'] gets the type of the 'reviews' property (which is Review[])
@@ -10,6 +11,8 @@ import { useAuth } from "../context/AuthContext&Global";
 type ReviewProps = Restaurant["reviews"][number];
 
 const ReviewComments = ({ rating, comment, reviewedAt, user }: ReviewProps) => {
+   const { t } = useTranslation();
+
    const { user: CurrentLoggedUser } = useAuth();
    const profileImageUrl = user.profilePictureURL
       ? user.profilePictureURL.includes("/")
@@ -46,7 +49,7 @@ const ReviewComments = ({ rating, comment, reviewedAt, user }: ReviewProps) => {
                <div className={styles.metaTopRow}>
                   <strong className={styles.username}>
                      {user.username === CurrentLoggedUser?.username
-                        ? `${user.username} (YOU)`
+                        ? `${user.username} ${t("yourReview")}`
                         : user.username}
                   </strong>
                   <div className={styles.starRatingReviewCon}>{starIconsRating()}</div>

@@ -291,7 +291,7 @@ h3 {
    content: "ع";
    position: absolute;
    inset-inline-start: 20%;
-   top: 12%;
+   top: -2%;
    display: flex;
    justify-content: center;
    align-items: center;

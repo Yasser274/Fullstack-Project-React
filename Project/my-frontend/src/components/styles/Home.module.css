@@ -595,20 +595,29 @@
    text-decoration: none;
    background-color: var(--accent-color);
    color: #525252;
-   padding: 10px 50px 10px 10px;
+   padding-top: 10px;
+   padding-bottom: 10px;
+   padding-inline-start: 10px;
+   padding-inline-end: 50px;
    transition: all 0.2s ease-in-out;
-   border-top-left-radius: 10px;
-   border-bottom-left-radius: 10px;
-   border-top-right-radius: 30px;
-   border-bottom-right-radius: 30px;
+   /* border-top-left-radius	border-start-start-radius	Top edge's start, Inline start
+      border-top-right-radius	border-start-end-radius	Top edge's start, Inline end
+      border-bottom-left-radius	border-end-start-radius	Bottom edge's start, Inline start
+      border-bottom-right-radius	border-end-end-radius	Bottom edge's start, Inline end 
+      
+      for ltr and rtl*/
+   border-start-start-radius: 10px;
+   border-end-start-radius: 10px;
+   border-start-end-radius: 30px;
+   border-end-end-radius: 30px;
    box-shadow: 0px 4px 7px rgba(0, 0, 0, 0.329);
 }
 .innerProfileNavDefault:hover {
-   padding-right: 80px;
+   padding-inline-end: 80px;
 }
 .innerProfileNavAct {
    color: white;
-   padding-right: 80px;
+   padding-inline-end: 80px;
    box-shadow: 3px 2px 15px rgba(0, 0, 0, 0.603);
 }
 .profileRightSection {
@@ -618,7 +627,7 @@
    transform: translateX(-30px);
    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
-.profileRightSectionVisible{
+.profileRightSectionVisible {
    opacity: 1;
    transform: translateX(0);
 }
