@@ -1,4 +1,3 @@
-import type React from "react";
 import searchPng from "../../../src/assets/icons/search.png";
 
 interface searchBarProps {
@@ -30,7 +29,8 @@ const SearchBar = ({
             type="text"
             placeholder={placeholderText}
             onChange={(e) => updateTextValueState(e.target.value)}
-            value={searchBarText}
+            // If searchBarText is not null and not undefined return its value if not return "" (if it's null or undefined)
+            value={searchBarText ?? ""}
          />
       </div>
    );

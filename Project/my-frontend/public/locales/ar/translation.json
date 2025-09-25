@@ -56,6 +56,7 @@
    "termsOfSer": "شروط الخدمة",
    "rightsText": "2025 Trend Bites. جميع الحقوق محفوظة",
    "yourReview": "(انت)",
+   "ratedSuccessfully": "لقد قمت بالتقييم بنجاح!",
    "auth": {
       "login": {
          "success": "تم تسجيل الدخول بنجاح",
@@ -65,6 +66,12 @@
          "alreadyExist": "يوجد حساب بهذا البريد الإلكتروني/اسم المستخدم بالفعل.",
          "passwordNotMatch": "كلمات المرور غير متطابقة.",
          "accountCreated": "تم إنشاء الحساب بنجاح"
+      },
+      "changeProfileSettings": {
+         "incorrectOldPassword": "كلمة المرور القديمة غير صحيحة",
+         "notMatch": "كلمة المرور الجديدة لا تتطابق",
+         "changedSuccessfully": "تم تغيير كلمة المرور بنجاح! سيتم تسجيل خروجك خلال 5 ثوانٍ",
+         "changedProfilePic": "تم تحديث صورة الملف الشخصي بنجاح!"
       }
    }
 }

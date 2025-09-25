@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext&Global.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
+import { ToastContainer } from "react-toastify";
 
 // import languages package
 import "./i18n";
@@ -15,6 +16,7 @@ createRoot(document.getElementById("root")!).render(
          <BrowserRouter>
             <AuthProvider>
                <ThemeProvider>
+                  <ToastContainer />
                   <App />
                </ThemeProvider>
             </AuthProvider>

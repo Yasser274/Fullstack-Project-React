@@ -8,7 +8,8 @@ export const restaurants = async (req: Request, res: Response) => {
    const page = parseInt(req.query.page as string) || 1; // since we will be getting the page from the url it will be a string so convert it to number
    const limit = parseInt(req.query.limit as string) || 1;
    const sortByQuery = (req.query.sortBy as string)?.toUpperCase(); // grab param and uppercase it
-
+   const lang = req.query.lang === "en" ? "en" : "ar"; // grab the current language
+   console.log(lang);
    // if user entered value to search
    const searchTerm = await req.query.searchT;
    let searchPattern: string | undefined = "";
@@ -33,83 +34,93 @@ export const restaurants = async (req: Request, res: Response) => {
       // Modified my main query to include LIMIT and OFFSET instead of getting all restaurants at one time
       // it's important that LIMIT and OFFSET comes after ORDER BY clause
       const restaurantsListQuery = `WITH
-  tags_agg AS (
-    -- Step 1: Create a temporary table with each restaurant's tags pre-aggregated into an array.
-    SELECT
-      rt.restaurant_id,
-      ARRAY_AGG(t.tagName) AS tags
-    FROM
-      restaurant_tags AS rt
-      JOIN tags AS t ON t.id = rt.tag_id
-    GROUP BY
-      rt.restaurant_id
-  ),
-  reviews_agg AS (
-    -- Step 2: Create another temporary table with each restaurant's reviews pre-aggregated into a JSON array.
-    SELECT
-      rw.restaurant_id,
-      JSON_AGG(
-        JSON_BUILD_OBJECT(
-          'comment',
-          rw.comment,
-          'rating',
-          rw.rating,
-          'reviewedAt',
-          rw.reviewed_at,
-          'user',
-          JSON_BUILD_OBJECT('username', u.username, 'profilePictureURL', u.profile_picture_url, 'userID', u.id)
-        )
-        ORDER BY
-          rw.reviewed_at DESC -- Good practice to order reviews
-      ) AS reviews
-    FROM
-      restaurant_reviews AS rw
-      JOIN users AS u ON rw.user_id = u.id
-    GROUP BY
-      -- This is crucial: we group all rows by the restaurant id so just one row for each restaurant
-      rw.restaurant_id
-  ),
-  -- Step 3: Pre rank all restaurants 
-  ranked_restaurants AS (
-  SELECT *,
-  -- It calculates the rank over the entire ordered dataset
-  RANK() OVER (ORDER BY average_rating DESC, rating_count DESC) as rank
-  FROM restaurants
-  )
-  -- Step 4: Now, join the main restaurants table to your pre-aggregated results.
-  -- These are now clean one-to-one joins, preventing any row duplication.
-SELECT
-  r.id,
-  r.restaurant_name,
-  r.restaurant_logo,
-  r.description,
-  r.rating_count,
-  r.average_rating,
-  r.rank, -- The rank is now just a column we can select
-  COALESCE(ta.tags, '{}') AS tags,
-  COALESCE(ra.reviews, '[]'::json) AS reviews
-  
-FROM
-  ranked_restaurants AS r
-  LEFT JOIN tags_agg AS ta ON r.id = ta.restaurant_id
-  LEFT JOIN reviews_agg AS ra ON r.id = ra.restaurant_id
-  -- The search filter is now applied *after* the ranking was calculated
-  WHERE r.restaurant_name ILIKE $1
-ORDER BY
-  -- As a tie-breaker, the one with more ratings is ranked higher (more trustworthy).
-  r.average_rating ${sort},
-  r.rating_count DESC   
-  -- LIMIT the top amount(like 4 (top 4)) and OFFSET (skip the first row for example 1) now this example will show not the top 4 but the top 2-3-4-5
-  LIMIT $2 OFFSET $3;
+   tags_agg AS (
+      -- Step 1: Create a temporary table with each restaurant's tags pre-aggregated into an array.
+      SELECT
+         rt.restaurant_id,
+         ARRAY_AGG(t.tagName) AS tags
+      FROM
+         restaurant_tags AS rt
+         JOIN tags AS t ON t.id = rt.tag_id
+      GROUP BY
+         rt.restaurant_id
+   ),
+   reviews_agg AS (
+      -- Step 2: Create another temporary table with each restaurant's reviews pre-aggregated into a JSON array.
+      SELECT
+         rw.restaurant_id,
+         JSON_AGG(
+         JSON_BUILD_OBJECT(
+            'comment',
+            rw.comment,
+            'rating',
+            rw.rating,
+            'reviewedAt',
+            rw.reviewed_at,
+            'user',
+            JSON_BUILD_OBJECT('username', u.username, 'profilePictureURL', u.profile_picture_url, 'userID', u.id)
+         )
+         ORDER BY
+            rw.reviewed_at DESC -- Good practice to order reviews
+         ) AS reviews
+      FROM
+         restaurant_reviews AS rw
+         JOIN users AS u ON rw.user_id = u.id
+      GROUP BY
+         -- This is crucial: we group all rows by the restaurant id so just one row for each restaurant
+         rw.restaurant_id
+   ),
+   -- Step 3: Pre rank all restaurants 
+   ranked_restaurants AS (
+      SELECT
+         *,
+         -- It calculates the rank over the entire ordered dataset
+         RANK() OVER (
+         ORDER BY
+            average_rating DESC,
+            rating_count DESC
+         ) AS RANK
+      FROM
+         restaurants
+   )
+   -- Step 4: Now, join the main restaurants table to your pre-aggregated results.
+   -- These are now clean one-to-one joins, preventing any row duplication.
+   SELECT
+   r.id,
+   rtt.name AS restaurant_name,
+   r.restaurant_logo,
+   rtt.description,
+   r.rating_count,
+   r.average_rating,
+   r.rank, -- The rank is now just a column we can select
+   COALESCE(ta.tags, '{}') AS tags,
+   COALESCE(ra.reviews, '[]'::json) AS reviews
+   FROM
+   ranked_restaurants AS r
+   LEFT JOIN tags_agg AS ta ON r.id = ta.restaurant_id
+   LEFT JOIN reviews_agg AS ra ON r.id = ra.restaurant_id
+   LEFT JOIN restaurant_translations AS rtt ON rtt.restaurant_id = r.id
+   -- The search filter is now applied *after* the ranking was calculated
+   WHERE
+   rtt.name ILIKE $1 AND rtt.language_code = $2
+   ORDER BY
+   -- As a tie-breaker, the one with more ratings is ranked higher (more trustworthy).
+   r.average_rating ${sort},
+   r.rating_count DESC
+   -- LIMIT the top amount(like 4 (top 4)) and OFFSET (skip the first row for example 1) now this example will show not the top 4 but the top 2-3-4-5
+   LIMIT
+   $3
+   OFFSET
+   $4
 `;
       // another query to get the total number of restaurants and so frontend knows how many pages are there (how many rows are in restaurants table)
-      const countQuery = `SELECT COUNT(*) from restaurants WHERE restaurant_name ILIKE $1`;
+      const countQuery = `SELECT COUNT(*) from restaurants AS r LEFT JOIN restaurant_translations AS rtt ON rtt.restaurant_id = r.id WHERE rtt.name ILIKE $1 AND rtt.language_code = $2`;
 
       // Execute both queries. Using Promise.all is slightly more efficient
       // as it runs them in parallel.
       const [restaurantsResult, countResult] = await Promise.all([
-         pool.query(restaurantsListQuery, [searchPattern, limit, offset]),
-         pool.query(countQuery, [searchPattern]),
+         pool.query(restaurantsListQuery, [searchPattern, lang, limit, offset]),
+         pool.query(countQuery, [searchPattern, lang]),
       ]);
 
       const { rows: restaurants } = restaurantsResult;
@@ -260,21 +271,24 @@ export const ratingRestaurants = async (req: Request, res: Response) => {
 export const getUserRatingHistory = async (req: Request, res: Response) => {
    // get user ID
    const userID = req.user!.userId;
+   const lang = req.query.lang === "en" ? "en" : "ar";
+   console.log(lang);
    try {
       const RatingHistory = `SELECT
         rr.restaurant_id,
         rr.rating,
         rr.reviewed_at,
         rr.comment,
-        r.restaurant_name,
+        rtt.name AS restaurant_name,
         r.restaurant_logo
       FROM
         restaurant_reviews AS rr
         JOIN restaurants AS r ON rr.restaurant_id = r.id
+        LEFT JOIN restaurant_translations AS rtt ON rtt.restaurant_id = r.id
       WHERE
-        user_id = $1;`;
+        user_id = $1 AND rtt.language_code = $2;`;
 
-      const { rows: dbRatingHistory } = await pool.query(RatingHistory, [userID]);
+      const { rows: dbRatingHistory } = await pool.query(RatingHistory, [userID, lang]);
 
       if (dbRatingHistory.length <= 0) {
          return res.status(204).json({ message: `No Rating History`, displayMessage: `No Rating History.` });
@@ -291,20 +305,23 @@ export const getUserRatingHistory = async (req: Request, res: Response) => {
 
 //. Sponsorship API
 export const SponsorshipRestaurant = async (req: Request, res: Response) => {
+   const lang = req.query.lang === "en" ? "en" : "ar";
+
    try {
       const sponsersQuery = `SELECT
   s.id,
   s.banner_image_url,
-  r.restaurant_name,
+  rtt.name AS restaurant_name,
   r.restaurant_logo
 FROM
   sponsorships AS s
   LEFT JOIN restaurants AS r ON s.restaurant_id = r.id
+  LEFT JOIN restaurant_translations AS rtt ON rtt.restaurant_id = r.id
 WHERE
-  s.is_active = TRUE
+  s.is_active = TRUE AND rtt.language_code = $1
 ORDER BY
   display_order DESC;`;
-      const { rows: sponsorsDb } = await pool.query(sponsersQuery);
+      const { rows: sponsorsDb } = await pool.query(sponsersQuery, [lang]);
       return res.status(200).json({ message: "Fetched sponsors successfully.", sponsorsData: sponsorsDb });
    } catch (error) {
       console.error(`Error while fetching sponsors`, error);

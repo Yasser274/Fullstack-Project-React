@@ -3,6 +3,8 @@ import type { User } from "../context/AuthContext&Global";
 import styles from "../components/styles/Home.module.css";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast, Bounce } from "react-toastify";
+import { useTheme } from "../context/ThemeContext";
 
 // get the types of restaurant
 interface RestaurantCardProps {
@@ -30,6 +32,7 @@ import HalfEmptyStar from "../assets/icons/HalfEmptyStar";
 
 const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCardProps) => {
    const { t } = useTranslation();
+   const { theme } = useTheme();
 
    // function to votes and affect the ranking
    // State to hold the current rating. 0 means no stars are selected.
@@ -100,10 +103,13 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
       }
 
       if (rateValue === userReview?.rating) {
-         console.log("you already voted the same amount");
-         setErrorSameAmount(
-            `You have already given this restaurant a rating of ${userReview?.rating} stars.`
-         );
+         toast.error(`You have already given this restaurant a rating of ${userReview?.rating} stars.`, {
+            position: "top-center",
+            autoClose: 4000,
+            theme: theme === "light" ? "light" : "dark",
+            transition: Bounce,
+            pauseOnHover: true,
+         });
          return;
       }
       setIsVoting(true);
@@ -126,6 +132,14 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
          const updatedRestaurant = await response.json();
          console.dir(updatedRestaurant);
          console.log("Sent", updatedRestaurant);
+         toast.success(t("ratedSuccessfully"), {
+            position: "top-center",
+            autoClose: 4000,
+            theme: theme === "light" ? "light" : "dark",
+            transition: Bounce,
+            pauseOnHover: true,
+            icon: <>🎉</>,
+         });
          handleVoteUpdate(updatedRestaurant.restaurantsData);
       } catch (error) {
          console.error("Error submitting vote:", error);
@@ -188,7 +202,9 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                      >
                         {t("reviewRestaurantModalCharLimit")} {reviewComm.length}/1300
                      </span>
-                     {reviewComm.length > 1300 ? <span>{t("reviewRestaurantModalCharLimitPassedMsg")}</span> : null}
+                     {reviewComm.length > 1300 ? (
+                        <span>{t("reviewRestaurantModalCharLimitPassedMsg")}</span>
+                     ) : null}
                      <button
                         type="submit"
                         disabled={reviewComm.length > 1300}

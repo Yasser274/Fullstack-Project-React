@@ -103,8 +103,14 @@ const HomePage = () => {
    //* fetch sponsors
    useEffect(() => {
       const getSponsors = async () => {
+         const currentLanguage = i18n.language.split("-")[0];
+
+         const params = new URLSearchParams({
+            lang: currentLanguage,
+         });
+
          try {
-            const response = await fetch(`${API_BASE_URL}/api/restaurants/sponsors`, {
+            const response = await fetch(`${API_BASE_URL}/api/restaurants/sponsors?${params.toString()}`, {
                method: "GET",
                headers: {
                   "Content-Type": "application/json",
@@ -121,7 +127,7 @@ const HomePage = () => {
          }
       };
       getSponsors();
-   }, []);
+   }, [i18n.language]);
 
    // useEffect to fetch the data(json) from api of restaurants and use setRestaurants to store the data in the state
    useEffect(() => {
@@ -145,11 +151,16 @@ const HomePage = () => {
             sort = "DESC";
          }
 
+         // Language
+         const currentLanguage = i18n.language.split("-")[0];
+         console.log(currentLanguage);
+
          // this stores all params for me to use in the API URL (just the same setSearchParams but in URL form (string query))
          const params = new URLSearchParams({
             page: currentPage.toString(),
             limit: "15", // how many restaurants to show in a page
             sortBy: sort,
+            lang: currentLanguage,
          });
          // when nothing is inside the search bar doesn't run what's inside this useEffect
 
@@ -188,7 +199,7 @@ const HomePage = () => {
          }
       };
       fetchRestaurantsList();
-   }, [currentPage, sortBy, searchTerm]);
+   }, [currentPage, sortBy, searchTerm, i18n.language]);
 
    const handleVoteUpdate = (updatedRestaurantDataFromServer: Restaurant[]) => {
       if (!updatedRestaurantDataFromServer || updatedRestaurantDataFromServer.length === 0) {

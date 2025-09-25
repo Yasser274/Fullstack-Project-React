@@ -4,6 +4,7 @@ import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
 import StarFilled from "../assets/icons/StarFilled";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 
 interface rateHistoryT {
    restaurant_id: number;
@@ -15,7 +16,7 @@ interface rateHistoryT {
 }
 
 const ProfileVotesHistory = () => {
-   const { t } = useTranslation();
+   const { t, i18n } = useTranslation();
 
    const [rateHistory, setRateHistory] = useState<rateHistoryT[] | null>(null);
 
@@ -25,9 +26,19 @@ const ProfileVotesHistory = () => {
 
    const { user } = useAuth();
 
+
    //  get user rating history
    useEffect(() => {
       const fetchRatingHistory = async () => {
+         const currentLanguage = i18n.language.split("-")[0];
+         console.log(currentLanguage)
+
+         // this stores all params for me to use in the API URL (just the same setSearchParams but in URL form (string query))
+         const params = new URLSearchParams({
+            lang: currentLanguage
+         });
+         console.log(params.toString())
+
          if (!user) {
             console.error("User is not authenticated. Cannot vote.");
             setIsLoading(false);
@@ -39,7 +50,7 @@ const ProfileVotesHistory = () => {
             return;
          }
          try {
-            const response = await fetch(`${API_BASE_URL}/api/restaurants/rate_history`, {
+            const response = await fetch(`${API_BASE_URL}/api/restaurants/rate_history?${params.toString()}`, {
                method: "GET",
                headers: {
                   Authorization: `Bearer ${authToken}`,
@@ -63,7 +74,7 @@ const ProfileVotesHistory = () => {
          }
       };
       fetchRatingHistory();
-   }, []);
+   }, [i18n.language]);
 
    return (
       <div className={styles.votesHistoryCon}>

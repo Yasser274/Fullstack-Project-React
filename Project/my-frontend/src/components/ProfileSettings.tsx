@@ -5,6 +5,8 @@ import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
 import EditIcon from "../assets/icons/EditIcon";
 import { useTranslation } from "react-i18next";
+import { toast, Bounce } from "react-toastify";
+import { useTheme } from "../context/ThemeContext";
 
 const ProfileSettings = () => {
    const [error, setError] = useState<string | null>(null);
@@ -16,7 +18,8 @@ const ProfileSettings = () => {
 
    const { logout, user, setUser, profileImageUrl, login } = useAuth();
 
-   const {t} = useTranslation()
+   const { t } = useTranslation();
+   const { theme } = useTheme();
 
    // .Functions
    const handleClickImg = () => {
@@ -54,7 +57,13 @@ const ProfileSettings = () => {
       // validation
       // if new passwords don't match
       if (getNewPasswordVal !== getNewConfPasswordVal) {
-         setError("New Password do not match");
+         toast.error(t("auth.changeProfileSettings.notMatch"), {
+            position: "top-center",
+            autoClose: 4000,
+            theme: theme === "light" ? "light" : "dark",
+            transition: Bounce,
+            pauseOnHover: true,
+         });
          setPasswordsMismatch(true);
          return;
       }
@@ -76,15 +85,27 @@ const ProfileSettings = () => {
          // ? Read the response body ONCE
          const data = await response.json();
 
+         if (response.status === 401) {
+            toast.error(t(data.displayMessage), {
+               position: "top-center",
+               autoClose: 4000,
+               theme: theme === "light" ? "light" : "dark",
+               transition: Bounce,
+               pauseOnHover: true,
+            });
+         }
          if (!response.ok) {
             throw new Error(data.message || "Changing password failed.");
          }
-         if (response.status === 401) {
-            setError(data.message);
-         }
 
          console.dir(data);
-         setDone("Password changed successfully! You will be logged out in 5 seconds"); // Provide success feedback!
+         toast.success(t("auth.changeProfileSettings.changedSuccessfully"), {
+            position: "top-center",
+            autoClose: 4000,
+            theme: theme === "light" ? "light" : "dark",
+            transition: Bounce,
+            pauseOnHover: true,
+         }); // Provide success feedback!
          setInterval(() => {
             logout();
          }, 5000);
@@ -132,7 +153,13 @@ const ProfileSettings = () => {
             console.log("ran");
             //update the new token so it contains the new profile picture
             login(data.token);
-            setDone("Profile picture updated successfully!");
+            toast.success("Profile picture updated successfully!", {
+               position: "top-center",
+               autoClose: 4000,
+               theme: theme === "light" ? "light" : "dark",
+               transition: Bounce,
+               pauseOnHover: true,
+            });
          } else {
             if (user) {
                setUser({ ...user, profilePictureURL: data.newImageUrl });
@@ -147,8 +174,6 @@ const ProfileSettings = () => {
       <div className={styles.profileSettingsCon}>
          <h2 className={styles.profileSecTitle}>{t("changePasswordTitle")}</h2>
          <form className={styles.formProfilePassword} onSubmit={changePassword}>
-            {done ? <span className={styles.doneMessage}>{done}</span> : null}
-            {error ? <span className={styles.errorMessage}>{error}</span> : null}
             <div className={styles.oldPassCon}>
                <label htmlFor="oldPass">{t("oldPasswordTitle")}</label>
                <input

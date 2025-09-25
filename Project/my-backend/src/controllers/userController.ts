@@ -149,7 +149,10 @@ export const changePassword = async (req: Request, res: Response) => {
          console.error("Not same password");
          return res
             .status(401)
-            .json({ message: "Old password is not correct", displayMessage: `Incorrect old password` });
+            .json({
+               message: "Old password is not correct",
+               displayMessage: `auth.changeProfileSettings.incorrectOldPassword`,
+            });
       }
    } catch (error) {
       console.error("Error whiling changing user password");
