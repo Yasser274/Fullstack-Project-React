@@ -177,4 +177,6 @@ WHERE
 
 -  Themes: Toggle between light and dark modes for a personalized experience.
 
+-  Language Support: Switch seamlessly between English and Arabic using react-i18next, making the platform accessible to a broader audience.
+
 Unlike Google Maps, Trend Bites focuses on dynamic, monthly trends, enabling small restaurants to rise quickly in popularity and helping users discover new dining experiences. This project showcases full-stack development, user authentication, database management, and responsive UI design, creating an engaging, community-driven platform for restaurant ratings.
