@@ -123,6 +123,42 @@ INSERT INTO restaurant_translations (restaurant_id, name, language_code, descrip
 VALUES (4, 'تاكو بل', 'ar', 'مثال للوصف');
 ```
 
+-  For adding sponsored (restaurant already exists):
+
+```
+INSERT INTO
+  sponsorships (restaurant_id, banner_image_url)
+VALUES
+  (
+    (
+      SELECT
+        rtt.restaurant_id
+      FROM
+        restaurant_translations AS rtt
+      WHERE
+        rtt.name = 'Shawarma House'
+    ),
+    '<IMG LINK URL>'
+  );
+```
+
+-  To deactivate a sponsorship (remove it from display), just replace 'Shawarma House' with the restaurant name you want to update:
+
+```
+UPDATE sponsorships
+SET
+  is_active = FALSE
+WHERE
+  restaurant_id = (
+    SELECT
+      rtt.restaurant_id
+    FROM
+      restaurant_translations AS rtt
+    WHERE
+      rtt.name = 'Shawarma House'
+  );
+```
+
 ## About the Project:
 
 #### Core Functionality:
