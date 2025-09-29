@@ -76,6 +76,55 @@ cd ..
 npm run dev
 ```
 
+## 💻 Inserting Data into Tables:
+
+-  For the restaurants list (logo goes here, name + desc stay in translations)::
+
+```
+WITH ins1 AS (
+  INSERT INTO restaurants (restaurant_logo)
+  VALUES ('<Img link>')
+  RETURNING id
+)
+INSERT INTO restaurant_translations (restaurant_id, name, language_code,description)
+SELECT id, 'Taco Bell', 'en','Desc Example'
+FROM ins1;
+
+```
+
+-  For linking restaurants with existing tags:
+
+```
+INSERT INTO restaurant_tags (restaurant_id, tag_id)
+VALUES (
+    (SELECT restaurant_id FROM restaurant_translations AS rt WHERE rt.name = 'Maestro'),
+    (SELECT id FROM tags AS t WHERE t.tagname = 'pizza')
+)
+```
+
+-  For adding new tags:
+
+```
+INSERT INTO tags (tagname)
+VALUES ('Egyptian')
+```
+
+-  For adding restaurant translations EN (restaurant already exists):
+
+```
+INSERT INTO restaurant_translations (restaurant_id, name, language_code,description)
+VALUES (4,'Taco Bell','en','Desc Example');
+```
+
+-  For adding restaurant translations AR (restaurant already exists):
+
+```
+INSERT INTO restaurant_translations (restaurant_id, name, language_code, description)
+VALUES (4, 'تاكو بل', 'ar', 'مثال للوصف');
+```
+
+## About the Project:
+
 #### Core Functionality:
 
 -  Restaurant Ratings: Logged-in users can rate restaurants out of 5 stars, with optional comments, to highlight monthly trending spots. Ratings are aggregated to showcase popular restaurants.

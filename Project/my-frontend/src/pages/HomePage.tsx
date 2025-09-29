@@ -136,7 +136,7 @@ const HomePage = () => {
          });
       };
       handleTagChange();
-   }, [selectedTag, setSearchParams]);
+   }, [selectedTag]);
 
    // * fetch tags
    useEffect(() => {
