@@ -31,13 +31,11 @@ const ProfileVotesHistory = () => {
    useEffect(() => {
       const fetchRatingHistory = async () => {
          const currentLanguage = i18n.language.split("-")[0];
-         console.log(currentLanguage)
 
          // this stores all params for me to use in the API URL (just the same setSearchParams but in URL form (string query))
          const params = new URLSearchParams({
             lang: currentLanguage
          });
-         console.log(params.toString())
 
          if (!user) {
             console.error("User is not authenticated. Cannot vote.");

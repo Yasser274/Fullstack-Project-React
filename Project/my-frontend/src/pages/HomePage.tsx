@@ -12,6 +12,7 @@ import Pagination from "../components/Pagination";
 import Sponsored from "../components/Sponsored";
 // for translations
 import { useTranslation } from "react-i18next";
+import TagsFilter from "../components/TagsFilter";
 
 // export the types of restaurants in useState
 export interface Restaurant {
@@ -42,6 +43,10 @@ export interface sponsorsProps {
    banner_image_url: string;
    restaurant_name: string;
    restaurant_logo: string;
+}
+export interface tagsPropsListAPI {
+   id: number;
+   tagname: string;
 }
 
 // just an example on how to extract and use just one type in an interface
@@ -87,6 +92,18 @@ const HomePage = () => {
    // store sponsors
    const [sponsorsList, setSponsorsList] = useState<null | sponsorsProps[]>(null);
 
+   // store tags
+   const [tags, setTags] = useState<tagsPropsListAPI[] | null>(null);
+   // stored selected tags by user
+   const [selectedTag, setSelectedTag] = useState<number[]>(() => {
+      // get all parameters named tags from current  URL
+      const tagsFromUrl = searchParams.getAll("tags"); // EX ([ "2", "4" ])
+
+      const tagsArray = tagsFromUrl.map((tag) => parseInt(tag, 10)).filter((tagId) => !isNaN(tagId)); // if there was a string in the url that couldn't be converted filter it (Not a number (NaN))
+      return tagsArray;
+   });
+   console.log(selectedTag);
+
    const { t, i18n } = useTranslation();
 
    // this will be passed into Pagination comp
@@ -99,6 +116,42 @@ const HomePage = () => {
          return prevParams;
       });
    };
+
+   // useEffect to add selected tags into the URL
+   useEffect(() => {
+      const handleTagChange = () => {
+         //it's crucial to remove any existing 'tags' parameters
+         // This handles the case where a user deselects a tag.
+         setSearchParams((prevParams) => {
+            prevParams.delete("tags");
+
+            // now add all currently selected tags into the URL
+            selectedTag.forEach((tagId) => {
+               prevParams.append("tags", tagId.toString());
+            });
+
+            // when a tag is selected or removed reset page number to 1
+            prevParams.set("page", "1");
+            return prevParams;
+         });
+      };
+      handleTagChange();
+   }, [selectedTag, setSearchParams]);
+
+   // * fetch tags
+   useEffect(() => {
+      const fetchTags = async () => {
+         const response = await fetch(`${API_BASE_URL}/api/restaurants/restaurantTags`);
+
+         const data = await response.json();
+
+         if (!response.ok) {
+            throw new Error(data.message || `Fetching tags went wrong (Frontend)`);
+         }
+         setTags(data.tagsData);
+      };
+      fetchTags();
+   }, []);
 
    //* fetch sponsors
    useEffect(() => {
@@ -153,7 +206,6 @@ const HomePage = () => {
 
          // Language
          const currentLanguage = i18n.language.split("-")[0];
-         console.log(currentLanguage);
 
          // this stores all params for me to use in the API URL (just the same setSearchParams but in URL form (string query))
          const params = new URLSearchParams({
@@ -162,6 +214,15 @@ const HomePage = () => {
             sortBy: sort,
             lang: currentLanguage,
          });
+
+         // Selected Tags if user selected any
+         if (selectedTag.length > 0) {
+            console.log(selectedTag);
+            selectedTag.forEach((tagId) => {
+               params.append("tags", tagId.toString());
+               console.log(params.toString());
+            });
+         }
          // when nothing is inside the search bar doesn't run what's inside this useEffect
 
          //-- search delay so it doesn't hit the API instantly (debounce)
@@ -180,7 +241,6 @@ const HomePage = () => {
             }
             const data = await response.json(); // Get the full object first
             const restaurantsArray: [] = data.restaurantsData; // Then extract the array from the 'restaurantsData' property
-            console.log(restaurantsArray);
             if (restaurantsArray.length <= 0) {
                setNothingFound("No restaurants found matching your search.");
                console.log(restaurantsArray);
@@ -199,7 +259,7 @@ const HomePage = () => {
          }
       };
       fetchRestaurantsList();
-   }, [currentPage, sortBy, searchTerm, i18n.language]);
+   }, [currentPage, sortBy, searchTerm, i18n.language, selectedTag]);
 
    const handleVoteUpdate = (updatedRestaurantDataFromServer: Restaurant[]) => {
       if (!updatedRestaurantDataFromServer || updatedRestaurantDataFromServer.length === 0) {
@@ -267,6 +327,12 @@ const HomePage = () => {
                <option value="highestRating">{t("sortByHighest")}</option>
                <option value="lowestRating">{t("sortByLowest")}</option>
             </select>
+
+            <TagsFilter
+               tagsList={tags}
+               selectedTagsList={selectedTag}
+               selectTagsFun={setSelectedTag}
+            ></TagsFilter>
          </div>
          <div
             ref={section3Ref}

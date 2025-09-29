@@ -4,6 +4,7 @@ import {
    ratingRestaurants,
    getUserRatingHistory,
    SponsorshipRestaurant,
+   restaurantTags,
 } from "../controllers/restaurantController.js";
 import authenticateToken from "../middleware/authenticateToken.js";
 
@@ -20,5 +21,8 @@ restaurantRouter.get("/rate_history", authenticateToken, getUserRatingHistory);
 
 // get sponsorships
 restaurantRouter.get("/sponsors", SponsorshipRestaurant);
+
+// get restaurant tags
+restaurantRouter.get("/restaurantTags",restaurantTags)
 
 export default restaurantRouter;

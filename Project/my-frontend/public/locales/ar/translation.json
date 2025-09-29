@@ -57,6 +57,8 @@
    "rightsText": "2025 Trend Bites. جميع الحقوق محفوظة",
    "yourReview": "(انت)",
    "ratedSuccessfully": "لقد قمت بالتقييم بنجاح!",
+   "selectTag": "تحديد الفئة",
+   "searchTagPlaceholder": "البحث عن تصنيف",
    "auth": {
       "login": {
          "success": "تم تسجيل الدخول بنجاح",

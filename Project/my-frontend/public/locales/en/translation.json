@@ -56,7 +56,9 @@
    "termsOfSer": "Terms of Service",
    "rightsText": "2025 Trend Bites. All Rights Reserved.",
    "yourReview": "(YOU)",
-   "ratedSuccessfully" : "You rated successfully!",
+   "ratedSuccessfully": "You rated successfully!",
+   "selectTag": "Select Tag",
+   "searchTagPlaceholder": "Search for tag",
    "auth": {
       "login": {
          "success": "Logged in Successfully",

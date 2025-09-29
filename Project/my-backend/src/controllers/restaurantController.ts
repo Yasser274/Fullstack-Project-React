@@ -4,12 +4,27 @@ import { pool } from "../config/database.js";
 // * get restaurants list function
 export const restaurants = async (req: Request, res: Response) => {
    // Get current page and limit from query params(like ?page=1),default values
+   // get selected tags by user if any
+   console.log(req.query);
+   let tags: number[] = [];
+   const selectedTagsQuery = req.query.tags;
+   if (selectedTagsQuery) {
+      if (Array.isArray(selectedTagsQuery)) {
+         // if multiple tags were selected by user (?tags=1&tags=2), it's an array
+         tags = selectedTagsQuery.map((tag) => parseInt(tag as string, 10)).filter(Number.isFinite); // go through every element and create an new array from those elements converted to int and if a string was converted it will be NaN so filter will filter non number values
+      } else {
+         // if one tag is sent (?tags=1)
+         const tagId = parseInt(selectedTagsQuery as string, 10);
+         if (Number.isFinite(tagId)) {
+            tags = [tagId];
+         }
+      }
+   }
 
    const page = parseInt(req.query.page as string) || 1; // since we will be getting the page from the url it will be a string so convert it to number
    const limit = parseInt(req.query.limit as string) || 1;
    const sortByQuery = (req.query.sortBy as string)?.toUpperCase(); // grab param and uppercase it
    const lang = req.query.lang === "en" ? "en" : "ar"; // grab the current language
-   console.log(lang);
    // if user entered value to search
    const searchTerm = await req.query.searchT;
    let searchPattern: string | undefined = "";
@@ -31,6 +46,24 @@ export const restaurants = async (req: Request, res: Response) => {
    // This is the number of rows to skip. For page 1, we skip 0. For page 2, we skip 10.
    const offset = (page - 1) * limit;
    try {
+      // dynamic query parameters         if the 'tags' parameter will exist i'll push it in this array.
+      const queryParams: (string | number | number[])[] = [searchPattern, lang];
+      let filterClause = "";
+
+      // if tags were selected
+      if (tags.length > 0) {
+         filterClause = `AND r.id IN (
+                SELECT rt.restaurant_id
+                FROM restaurant_tags AS rt
+                WHERE rt.tag_id = ANY($${queryParams.length + 1})
+                GROUP BY rt.restaurant_id
+                HAVING COUNT(rt.tag_id) = ${tags.length}
+            )
+        `;
+         queryParams.push(tags);
+      }
+      console.log(queryParams);
+
       // Modified my main query to include LIMIT and OFFSET instead of getting all restaurants at one time
       // it's important that LIMIT and OFFSET comes after ORDER BY clause
       const restaurantsListQuery = `WITH
@@ -103,24 +136,32 @@ export const restaurants = async (req: Request, res: Response) => {
    -- The search filter is now applied *after* the ranking was calculated
    WHERE
    rtt.name ILIKE $1 AND rtt.language_code = $2
+   ${filterClause}
    ORDER BY
    -- As a tie-breaker, the one with more ratings is ranked higher (more trustworthy).
    r.average_rating ${sort},
    r.rating_count DESC
    -- LIMIT the top amount(like 4 (top 4)) and OFFSET (skip the first row for example 1) now this example will show not the top 4 but the top 2-3-4-5
    LIMIT
-   $3
+   $${queryParams.length + 1} -- Dynamic placeholder for LIMIT
    OFFSET
-   $4
+   $${queryParams.length + 2} -- Dynamic placeholder for OFFSET
 `;
       // another query to get the total number of restaurants and so frontend knows how many pages are there (how many rows are in restaurants table)
-      const countQuery = `SELECT COUNT(*) from restaurants AS r LEFT JOIN restaurant_translations AS rtt ON rtt.restaurant_id = r.id WHERE rtt.name ILIKE $1 AND rtt.language_code = $2`;
+      const countQuery = `SELECT COUNT(*) from restaurants AS r LEFT JOIN restaurant_translations AS rtt ON rtt.restaurant_id = r.id WHERE rtt.name ILIKE $1 AND rtt.language_code = $2 ${filterClause}`;
+
+      // The parameters for the count query are the same as the main query,
+      // just without limit and offset.
+      const countQueryParams = [...queryParams];
+
+      // now i add limit and offset to the dynamic parameters
+      queryParams.push(limit, offset);
 
       // Execute both queries. Using Promise.all is slightly more efficient
       // as it runs them in parallel.
       const [restaurantsResult, countResult] = await Promise.all([
-         pool.query(restaurantsListQuery, [searchPattern, lang, limit, offset]),
-         pool.query(countQuery, [searchPattern, lang]),
+         pool.query(restaurantsListQuery, queryParams), // use the full parameters with limit and offset ([searchPattern, lang,limit,offset])
+         pool.query(countQuery, countQueryParams), // use partial parameters without limit and offset
       ]);
 
       const { rows: restaurants } = restaurantsResult;
@@ -272,7 +313,6 @@ export const getUserRatingHistory = async (req: Request, res: Response) => {
    // get user ID
    const userID = req.user!.userId;
    const lang = req.query.lang === "en" ? "en" : "ar";
-   console.log(lang);
    try {
       const RatingHistory = `SELECT
         rr.restaurant_id,
@@ -326,5 +366,22 @@ ORDER BY
    } catch (error) {
       console.error(`Error while fetching sponsors`, error);
       res.status(500).json({ message: `Fetching sponsors went wrong.` });
+   }
+};
+
+// .Restaurant Tags API
+export const restaurantTags = async (req: Request, res: Response) => {
+   try {
+      const tagsQuery = `SELECT
+      id,
+      tagname
+      FROM
+      tags;`;
+
+      const { rows: tagsDb } = await pool.query(tagsQuery);
+      return res.status(200).json({ message: `Fetched tags successfully`, tagsData: tagsDb });
+   } catch (error) {
+      console.error("Error while fetching Tags --", error);
+      res.status(500).json({ message: `Fetching tags went wrong.` });
    }
 };
