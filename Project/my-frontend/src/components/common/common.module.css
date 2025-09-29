@@ -94,6 +94,19 @@ h3 {
    top: 4%;
    right: 6%;
    cursor: pointer;
+   background-color: transparent;
+   border: none;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+.modalCloseIconBtn {
+   width: 28px;
+   transition: all 0.1s ease-in-out;
+
+}
+.modalCloseIconBtn:hover {
+   transform: scale(1.1);
 }
 .switchAuthCon {
    display: flex;

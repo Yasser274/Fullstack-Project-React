@@ -2,6 +2,7 @@ import type React from "react";
 import styles from "./common.module.css";
 import { useEffect } from "react";
 import ReactDOM from "react-dom";
+import CloseIcon from "../../assets/icons/CloseIcon";
 
 interface ModalProps {
    isOpen: boolean;
@@ -54,7 +55,7 @@ const Modal = ({ isOpen, onClose, children, title, setResetTitle, error }: Modal
                   setResetTitle?.(0);
                }}
             >
-               &times;
+               <CloseIcon className={styles.modalCloseIconBtn}></CloseIcon>
             </button>
             <title>{title}</title> {/* This is for the tab title */}
             <div className={styles.modalTitle}>
