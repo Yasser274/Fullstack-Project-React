@@ -24,6 +24,10 @@
    --pagination-shadow: rgba(0, 0, 0, 0.27);
    --input-login-background-color: #242424dc;
    --footer-background-color: #111827;
+
+   /* fonts for arabic and english */
+   --font-family-english: "Nunito", Arial, Helvetica, sans-serif;
+   --font-family-arabic: "Changa", "Nunito", Arial, Helvetica, sans-serif;
 }
 /* for dark theme */
 [data-theme="dark"] {
@@ -45,11 +49,11 @@
 }
 
 body {
-   font-family: "Nunito", Arial, Helvetica, sans-serif;
+   font-family: var(--font-family-english);
    background-color: #333333;
    margin: 0;
 }
 /* my arabic font lan */
 body:lang(ar) {
-   font-family: "Changa", Arial;
+   font-family: var(--font-family-arabic);
 }
