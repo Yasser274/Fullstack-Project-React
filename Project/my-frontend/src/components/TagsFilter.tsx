@@ -32,8 +32,6 @@ const TagsFilter = ({ tagsList, funResetPage1, selectedTagsList, selectTagsFun }
       });
    }
 
-   console.log(tagSearch);
-
    const handleOpeningMenu = () => {
       setMenuIsOpen((prev) => !prev);
    };

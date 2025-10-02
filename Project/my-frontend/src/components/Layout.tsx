@@ -11,6 +11,9 @@ import NavBar from "./NavBar";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
 import TrendBitesLogoRTL from "../assets/icons/TrendBitesLogoRTL";
+import Fork from "../assets/icons/Fork";
+import Spoon from "../assets/icons/Spoon";
+import useAnimateOnce from "../utils/useAnimateOnce";
 
 const Layout = () => {
    const { t } = useTranslation();
@@ -30,67 +33,80 @@ const Layout = () => {
       setIsMobileMenuOpen(false);
    }, [location]);
 
+   // animate once
+   const animateState = useAnimateOnce();
+   
    return (
-      <div className={styles.layoutContainer}>
-         <NavBar
-            setIsLoginModalOpen={setIsLoginModalOpen}
-            setIsMobileMenuOpen={setIsMobileMenuOpen}
-            isSessionExpired={isSessionExpired}
-            logout={logout}
-            isLoginModalOpen={isLoginModalOpen}
-            setSwitchModalTitle={setSwitchModalTitle}
-            isMobileMenuOpen={isMobileMenuOpen}
-            switchModalTitle={switchModalTitle}
-            user={user}
-            closeModalSession={closeModalSession}
-            profileImageUrl={profileImageUrl}
-         ></NavBar>
-         <main className={styles.mainCon}>
-            {/* This is where your page components (like HomePage) will be rendered */}
-            <Outlet />
-            {/* kinda like in flask {% body main %} where i can insert any html contents into it */}
-            {/* { The <Outlet /> component in Layout.tsx acts as a placeholder where React Router will swap in HomePage, AboutPage, etc., based on the current URL. } */}
-         </main>
+      <>
+         <div className={styles.layoutContainer}>
+            {/* For Fork and Spoon Icons in the background */}
+            <Fork
+               className={`${styles.backgroundForkSpoon} ${styles.forkDesign} ${styles[animateState]}`}
+            ></Fork>
+            <Spoon
+               className={`${styles.backgroundForkSpoon} ${styles.spoonDesign} ${styles[animateState]}`}
+            ></Spoon>
 
-         <footer className={styles.footerCon}>
-            <div className={styles.footerWhole}>
-               <div className={styles.footerContent}>
-                  <div>
-                     {/*    // Determine the direction based on the current language. */}
-                     {i18n.dir(i18n.language) === "ltr" ? (
-                        <TrendBitesLogo className={styles.logoSVG}></TrendBitesLogo>
-                     ) : (
-                        <TrendBitesLogoRTL className={styles.logoSVG}></TrendBitesLogoRTL>
-                     )}
+            <NavBar
+               setIsLoginModalOpen={setIsLoginModalOpen}
+               setIsMobileMenuOpen={setIsMobileMenuOpen}
+               isSessionExpired={isSessionExpired}
+               logout={logout}
+               isLoginModalOpen={isLoginModalOpen}
+               setSwitchModalTitle={setSwitchModalTitle}
+               isMobileMenuOpen={isMobileMenuOpen}
+               switchModalTitle={switchModalTitle}
+               user={user}
+               closeModalSession={closeModalSession}
+               profileImageUrl={profileImageUrl}
+            ></NavBar>
+            <main className={styles.mainCon}>
+               {/* This is where your page components (like HomePage) will be rendered */}
+               <Outlet />
+               {/* kinda like in flask {% body main %} where i can insert any html contents into it */}
+               {/* { The <Outlet /> component in Layout.tsx acts as a placeholder where React Router will swap in HomePage, AboutPage, etc., based on the current URL. } */}
+            </main>
+
+            <footer className={styles.footerCon}>
+               <div className={styles.footerWhole}>
+                  <div className={styles.footerContent}>
+                     <div>
+                        {/*    // Determine the direction based on the current language. */}
+                        {i18n.dir(i18n.language) === "ltr" ? (
+                           <TrendBitesLogo className={styles.logoSVG}></TrendBitesLogo>
+                        ) : (
+                           <TrendBitesLogoRTL className={styles.logoSVG}></TrendBitesLogoRTL>
+                        )}
+                     </div>
+                     <nav className={styles.footerLinks}>
+                        <div className={styles.legalFooterCon}>
+                           <h3>{t("legal")}</h3>
+                           <a href={`/${i18n.language}/privacy-policy`}>{t("privacyPolicy")}</a>
+                           <a href={`/${i18n.language}/terms-of-service`}>{t("termsOfSer")}</a>
+                        </div>
+                        <div className={styles.contactFooterCon}>
+                           <h3>{t("contactUs")}</h3>
+                           <Link to={`/${i18n.language}/contact`}>{t("contact")}</Link>
+                        </div>
+                     </nav>
                   </div>
-                  <nav className={styles.footerLinks}>
-                     <div className={styles.legalFooterCon}>
-                        <h3>{t("legal")}</h3>
-                        <a href={`/${i18n.language}/privacy-policy`}>{t("privacyPolicy")}</a>
-                        <a href={`/${i18n.language}/terms-of-service`}>{t("termsOfSer")}</a>
-                     </div>
-                     <div className={styles.contactFooterCon}>
-                        <h3>{t("contactUs")}</h3>
-                        <Link to={`/${i18n.language}/contact`}>{t("contact")}</Link>
-                     </div>
-                  </nav>
-               </div>
-               <div className={styles.belowFooterCon}>
-                  <hr style={{ color: "black", width: "100%", border: "white 1px solid" }} />
-                  <div className={styles.belowFooterDetails}>
-                     <div className={styles.copyright}>
-                        <p>&copy; {t("rightsText")}</p>
-                     </div>
-                     <div className={styles.socialMediaCon}>
-                        <SocialIcon network="github" url="https://www.github.com"></SocialIcon>
-                        <SocialIcon network="x" url="https://www.x.com"></SocialIcon>
-                        <SocialIcon network="youtube" url="https://www.youtube.com"></SocialIcon>
+                  <div className={styles.belowFooterCon}>
+                     <hr style={{ color: "black", width: "100%", border: "white 1px solid" }} />
+                     <div className={styles.belowFooterDetails}>
+                        <div className={styles.copyright}>
+                           <p>&copy; {t("rightsText")}</p>
+                        </div>
+                        <div className={styles.socialMediaCon}>
+                           <SocialIcon network="github" url="https://www.github.com"></SocialIcon>
+                           <SocialIcon network="x" url="https://www.x.com"></SocialIcon>
+                           <SocialIcon network="youtube" url="https://www.youtube.com"></SocialIcon>
+                        </div>
                      </div>
                   </div>
                </div>
-            </div>
-         </footer>
-      </div>
+            </footer>
+         </div>
+      </>
    );
 };
 

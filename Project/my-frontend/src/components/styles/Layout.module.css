@@ -34,14 +34,62 @@
    transform: scale(1.1);
 }
 
+.backgroundForkSpoon {
+   z-index: 1;
+   /* Clamp
+   First value → minimum size
+   Second value → preferred (usually relative, like % or vw)
+   Third value → maximum size */
+   width: clamp(150px, 20vw, 500px);
+   height: auto;
+   pointer-events: none;
+}
+/* This class is added on first load OR on refresh */
+.animateIn {
+   transform: translateX(0) !important;
+   opacity: 1 !important;
+   transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1s ease-in;
+}
+/* This class is added on client-side navigation */
+.visibleInstantly {
+   transform: translateX(0) !important;
+   opacity: 1 !important;
+}
+.forkDesign {
+   position: fixed;
+   top: 70%;
+   right: -5%;
+   transform: translateX(120%);
+   opacity: 0;
+}
+.spoonDesign {
+   position: fixed;
+   top: 20%;
+   left: -5%;
+   transform: translateX(-120%);
+   opacity: 0;
+}
+
 /* *NAVBAR Layout page */
 .layoutContainer {
    display: flex;
    flex-direction: column;
    min-height: 100vh;
    overflow-x: hidden;
-   background-color: var(--main-background-color);
    transition: background-color 0.3s ease-in-out;
+   isolation: isolate;
+   position: relative;
+}
+.layoutContainer::before {
+   content: ""; /* Pseudo-elements require a content property */
+   position: absolute; /* Position relative to .layoutContainer */
+
+   /* Stretch to fill the entire container */
+   inset: 0; /* Modern shorthand for top: 0; right: 0; bottom: 0; left: 0; */
+   background-color: var(--main-background-color);
+
+   /* Push this layer to the absolute back */
+   z-index: -20;
 }
 .logoSVG {
    width: 248px;
@@ -139,6 +187,8 @@
    flex: 1; /* It tells this element to grow and take up any available space */
    padding-bottom: 2rem;
    margin-top: 15px;
+   position: relative;
+   z-index: 1;
 }
 .mainCon h1,
 .mainCon h2,
@@ -378,6 +428,12 @@
    .aboutSection {
       display: flex;
       flex-direction: column;
+   }
+   .spoonDesign {
+      left: -13%;
+   }
+   .forkDesign {
+      right: -13%;
    }
 }
 @media (width >= 1280px) {
