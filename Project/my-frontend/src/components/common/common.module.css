@@ -103,7 +103,6 @@ h3 {
 .modalCloseIconBtn {
    width: 28px;
    transition: all 0.1s ease-in-out;
-
 }
 .modalCloseIconBtn:hover {
    transform: scale(1.1);
@@ -127,6 +126,24 @@ h3 {
    gap: 4px;
    padding: 8px 4px;
    color: white;
+}
+.formPasswordWrapper{
+   position: relative;
+   width: 100%;
+}
+.passwordInputWrapper {
+   position: relative;
+}
+.togglePasswordIcon {
+   --translateXvalue: -50%;
+   position: absolute;
+   top: 67%;
+   inset-inline-start: 61.2%;
+   transform: translate(var(--translateXvalue), -50%);
+   cursor: pointer;
+}
+[dir="rtl"] .togglePasswordIcon {
+   --translateXvalue: 50%;
 }
 .formDetailsLabel {
    display: flex;

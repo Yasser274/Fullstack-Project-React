@@ -1,4 +1,5 @@
 import styles from "./common.module.css";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 // Import SVGs icons
@@ -21,6 +22,8 @@ interface FormProps {
 const Form = ({ onSubmitP, buttonAction, errorMes, displayMessage }: FormProps) => {
    const { t } = useTranslation();
 
+   const [showPassword, setShowPassword] = useState<boolean>(false);
+
    const handleSubmit = (formData: FormData) => {
       // grab the input datas from inside the <form>
       const username = formData.get("username") as string; // so it knows the type of username so it goes with FormDataTy
@@ -42,12 +45,19 @@ const Form = ({ onSubmitP, buttonAction, errorMes, displayMessage }: FormProps) 
             </div>
             <input type="text" name="username" />
          </div>
-         <div className={styles.formDetailsDiv}>
+         <div className={`${styles.formDetailsDiv} ${styles.passwordInputWrapper}`}>
             <div className={styles.formDetailsLabel}>
                <PasswordIcon className={styles.formIcons}></PasswordIcon>
                <label>{t("passwordTextField")}</label>
             </div>
-            <input type="password" name="password" />
+            <input type={showPassword ? "text" : "password"} name="password" />
+            <button
+               type="button"
+               className={styles.togglePasswordIcon}
+               onClick={() => setShowPassword(!showPassword)}
+            >
+               {showPassword ? "Hide" : "Show"}
+            </button>
          </div>
          <div className={styles.formBtnCon}>
             <button type="submit">

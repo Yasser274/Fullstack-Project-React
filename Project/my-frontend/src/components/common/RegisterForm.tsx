@@ -1,4 +1,5 @@
 import styles from "../../components/common/common.module.css";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 // Import SVGs icons
 import UsernameIcon from "../../assets/icons/UsernameSVG"; // so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
@@ -21,6 +22,8 @@ interface RegisterFormProps {
 
 const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage }: RegisterFormProps) => {
    const { t } = useTranslation();
+
+   const [showPassword, setShowPassword] = useState<boolean>(false);
 
    const savedRegisterInfo = async (formData: FormData) => {
       const username = formData.get("username") as string; // get the name="username" from inside the form and set its type as string so it goes with our interface type
@@ -55,16 +58,34 @@ const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage
             <input type="email" name="email" />
          </div>
          <div className={styles.formDetailsDiv}>
-            <div className={styles.formDetailsLabel}>
-               <PasswordIcon className={styles.formIcons}></PasswordIcon>
-               <label>{t("passwordTextField")}</label>
+            <div className={styles.formPasswordWrapper}>
+               <div className={styles.formDetailsLabel}>
+                  <PasswordIcon className={styles.formIcons}></PasswordIcon>
+                  <label>{t("passwordTextField")}</label>
+               </div>
+               <input type={showPassword ? "text" : "password"} name="password" />
+               <button
+                  type="button"
+                  className={styles.togglePasswordIcon}
+                  onClick={() => setShowPassword(!showPassword)}
+               >
+                  {showPassword ? "Hide" : "Show"}
+               </button>
             </div>
-            <input type="password" name="password" />
-            <div className={styles.formDetailsLabel}>
-               <PasswordIcon className={styles.formIcons}></PasswordIcon>
-               <label>{t("confPasswordTextField")}</label>
+            <div className={styles.formPasswordWrapper}>
+               <div className={styles.formDetailsLabel}>
+                  <PasswordIcon className={styles.formIcons}></PasswordIcon>
+                  <label>{t("confPasswordTextField")}</label>
+               </div>
+               <input type={showPassword ? "text" : "password"} name="confirmPassword" />
+               <button
+                  type="button"
+                  className={styles.togglePasswordIcon}
+                  onClick={() => setShowPassword(!showPassword)}
+               >
+                  {showPassword ? "Hide" : "Show"}
+               </button>
             </div>
-            <input type="password" name="confirmPassword" />
          </div>
          <div className={styles.formBtnCon}>
             <button type="submit">

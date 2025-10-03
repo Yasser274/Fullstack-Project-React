@@ -276,7 +276,8 @@
    gap: 6px;
    color: var(--text-primary);
    z-index: 1;
-   margin-inline-start: 10px;
+   margin-inline-start: 31px;
+   margin-bottom: 10px;
 }
 .sponsoredLeft span {
    color: #e0e0e0 !important;
