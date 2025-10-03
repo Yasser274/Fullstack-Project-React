@@ -79,6 +79,7 @@
    transition: background-color 0.3s ease-in-out;
    isolation: isolate;
    position: relative;
+   overflow-y: hidden;
 }
 .layoutContainer::before {
    content: ""; /* Pseudo-elements require a content property */
@@ -133,6 +134,7 @@
    background-color: transparent;
    color: none;
    border: none;
+   
 }
 .hamburgerMenuIcon,
 .hamburgerMenuIconInsideSide {
@@ -311,6 +313,7 @@
    padding: 10px 0px;
    padding-top: 25px;
    color: white;
+   z-index: 3;
 }
 .footerContent {
    display: flex;

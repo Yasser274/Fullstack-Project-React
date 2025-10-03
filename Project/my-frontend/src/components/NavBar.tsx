@@ -11,6 +11,8 @@ import type { User } from "../context/AuthContext&Global";
 
 // for translations
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import useBodyScrollLock from "../hooks/useBodyScrollLock";
 // type for hamburgerIcon
 interface HamburgerIconProps {
    className?: string;
@@ -81,6 +83,9 @@ const NavBar = ({
       // Navigate to the new URL
       navigate(`/${newLang}/${currentPath}`);
    };
+
+   // for when mobile nav menu is opened disable scrolling if closed enable it back again
+   useBodyScrollLock(isMobileMenuOpen);
 
    return (
       <header>

@@ -961,6 +961,15 @@
       justify-content: center;
    }
 }
+@media (width <= 592px) {
+   .bottomHistoryDetails{
+      flex-direction: column;
+   }
+   .resturVoteInfo{
+      display: flex;
+      align-self: start;
+   }
+}
 
 /* =================================================================== */
 /* ===        MODAL & FORM STYLES       === */
