@@ -110,6 +110,7 @@ h3 {
 .switchAuthCon {
    display: flex;
    gap: 10px;
+   margin-top: 10px;
 }
 .switchAuthCon a {
    text-decoration: underline;
@@ -127,23 +128,31 @@ h3 {
    padding: 8px 4px;
    color: white;
 }
-.formPasswordWrapper{
+.formPasswordWrapper {
    position: relative;
    width: 100%;
 }
 .passwordInputWrapper {
    position: relative;
+   width: 100%;
+}
+.normalInputWrapper {
+   width: 100%;
 }
 .togglePasswordIcon {
-   --translateXvalue: -50%;
    position: absolute;
-   top: 67%;
-   inset-inline-start: 61.2%;
-   transform: translate(var(--translateXvalue), -50%);
+   top: 50%;
+   inset-inline-end: 0%;
    cursor: pointer;
+   background-color: transparent;
+   border: none;
+   padding: 0;
+   color: white;
+   transition: color 200ms ease-in-out;
+   height: 24px;
 }
-[dir="rtl"] .togglePasswordIcon {
-   --translateXvalue: 50%;
+.iconInactive {
+   color: var(--primary-300);
 }
 .formDetailsLabel {
    display: flex;
@@ -164,7 +173,7 @@ h3 {
    width: 24px;
 }
 .formDetailsDiv input {
-   width: 60%;
+   width: 92%;
    height: 44px;
    background-color: #7474770a;
    border-radius: 0.5rem;
