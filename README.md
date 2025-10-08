@@ -13,6 +13,12 @@ Trend Bites is a full-stack web application built with React (TypeScript) for th
 -  **Database:** PostgreSQL
 -  **Authentication:** JSON Web Tokens (JWT)
 
+## 🗄️ Database Schema
+
+Below is the database schema that illustrates how all tables in Trend Bites are structured and related:
+
+![Database Schema](/Project/docs/Trend%20Bites%20Schema.png)
+
 ## 🚀 Getting Started: How to Run This Project
 
 This project uses a single command to start both the backend and frontend servers simultaneously. Follow these steps to get it running.
