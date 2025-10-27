@@ -29,10 +29,19 @@ import Modal from "./common/Modal";
 import ReviewCommentsIcon from "../assets/icons/ReviewCommentsIcon";
 import ReviewComments from "./ReviewComments";
 import HalfEmptyStar from "../assets/icons/HalfEmptyStar";
+import i18n from "../i18n";
 
 const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCardProps) => {
    const { t } = useTranslation();
    const { theme } = useTheme();
+   let isRTL: boolean | null = null;
+
+   // check if the current language is RTL or LTR and return true or false
+   if (i18n.dir() === "rtl") {
+      isRTL = true;
+   } else {
+      isRTL = false;
+   }
 
    // function to votes and affect the ranking
    // State to hold the current rating. 0 means no stars are selected.
@@ -318,6 +327,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                                        key={index}
                                        className={styles.halfEmptyStar}
                                        onClick={handleStarClick}
+                                       rightOrLeft={isRTL}
                                     ></HalfEmptyStar>
                                  );
                               } else {

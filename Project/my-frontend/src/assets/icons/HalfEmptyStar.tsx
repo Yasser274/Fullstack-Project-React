@@ -2,18 +2,24 @@ interface HalfEmptyStarProps {
    className: string;
    onClick?: () => void;
    disabled?: boolean;
+   rightOrLeft?: boolean;
 }
 
-const HalfEmptyStar = ({ className, onClick, disabled }: HalfEmptyStarProps) => {
+const HalfEmptyStar = ({ className, onClick, disabled, rightOrLeft }: HalfEmptyStarProps) => {
+   const svgStyles: React.CSSProperties = {
+      cursor: disabled ? "not-allowed" : "pointer",
+      transform: rightOrLeft ? "scaleX(-1)" : "none", // means the site language is right flip the svg horizontally so the half filled star aligns perfectly
+   };
+
    return (
       <svg
          id="Layer_2"
          data-name="Layer 2"
          xmlns="http://www.w3.org/2000/svg"
          viewBox="0 0 512.4 492.14"
-         className={className}
+         className={`${className} ${rightOrLeft}`}
          onClick={onClick}
-         style={{ cursor: disabled ? "not-allowed" : "pointer" }}
+         style={svgStyles}
       >
          <g id="Layer_2-2" data-name="Layer 2">
             <g>
