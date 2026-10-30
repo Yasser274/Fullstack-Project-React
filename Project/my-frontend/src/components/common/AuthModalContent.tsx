@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Form, { type FormDataTy } from "./Form";
 import RegisterForm, { type RegisterFormData } from "./RegisterForm";
 import styles from "../common/common.module.css";

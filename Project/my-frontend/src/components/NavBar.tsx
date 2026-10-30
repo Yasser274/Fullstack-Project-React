@@ -11,7 +11,6 @@ import type { User } from "../context/AuthContext&Global";
 
 // for translations
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 // type for hamburgerIcon
 interface HamburgerIconProps {

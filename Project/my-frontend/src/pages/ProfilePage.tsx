@@ -1,7 +1,7 @@
 import styles from "../components/styles/Home.module.css";
 import ProfileNav from "../components/ProfileNav";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "../context/AuthContext&Global";
 import Modal from "../components/common/Modal";
@@ -9,7 +9,7 @@ import useInView from "../components/common/useInView";
 import { useTranslation } from "react-i18next";
 
 const ProfilePage = () => {
-   const { t, i18n } = useTranslation();
+   const { t } = useTranslation();
 
    const [sectionRef, isSectionVisible] = useInView<HTMLDivElement>({
       threshold: 0.1,

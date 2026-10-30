@@ -1,6 +1,4 @@
 import styles from "./common.module.css";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 
 // Import SVGs icons
 import UsernameIcon from "../../assets/icons/UsernameSVG"; // so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
@@ -21,9 +19,7 @@ interface FormProps {
 }
 
 const Form = ({ onSubmitP, buttonAction, errorMes, displayMessage }: FormProps) => {
-   const { t } = useTranslation();
 
-   const [showPassword, setShowPassword] = useState<boolean>(false);
 
    const handleSubmit = (formData: FormData) => {
       // grab the input datas from inside the <form>

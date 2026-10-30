@@ -1,9 +1,6 @@
 import { useTranslation } from "react-i18next";
 import useInView from "../components/common/useInView";
 import styles from "../components/styles/Layout.module.css";
-import { useRef } from "react";
-import { useTransition } from "react";
-import i18n from "../i18n";
 
 const AboutPage = () => {
    const [sectionRef, isSectionVisible] = useInView<HTMLDivElement>({
@@ -15,7 +12,7 @@ const AboutPage = () => {
       triggerOnce: true,
    });
 
-   const { t, i18n } = useTranslation();
+   const { t, } = useTranslation();
 
    return (
       <>

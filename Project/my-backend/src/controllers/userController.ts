@@ -4,8 +4,22 @@ import { pool } from "../config/database.js";
 // to read files format etc
 import path from "path";
 // to hash passwords from users
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"; // (for Login session)
+
+// to create presigned S3 upload URLs for profile pictures
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import crypto from "crypto";
+
+const s3 = new S3Client({ region: process.env.AWS_REGION || "us-east-1" });
+// allowed image types and the file extension to save them with
+const allowedImageTypes: Record<string, string> = {
+   "image/jpeg": "jpg",
+   "image/png": "png",
+   "image/gif": "gif",
+   "image/webp": "webp",
+};
 
 //* function Login user in
 export const loginUser = async (req: Request, res: Response) => {
@@ -147,12 +161,10 @@ export const changePassword = async (req: Request, res: Response) => {
       } else {
          // - Passwords DO NOT Match: Send an error ---
          console.error("Not same password");
-         return res
-            .status(401)
-            .json({
-               message: "Old password is not correct",
-               displayMessage: `auth.changeProfileSettings.incorrectOldPassword`,
-            });
+         return res.status(401).json({
+            message: "Old password is not correct",
+            displayMessage: `auth.changeProfileSettings.incorrectOldPassword`,
+         });
       }
    } catch (error) {
       console.error("Error whiling changing user password");
@@ -161,16 +173,48 @@ export const changePassword = async (req: Request, res: Response) => {
    }
 };
 
+//. Get a presigned URL so the browser can upload the profile picture straight to S3
+export const getProfilePicUploadUrl = async (req: Request, res: Response) => {
+   try {
+      const contentType = req.query.contentType as string;
+      const ext = allowedImageTypes[contentType];
+      if (!ext) {
+         return res.status(400).json({ message: "File upload only supports jpeg, jpg, png, gif, webp" });
+      }
+      const bucket = process.env.UPLOADS_BUCKET;
+      if (!bucket) throw new Error("UPLOADS_BUCKET is not defined");
+
+      const userId = req.user!.userId; // From my JWT middleware
+      // unique filename that starts with the user's id (checked later in changeProfilePic)
+      const fileName = `${userId}-${Date.now()}-${crypto.randomBytes(4).toString("hex")}.${ext}`;
+
+      const command = new PutObjectCommand({
+         Bucket: bucket,
+         Key: `uploads/${fileName}`,
+         ContentType: contentType,
+      });
+      // link is only valid for 5 minutes and only for this exact file
+      const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+
+      return res.status(200).json({ uploadUrl, fileName });
+   } catch (error) {
+      console.error("Error creating upload URL:", error);
+      res.status(500).json({ error: `An internal server error occurred.` });
+   }
+};
+
 //. Change profile picture api function
 export const changeProfilePic = async (req: Request, res: Response) => {
    try {
-      // After Multer runs, the file is NOT in req.body. It's in req.file!
-      if (!req.file) {
-         return res.status(400).json({ message: `No File was uploaded.` });
-      }
-
+      // The file is already uploaded to S3 by the browser, we only get its filename here
+      const { fileName } = req.body as { fileName?: string };
       const userId = req.user!.userId; // From my JWT middleware
-      const newPicturePath = req.file.filename; // Get the filename where Multer saved the file (e.g., "newPicture-167888...png")
+
+      // only accept filenames that belong to this user and look like ours (blocks setting someone else's picture)
+      if (!fileName || !fileName.startsWith(`${userId}-`) || !/^[\w-]+\.(jpg|png|gif|webp)$/.test(fileName)) {
+         return res.status(400).json({ message: `Invalid file name.` });
+      }
+      const newPicturePath = fileName;
 
       // Update user's profile picture path in database with the new path of the image he just uploaded and return the path so frontend can get it
       // This now saves the filename to the database then the

@@ -4,7 +4,6 @@ import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
 import StarFilled from "../assets/icons/StarFilled";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
 
 interface rateHistoryT {
    restaurant_id: number;
@@ -20,9 +19,9 @@ const ProfileVotesHistory = () => {
 
    const [rateHistory, setRateHistory] = useState<rateHistoryT[] | null>(null);
 
-   const [error, setError] = useState<string>("");
+   const [, setError] = useState<string>("");
 
-   const [isLoading, setIsLoading] = useState<boolean>(true);
+   const [, setIsLoading] = useState<boolean>(true);
 
    const { user } = useAuth();
 

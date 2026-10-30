@@ -4,7 +4,9 @@ import path from "path";
 import fs from "fs";
 import { type Request } from "express";
 
-const uploadDir = "profilePicUsers/";
+// Lambda's code folder is read-only, only /tmp is writable (temporary until uploads move to S3 in Phase 6)
+const uploadDir = process.env.AWS_LAMBDA_FUNCTION_NAME ? "/tmp/profilePicUsers/" : "profilePicUsers/";
+
 // Ensure the 'profilePicUsers' directory exists if it doesn't create (mkdir) new dir called that
 if (!fs.existsSync(uploadDir)) {
    fs.mkdirSync(uploadDir, { recursive: true });

@@ -1,5 +1,5 @@
 import "./App.css";
-import { Route, Routes, Navigate } from "react-router-dom"; // this so i can route between pages
+import { Route, Routes } from "react-router-dom"; // this so i can route between pages
 
 // LAYOUT Component
 import Layout from "./components/Layout";

@@ -1,6 +1,5 @@
 import styles from "../components/styles/Home.module.css";
 import { NavLink } from "react-router-dom";
-import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 
 const ProfileNav = () => {

@@ -1,5 +1,4 @@
-import type { Restaurant, Review } from "../pages/HomePage";
-import type { User } from "../context/AuthContext&Global";
+import type { Restaurant } from "../pages/HomePage";
 import styles from "../components/styles/Home.module.css";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -45,7 +44,6 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
 
    // function to votes and affect the ranking
    // State to hold the current rating. 0 means no stars are selected.
-   const [rating, setRating] = useState<number>(0);
    // State to disable stars while submitting the vote
    const [isVoting, setIsVoting] = useState<boolean>(false);
 
@@ -63,7 +61,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
    const [reviewCommentsModal, setReviewCommentsModal] = useState<boolean>(false);
 
    // error if rated the same amount again
-   const [errorSameAmount, setErrorSameAmount] = useState<string | null>(null);
+   const [errorSameAmount, ] = useState<string | null>(null);
 
    const totalStars = 5;
 

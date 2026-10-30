@@ -9,8 +9,8 @@ import { toast, Bounce } from "react-toastify";
 import { useTheme } from "../context/ThemeContext";
 
 const ProfileSettings = () => {
-   const [error, setError] = useState<string | null>(null);
-   const [done, setDone] = useState<string | null>(null);
+   const [, setError] = useState<string | null>(null);
+   const [, setDone] = useState<string | null>(null);
 
    const imageSelector = useRef<HTMLInputElement>(null);
 
@@ -33,6 +33,20 @@ const ProfileSettings = () => {
       if (event.target.files === null) return;
 
       const file = event.target.files[0];
+      if (!file) return;
+
+      // same 8MB limit the old multer upload had
+      if (file.size > 1024 * 1024 * 8) {
+         toast.error("Image must be smaller than 8MB", {
+            position: "top-center",
+            autoClose: 4000,
+            theme: theme === "light" ? "light" : "dark",
+            transition: Bounce,
+            pauseOnHover: true,
+         });
+         return;
+      }
+
       changeProfilePicture(file);
    };
 
@@ -128,18 +142,35 @@ const ProfileSettings = () => {
          setError("You are not logged in."); // Show a user-friendly error
          return;
       }
-      // Create a FormData object. This is how you send files.
-      const formData = new FormData();
-      // Append the file to the FormData object.
-      formData.append("newPicture", file);
-
       try {
+         // 1. ask the backend for a presigned S3 upload URL
+         const urlResponse = await fetch(
+            `${API_BASE_URL}/api/profilePicUploadUrl?contentType=${encodeURIComponent(file.type)}`,
+            { headers: { Authorization: `Bearer ${authToken}` } },
+         );
+         const urlData = await urlResponse.json();
+         if (!urlResponse.ok) {
+            throw new Error(urlData.message || "Could not get upload URL");
+         }
+
+         // 2. upload the picture straight to S3 (it never goes through Lambda)
+         const s3Response = await fetch(urlData.uploadUrl, {
+            method: "PUT",
+            headers: { "Content-Type": file.type },
+            body: file,
+         });
+         if (!s3Response.ok) {
+            throw new Error("Uploading the picture to S3 failed");
+         }
+
+         // 3. tell the backend the new filename so it saves it and gives back a new token
          const response = await fetch(`${API_BASE_URL}/api/changePic`, {
             method: "PATCH",
             headers: {
+               "Content-Type": "application/json",
                Authorization: `Bearer ${authToken}`,
             },
-            body: formData,
+            body: JSON.stringify({ fileName: urlData.fileName }),
          });
          const data = await response.json();
 

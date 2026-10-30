@@ -1,0 +1,51 @@
+name: Deploy backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Project/my-backend/**"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Project/my-backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Project/my-backend/package-lock.json
+
+      - name: Build and package
+        run: |
+          npm ci
+          npm run build
+          npm ci --omit=dev
+          zip -r -q backend.zip dist node_modules package.json
+
+      - name: Log in to AWS (OIDC, no stored keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code --function-name ${{ vars.LAMBDA_FUNCTION_NAME }} --zip-file fileb://backend.zip > /dev/null
+          aws lambda wait function-updated --function-name ${{ vars.LAMBDA_FUNCTION_NAME }}
+          echo "Lambda updated"

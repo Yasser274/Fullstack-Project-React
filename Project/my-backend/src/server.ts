@@ -4,6 +4,7 @@ import "dotenv/config"; // Loads environment variables from .env into process.en
 // use these built in package so i can access path of files etc
 import path from "path";
 import { fileURLToPath } from "url";
+import serverless from "serverless-http";
 
 //* import routes (where the path lies)
 import userRouter from "./routes/userRoutes.js";
@@ -12,6 +13,9 @@ import restaurantRouter from "./routes/restaurantRoutes.js";
 // Create an instance of the Express application. The `app` object is the heart of my server.
 const app = express();
 const port = process.env.API_PORT || 3001;
+
+// Lambda entry point: API Gateway calls this instead of app.listen
+export const handler = serverless(app);
 
 // - Get absolute path to the current directory ---
 // This code figures out the full, exact path to the folder where your server.ts file lives.
@@ -67,7 +71,9 @@ app.use("/api", userRouter);
 //    }
 // });
 // The app.listen() function starts the server and makes it listen for incoming requests on the specified port.
-// The code inside the callback function runs once the server has successfully started.
-app.listen(port, () => {
-   console.log(`Backend server is running and listening on http://localhost:${port}`);
-});
+// Only runs locally, inside Lambda there is no server to listen on.
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+   app.listen(port, () => {
+      console.log(`Backend server is running and listening on http://localhost:${port}`);
+   });
+}

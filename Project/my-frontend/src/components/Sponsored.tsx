@@ -9,7 +9,7 @@ import "swiper/css/navigation";
 
 // import required modules
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import { Swiper as SwiperClass } from "swiper/types"; // Import Swiper's type for the callback
+import type { Swiper as SwiperClass } from "swiper/types"; // Import Swiper's type for the callback
 import type { sponsorsProps } from "../pages/HomePage";
 import  { useTranslation } from "react-i18next";
 
@@ -20,7 +20,7 @@ const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
    const progressCircle = useRef<SVGSVGElement | null>(null);
    const progressContent = useRef<HTMLSpanElement | null>(null);
 
-   const onAutoplayTimeLeft = (s: SwiperClass, time: number, progress: number) => {
+   const onAutoplayTimeLeft = (_s: SwiperClass, time: number, progress: number) => {
       if (progressCircle.current) {
          progressCircle.current.style.setProperty("--progress", String(progress));
       }
