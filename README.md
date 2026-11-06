@@ -1,6 +1,8 @@
-# My Fullstack Project (React(TS) + ExpressJS + PostgreSQL) Trend Bites
+# Trend Bites (React + Express + PostgreSQL on AWS)
 
-#### Video Demo: (https://www.youtube.com/watch?v=kpDFoljGSl8)
+**Live site:** https://trendbites.yasserswdev.com
+
+**Video demo:** https://www.youtube.com/watch?v=kpDFoljGSl8
 
 #### Description:
 
@@ -8,25 +10,37 @@ Trend Bites is a full-stack web application built with React (TypeScript) for th
 
 #### Tech Stack
 
--  **Frontend:** React, TypeScript, Vite
--  **Backend:** Node.js, Express.js, TypeScript
--  **Database:** PostgreSQL
--  **Authentication:** JSON Web Tokens (JWT)
+- **Frontend:** React, TypeScript, Vite
+- **Backend:** Node.js, Express.js, TypeScript
+- **Database:** PostgreSQL
+- **Authentication:** JSON Web Tokens (JWT)
+- **Cloud:** AWS (S3, CloudFront, API Gateway, Lambda, RDS, VPC, IAM, ACM)
+- **CI/CD:** GitHub Actions (OIDC)
 
-## 🗄️ Database Schema
+## Database Schema
 
 Below is the database schema that illustrates how all tables in Trend Bites are structured and related:
 
 ![Database Schema](/Project/docs/Trend%20Bites%20Schema.png)
 
-## 🚀 Getting Started: How to Run This Project
+## AWS Architecture
+
+![AWS Architecture](/Project/docs/aws-architecture.png)
+
+- **Frontend:** the React build sits in a private S3 bucket and is served through CloudFront (Origin Access Control, HTTPS, custom domain with an ACM certificate). A CloudFront Function rewrites client-side routes to `index.html`.
+- **API:** the Express app runs on AWS Lambda (via `serverless-http`) behind an API Gateway HTTP API with throttling. CloudFront routes `/api/*` to it, so the site and API share one domain and no CORS setup is needed.
+- **Database:** Amazon RDS PostgreSQL in private VPC subnets with no internet route. The security group only allows port 5432 from the Lambda security group.
+- **Uploads:** profile pictures are uploaded straight from the browser to S3 using presigned URLs. The Lambda role can only write to `uploads/`.
+- **CI/CD:** GitHub Actions deploys the frontend (S3 sync and CloudFront invalidation) and the backend (Lambda code update). It authenticates to AWS through OIDC, so no access keys are stored.
+
+## Getting Started: How to Run This Project
 
 This project uses a single command to start both the backend and frontend servers simultaneously. Follow these steps to get it running.
 
 #### Prerequisites
 
--  Node.js and `npm` must be installed on your system.
--  PostgreSQL must be installed and running.
+- Node.js and `npm` must be installed on your system.
+- PostgreSQL must be installed and running.
 
 ### 1. Installation
 
@@ -84,7 +98,7 @@ npm run dev
 
 ## 💻 Inserting Data into Tables:
 
--  For the restaurants list (logo goes here, name + desc stay in translations)::
+- For the restaurants list (logo goes here, name + desc stay in translations)::
 
 ```
 WITH ins1 AS (
@@ -98,7 +112,7 @@ FROM ins1;
 
 ```
 
--  For linking restaurants with existing tags:
+- For linking restaurants with existing tags:
 
 ```
 INSERT INTO restaurant_tags (restaurant_id, tag_id)
@@ -108,28 +122,28 @@ VALUES (
 )
 ```
 
--  For adding new tags:
+- For adding new tags:
 
 ```
 INSERT INTO tags (tagname)
 VALUES ('Egyptian')
 ```
 
--  For adding restaurant translations EN (restaurant already exists):
+- For adding restaurant translations EN (restaurant already exists):
 
 ```
 INSERT INTO restaurant_translations (restaurant_id, name, language_code,description)
 VALUES (4,'Taco Bell','en','Desc Example');
 ```
 
--  For adding restaurant translations AR (restaurant already exists):
+- For adding restaurant translations AR (restaurant already exists):
 
 ```
 INSERT INTO restaurant_translations (restaurant_id, name, language_code, description)
 VALUES (4, 'تاكو بل', 'ar', 'مثال للوصف');
 ```
 
--  For adding sponsored (restaurant already exists):
+- For adding sponsored (restaurant already exists):
 
 ```
 INSERT INTO
@@ -148,7 +162,7 @@ VALUES
   );
 ```
 
--  To deactivate a sponsorship (remove it from display), just replace 'Shawarma House' with the restaurant name you want to update:
+- To deactivate a sponsorship (remove it from display), just replace 'Shawarma House' with the restaurant name you want to update:
 
 ```
 UPDATE sponsorships
@@ -169,20 +183,34 @@ WHERE
 
 #### Core Functionality:
 
--  Restaurant Ratings: Logged-in users can rate restaurants out of 5 stars, with optional comments, to highlight monthly trending spots. Ratings are aggregated to showcase popular restaurants.
+- Restaurant Ratings: Logged-in users can rate restaurants out of 5 stars, with optional comments, to highlight monthly trending spots. Ratings are aggregated to showcase popular restaurants.
 
--  Community Feedback: Users can view ratings and comments (if provided) from others, fostering a collaborative rating environment.
+- Community Feedback: Users can view ratings and comments (if provided) from others, fostering a collaborative rating environment.
 
--  Monthly Reset: At the end of each month, all ratings are cleared from the database, allowing users to re-rate for the new month and keeping trends fresh.
+- Monthly Reset: ratings are designed to reset each month so trends stay fresh (scheduled reset is planned, see Roadmap)
 
 #### User Features:
 
--  Authentication: Secure registration and login system, with options to update profile pictures and passwords.
+- Authentication: Secure registration and login system, with options to update profile pictures and passwords.
 
--  Profile Dashboard: Displays personal rating history across all months, including voted restaurants, past trends, and any comments provided by the user.
+- Profile Dashboard: Displays personal rating history across all months, including voted restaurants, past trends, and any comments provided by the user.
 
--  Themes: Toggle between light and dark modes for a personalized experience.
+- Themes: Toggle between light and dark modes for a personalized experience.
 
--  Language Support: Switch seamlessly between English and Arabic using react-i18next, making the platform accessible to a broader audience.
+- Language Support: Switch seamlessly between English and Arabic using react-i18next, making the platform accessible to a broader audience.
 
 Unlike Google Maps, Trend Bites focuses on dynamic, monthly trends, enabling small restaurants to rise quickly in popularity and helping users discover new dining experiences. This project showcases full-stack development, user authentication, database management, and responsive UI design, creating an engaging, community-driven platform for restaurant ratings.
+
+## Deployment
+
+Pushing to `main` runs the workflows in `.github/workflows/`:
+
+-  `deploy-frontend.yml`: builds the React app, syncs it to S3, and invalidates the CloudFront cache
+-  `deploy-backend.yml`: builds and zips the Express app, then updates the Lambda function code
+
+Note: profile picture uploads use presigned S3 URLs, so that feature needs AWS credentials and only works on the deployed site, not locally.
+
+## Roadmap
+
+-  Scheduled monthly rating reset (EventBridge Scheduler)
+-  Migrate the database to Aurora Serverless v2 (to save costs)
