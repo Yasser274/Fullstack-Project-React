@@ -96,7 +96,7 @@ cd ..
 npm run dev
 ```
 
-## 💻 Inserting Data into Tables:
+## Inserting Data into Tables:
 
 - For the restaurants list (logo goes here, name + desc stay in translations)::
 
