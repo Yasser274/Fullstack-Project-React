@@ -1,126 +1,225 @@
+/* =================================================================== */
+/* ===              PROFILE: DATA + SETTINGS                       === */
+/* =================================================================== */
+/* every color/size comes from styles/theme.css */
+
 /* * Profile Data Section */
 .profileDataCon {
    display: flex;
    flex-direction: column;
+   align-items: center;
+   gap: var(--space-3);
+   width: 100%;
+   padding-bottom: var(--space-8);
+   box-sizing: border-box;
+   overflow: hidden;
+   background-color: var(--color-surface);
+   border: 1px solid var(--color-border);
+   border-radius: var(--radius-lg);
+   box-shadow: var(--shadow-md);
+}
+/* navy strip at the top with the navbar glow, the picture sits half on it */
+.profileBanner {
+   width: 100%;
+   height: 120px;
+   background: radial-gradient(circle at 50% 200%, var(--color-nav-glow), var(--color-nav-bg) 70%);
+   border-bottom: 3px solid var(--color-gold);
 }
 .profileDetails1 {
    display: flex;
-   gap: 10px;
+   flex-direction: column;
+   gap: var(--space-3);
    align-items: center;
-   color: var(--text-primary);
+   margin-top: -70px; /* pull the picture up onto the banner */
+   color: var(--color-text);
 }
 .profileDetails1 img {
-   width: 200px;
-   height: 200px;
+   width: 128px;
+   height: 128px;
    border-radius: 50%;
    object-fit: cover;
    object-position: center;
+   border: 4px solid var(--color-surface); /* ring in the card color so it "cuts" into the banner */
+   outline: 3px solid var(--color-gold); /* gold ring like the navbar picture */
+   box-shadow: var(--shadow-lg);
+   background-color: var(--color-surface-sunken);
 }
-.emailProfileCon {
-   color: var(--text-primary);
+.profileDetails1 h2 {
+   font-size: var(--text-2xl);
+   font-weight: var(--weight-bold);
+}
+.profileInfoList {
+   list-style: none;
+   margin: 0;
+   padding: 0;
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-2);
+}
+.profileInfoList li {
+   display: flex;
+   align-items: center;
+   gap: var(--space-2);
+   padding: var(--space-2) var(--space-4);
+   border-radius: var(--radius-pill);
+   background-color: var(--color-surface-sunken);
+   color: var(--color-text-muted);
+}
+.profileInfoList svg {
+   color: var(--color-primary);
+}
+.emailProfileCon p {
+   margin: 0;
 }
 
 /* * Profile settings section */
 .profileSettingsCon {
-   width: calc(100% - 4vw);
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-5);
+   width: 100%;
+}
+/* each setting is a card */
+.settingsCard {
+   padding: var(--space-6);
+   background-color: var(--color-surface);
+   border: 1px solid var(--color-border);
+   border-radius: var(--radius-lg);
+   box-shadow: var(--shadow-md);
 }
 .profileSecTitle,
 .profileSecTitleB {
-   color: var(--text-primary);
-   margin-bottom: 1.4rem !important;
    display: flex;
-   justify-content: flex-start;
+   align-items: center;
+   gap: var(--space-2);
+   margin-bottom: var(--space-5) !important;
+   color: var(--color-text);
+   font-size: var(--text-xl);
+   font-weight: var(--weight-bold);
 }
-.profileSecTitleB {
-   margin-top: 1.2rem !important;
+.profileSecTitle svg,
+.profileSecTitleB svg {
+   color: var(--color-primary);
 }
 .formProfilePassword {
    display: flex;
    flex-direction: column;
-   gap: 1.4rem;
-   justify-content: center;
+   gap: var(--space-4);
 }
-.doneMessage{
-   color: var(--text-primary);
-   font-size: 1.1rem;
-   font-weight: 800;
-}
-.oldPassCon {
-   display: flex;
-   flex-direction: column;
-   color: var(--text-primary);
-}
-.oldPassCon input,
-.newPassCon input {
-   min-width: 300px;
-   max-width: 350px;
-   height: 44px;
-   background-color: var(--input-login-background-color);
-   border-radius: 0.5rem;
-   padding: 0 1rem;
-   border: 2px solid transparent;
-   font-size: 1rem;
-   color: white;
-   transition: border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
-      color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s, background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
-}
+.oldPassCon,
 .newPassCon {
    display: flex;
    flex-direction: column;
-   gap: 0.7rem;
-   color: var(--text-primary);
+   gap: var(--space-2);
+   color: var(--color-text);
+}
+.newPassCon {
+   padding-top: var(--space-4);
+   border-top: 1px dashed var(--color-border);
+}
+.oldPassCon label,
+.newPassCon label {
+   font-size: var(--text-sm);
+   font-weight: var(--weight-bold);
+   color: var(--color-text-muted);
+}
+/* same input look as the toolbar on the home page */
+.oldPassCon input,
+.newPassCon input {
+   width: 100%;
+   max-width: 420px;
+   box-sizing: border-box;
+   height: var(--control-height);
+   padding: 0 var(--space-4);
+   border: 1px solid var(--color-border-strong);
+   border-radius: var(--radius-md);
+   background-color: var(--color-input-bg);
+   color: var(--color-text);
+   font-size: var(--text-base);
+   transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
+}
+.oldPassCon input::placeholder,
+.newPassCon input::placeholder {
+   color: var(--color-text-subtle);
+}
+.oldPassCon input:focus,
+.newPassCon input:focus {
+   outline: none;
+   border-color: var(--color-primary);
+   box-shadow: var(--shadow-focus);
+}
+.newPassConWrong,
+.newPassConWrong:focus {
+   border-color: var(--color-danger) !important;
+   box-shadow: 0 0 0 3px var(--color-danger-soft) !important;
 }
 .changePassBtn {
-   display: flex;
-   padding: 8px 10px;
-   font-size: 1.1rem;
-   cursor: pointer;
-   align-self: center;
-   padding: 12px 28px;
-   font-size: 1.07rem;
+   align-self: flex-start;
+   height: var(--control-height);
+   padding: 0 var(--space-6);
+   margin-top: var(--space-2);
    border: none;
-   color: white;
-   background: var(--primary-700);
-   border-radius: 8px;
-   transition: all 0.3s ease-in-out;
+   border-radius: var(--radius-md);
+   background-color: var(--color-primary);
+   color: var(--color-on-primary);
+   font-size: var(--text-base);
+   font-weight: var(--weight-bold);
+   cursor: pointer;
+   box-shadow: var(--shadow-primary);
+   transition: all var(--duration) var(--ease);
 }
 .changePassBtn:hover {
+   background-color: var(--color-primary-hover);
    transform: translateY(-2px);
 }
-.newPassConWrong {
-   border: red 2px solid;
-}
-.errorMessage {
-   text-shadow: 0 0 7px rgba(0, 0, 0, 0.88);
-   text-align: center;
-   color: rgba(255, 43, 43, 1);
-   font-size: 1.1rem;
-   font-weight: 600;
-}
+
 /* Profile Picture section (Profile Settings) */
 .changeProfilePicCon {
    display: inline-flex;
-   gap: 10px;
    align-items: center;
-   color: var(--text-primary);
+   gap: var(--space-3);
    position: relative;
 }
-.changeProfilePicCon input{
+.changeProfilePicCon input {
    display: none;
 }
+/* button reset so it looks exactly like the image did before */
+.changeProfilePicBtn {
+   position: relative;
+   padding: 0;
+   border: none;
+   background: none;
+   cursor: pointer;
+   border-radius: 50%;
+   transition: transform var(--duration) var(--ease);
+}
+.changeProfilePicBtn:hover {
+   transform: scale(1.03);
+}
 .changeProfilePic {
-   width: 200px;
-   height: 200px;
+   display: block;
+   width: 140px;
+   height: 140px;
    border-radius: 50%;
    object-fit: cover;
    object-position: center;
-   cursor: pointer;
+   border: 3px solid var(--color-gold);
+   background-color: var(--color-surface-sunken);
 }
+/* round camera badge on the picture */
 .editIconProfile {
    position: absolute;
-   top: 10px;
-   right: 20px;
-   width: 48px;
-   height: 48px;
+   bottom: 4px;
+   inset-inline-end: 4px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 40px;
+   height: 40px;
+   border-radius: 50%;
+   background-color: var(--color-primary);
+   color: var(--color-on-primary);
+   border: 3px solid var(--color-surface);
+   box-shadow: var(--shadow-md);
    pointer-events: none;
 }

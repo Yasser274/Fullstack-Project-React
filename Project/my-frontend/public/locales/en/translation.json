@@ -54,11 +54,28 @@
    "contactUs": "Contact Us",
    "privacyPolicy": "Privacy Policy",
    "termsOfSer": "Terms of Service",
-   "rightsText": "2025 Trend Bites. All Rights Reserved.",
+   "rightsText": "{{year}} Trend Bites. All Rights Reserved.",
    "yourReview": "(YOU)",
    "ratedSuccessfully": "You rated successfully!",
    "selectTag": "Select Tag",
    "searchTagPlaceholder": "Search for tag",
+   "TrendingResSub": "Ranked by the community, refreshed every month",
+   "noRestaurantsFound": "No restaurants found matching your search.",
+   "noTagsFound": "No tags found",
+   "alreadyRatedSame": "You have already given this restaurant a rating of {{rating}} stars.",
+   "ratingFailed": "Your rating didn't go through, please try again.",
+   "noReviewsYet": "No reviews yet. Be the first to rate it!",
+   "noCommentProvided": "No comment provided.",
+   "noVotesHistory": "You haven't rated any restaurants yet.",
+   "somethingWentWrong": "Something went wrong, please try again.",
+   "prevPage": "Previous page",
+   "nextPage": "Next page",
+   "notFoundTitle": "Page not found",
+   "notFoundDesc": "This page doesn't exist yet or was moved.",
+   "backHome": "Back to home",
+   "contactTitle": "Get in touch",
+   "contactDesc": "Have a restaurant you want to see on Trend Bites, or found a bug? Reach out on any of these and I'll get back to you.",
+   "rateStars": "Rate {{count}} stars",
    "auth": {
       "login": {
          "success": "Logged in Successfully",
@@ -73,6 +90,7 @@
          "incorrectOldPassword": "Incorrect old password",
          "notMatch": "New Password do not match",
          "changedSuccessfully": "Password changed successfully! You will be logged out in 5 seconds",
+         "imageTooBig": "Image must be smaller than 8MB",
          "changedProfilePic": "Profile picture updated successfully!"
       }
    }

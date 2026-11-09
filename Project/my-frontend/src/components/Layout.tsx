@@ -7,6 +7,7 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext&Global";
 import TrendBitesLogo from "../assets/icons/TrendBitesLogo";
 import { SocialIcon } from "react-social-icons";
+import { SOCIAL_LINKS, socialIconProps } from "../config/socialLinks";
 import NavBar from "./NavBar";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
@@ -81,8 +82,9 @@ const Layout = () => {
                      <nav className={styles.footerLinks}>
                         <div className={styles.legalFooterCon}>
                            <h3>{t("legal")}</h3>
-                           <a href={`/${i18n.language}/privacy-policy`}>{t("privacyPolicy")}</a>
-                           <a href={`/${i18n.language}/terms-of-service`}>{t("termsOfSer")}</a>
+                           {/* Link instead of <a href> so it doesn't reload the whole app */}
+                           <Link to={`/${i18n.language}/privacy-policy`}>{t("privacyPolicy")}</Link>
+                           <Link to={`/${i18n.language}/terms-of-service`}>{t("termsOfSer")}</Link>
                         </div>
                         <div className={styles.contactFooterCon}>
                            <h3>{t("contactUs")}</h3>
@@ -91,15 +93,23 @@ const Layout = () => {
                      </nav>
                   </div>
                   <div className={styles.belowFooterCon}>
-                     <hr style={{ color: "black", width: "100%", border: "white 1px solid" }} />
+                     <hr className={styles.footerDivider} />
                      <div className={styles.belowFooterDetails}>
                         <div className={styles.copyright}>
-                           <p>&copy; {t("rightsText")}</p>
+                           {/* year comes from the date now so it doesn't stay on 2025 */}
+                           <p>&copy; {t("rightsText", { year: new Date().getFullYear() })}</p>
                         </div>
                         <div className={styles.socialMediaCon}>
-                           <SocialIcon network="github" url="https://www.github.com"></SocialIcon>
-                           <SocialIcon network="x" url="https://www.x.com"></SocialIcon>
-                           <SocialIcon network="youtube" url="https://www.youtube.com"></SocialIcon>
+                           {/* links come from config/socialLinks.ts */}
+                           {SOCIAL_LINKS.map((link) => (
+                              <SocialIcon
+                                 key={link.network}
+                                 network={link.network}
+                                 url={link.url}
+                                 {...socialIconProps}
+                                 className={styles.socialIcon}
+                              ></SocialIcon>
+                           ))}
                         </div>
                      </div>
                   </div>

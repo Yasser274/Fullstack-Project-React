@@ -19,7 +19,8 @@ interface ThemeProviderProps {
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
    // State for the theme, with logic to get initial value from localStorage
    const [theme, setTheme] = useState<string>(() => {
-      return localStorage.getItem("theme") || "light";
+      // the script in index.html already set data-theme (saved theme or the system theme) so i just read it back here
+      return localStorage.getItem("theme") || document.documentElement.getAttribute("data-theme") || "light";
    });
 
    useEffect(() => {

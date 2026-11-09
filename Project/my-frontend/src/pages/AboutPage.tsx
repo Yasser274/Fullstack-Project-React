@@ -29,7 +29,7 @@ const AboutPage = () => {
             </div>
             <img
                src="https://images.rosewoodhotels.com/is/image/rwhg/habsburg-restaurant-1-1:TALL-LARGE-9-16"
-               alt="Image of"
+               alt="Inside of a restaurant"
                className={`${styles.aboutSecImg} ${isSection2Visible ? styles.aboutSecImgVisible : ""} `}
                ref={section2Ref}
             />

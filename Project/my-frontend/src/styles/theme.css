@@ -1,0 +1,202 @@
+/* =================================================================== */
+/* ===                    THEME (single source)                    === */
+/* =================================================================== */
+/*
+   . every color, size, radius, shadow and animation timing of the site lives HERE
+   * the CSS modules only use these variables (no hex colors inside components)
+   * to change the look of the whole site i only need to change this file
+   * [data-theme="dark"] only overrides what is different in dark mode, everything else is shared
+
+   naming:
+   --color-*    colors (bg = page, surface = cards, text, primary = buttons/links, gold = brand from the logo)
+   --space-*    spacing (4px steps)
+   --radius-*   rounded corners
+   --shadow-*   shadows
+   --text-*     font sizes
+   --ease / --duration   animations
+   --z-*        stacking order (what is on top of what)
+*/
+
+:root {
+   /* * Brand (same in both themes) */
+   --color-gold: #fcc200; /* the gold from the logo */
+   --color-gold-strong: #e6ae00;
+   --color-gold-soft: rgba(252, 194, 0, 0.16);
+   --color-on-gold: #1c1a27; /* text that sits on gold */
+
+   /* navy palette of the navbar, footer and modals (they are dark in both themes, that's the brand look) */
+   --navy-950: hsl(256, 43%, 7%);
+   --navy-900: hsl(250, 32%, 10%);
+   --navy-800: hsl(245, 26%, 14%);
+   --navy-700: hsl(243, 26%, 18%);
+   --navy-600: hsl(252, 14%, 26%);
+   --navy-500: hsl(259, 13%, 34%);
+   --navy-300: hsl(251, 13%, 68%);
+   --navy-100: hsl(240, 21%, 92%);
+
+   --color-nav-bg: var(--navy-950);
+   --color-nav-glow: var(--navy-500); /* the soft glow at the bottom of the navbar */
+   --color-nav-border-1: var(--navy-500); /* gradient border top */
+   --color-nav-border-2: var(--navy-600); /* gradient border bottom */
+   --color-nav-text: rgba(255, 255, 255, 0.72);
+   --color-nav-text-hover: #ffffff;
+   --color-nav-hover-bg: rgba(255, 255, 255, 0.08);
+
+   /* white on dark (navbar, footer, mobile menu, banner) */
+   --color-white: #ffffff;
+   --color-on-dark-fill: rgba(255, 255, 255, 0.06); /* icon buttons, logout button */
+   --color-on-dark-border: rgba(255, 255, 255, 0.12); /* their borders + dividers */
+   --color-glass: rgba(255, 255, 255, 0.2); /* buttons/dots on top of photos */
+   --color-glass-hover: rgba(255, 255, 255, 0.32);
+   --color-glass-strong: rgba(255, 255, 255, 0.8);
+   --gradient-image-scrim: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.15) 60%, rgba(0, 0, 0, 0) 100%); /* dark fade under text on photos */
+
+   --color-footer-bg: var(--navy-950);
+   --color-footer-text: rgba(255, 255, 255, 0.62);
+
+   --color-modal-bg: hsl(250 30% 11% / 0.95); /* solid enough so white text is readable on the light theme too */
+   --color-modal-text: #ffffff;
+   --color-modal-text-muted: var(--navy-300);
+   --color-modal-field-bg: rgba(255, 255, 255, 0.06);
+   --color-modal-field-border: rgba(255, 255, 255, 0.12);
+   --color-modal-divider: rgba(255, 255, 255, 0.08);
+
+   /* * Theme colors (LIGHT, the default) */
+   --color-bg: #f6f5fa; /* page background */
+   --color-bg-glow: rgba(108, 92, 231, 0.1); /* soft color at the top of the page */
+   --color-surface: #ffffff; /* cards */
+   --color-surface-sunken: #f2f0f8; /* the rank column, hovered rows */
+   --color-border: #e8e5f0;
+   --color-border-strong: #d5d1e0; /* inputs, selects */
+
+   --color-text: #1c1a27;
+   --color-text-muted: #66637a;
+   --color-text-subtle: #9794a9;
+
+   --color-primary: #6c5ce7; /* buttons, active link, focus */
+   --color-primary-rgb: 108, 92, 231; /* same color as numbers, for rgba(var(--color-primary-rgb), 0.2) */
+   --color-primary-hover: #5848d4;
+   --color-primary-soft: #efecff; /* tag chips, light highlights */
+   --color-on-primary: #ffffff;
+
+   --color-danger: #e5484d;
+   --color-danger-hover: #cf3a3f;
+   --color-danger-soft: rgba(229, 72, 77, 0.12);
+   --color-success: #2fa66a;
+
+   --color-star: var(--color-gold);
+   --color-star-empty: #d9d6e3;
+
+   --color-rank-gold: linear-gradient(160deg, #ffe066, var(--color-gold));
+   --color-rank-silver: linear-gradient(160deg, #eef1f5, #a8b0ba);
+   --color-rank-bronze: linear-gradient(160deg, #e9b27f, #b8733a);
+
+   --color-input-bg: #ffffff;
+   --color-overlay: rgba(10, 8, 18, 0.45); /* dark layer behind modals and the mobile menu */
+
+   /* fork and spoon in the background */
+   --color-decor-light: #b7bdd0;
+   --color-decor-dark: #9aa1b9;
+
+   /* * Spacing (4px scale) */
+   --space-1: 4px;
+   --space-2: 8px;
+   --space-3: 12px;
+   --space-4: 16px;
+   --space-5: 20px;
+   --space-6: 24px;
+   --space-8: 32px;
+   --space-10: 40px;
+   --space-12: 48px;
+
+   /* * Corners */
+   --radius-sm: 8px;
+   --radius-md: 12px;
+   --radius-lg: 18px;
+   --radius-pill: 999px;
+
+   /* * Shadows */
+   --shadow-sm: 0 1px 2px rgba(28, 26, 39, 0.06);
+   --shadow-md: 0 4px 16px rgba(28, 26, 39, 0.07);
+   --shadow-lg: 0 12px 32px rgba(28, 26, 39, 0.12);
+   --shadow-nav: 0 10px 30px rgba(10, 8, 18, 0.25);
+   --shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.45);
+   --shadow-gold: 0 4px 14px rgba(252, 194, 0, 0.3);
+   --shadow-press: rgba(0, 0, 0, 0.3); /* the dark layer under my 3D button */
+   --text-shadow-photo: 0 2px 10px rgba(0, 0, 0, 0.5);
+   --text-shadow-gold: 0 6px 20px rgba(252, 194, 0, 0.25);
+   --shadow-primary: 0 6px 16px rgba(var(--color-primary-rgb), 0.35);
+   --shadow-focus: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
+
+   /* * Typography */
+   --font-family-english: "Nunito", Arial, Helvetica, sans-serif;
+   --font-family-arabic: "Changa", "Nunito", Arial, Helvetica, sans-serif;
+   --text-xs: 0.75rem;
+   --text-sm: 0.875rem;
+   --text-base: 1rem;
+   --text-lg: 1.125rem;
+   --text-xl: 1.375rem;
+   --text-2xl: 1.75rem;
+   --text-3xl: clamp(1.6rem, 3.4vw, 2.4rem);
+   --weight-normal: 400;
+   --weight-medium: 600;
+   --weight-bold: 800;
+
+   /* * Sizes */
+   --control-height: 46px; /* search, select, tags, buttons all share this height */
+   --icon-sm: 16px;
+   --icon-md: 20px;
+   --icon-lg: 24px;
+   --content-width: 960px; /* cards, toolbar and slider line up on this width */
+   --nav-width: 1200px;
+
+   /* * Motion */
+   --ease: cubic-bezier(0.25, 1, 0.5, 1);
+   --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+   --duration-fast: 150ms;
+   --duration: 250ms;
+   --duration-slow: 600ms;
+
+   /* * Stacking order */
+   --z-decor: 1;
+   --z-content: 2;
+   --z-footer: 3;
+   --z-dropdown: 200;
+   --z-nav: 400;
+   --z-menu-backdrop: 499;
+   --z-menu: 500;
+   --z-modal: 1000;
+}
+
+/* * DARK theme, only what changes */
+[data-theme="dark"] {
+   --color-bg: #0d0c13;
+   --color-bg-glow: rgba(139, 125, 255, 0.12);
+   --color-surface: #17161f;
+   --color-surface-sunken: #1f1d29;
+   --color-border: #282634;
+   --color-border-strong: #3a3748;
+
+   --color-text: #ecebf3;
+   --color-text-muted: #a3a1b5;
+   --color-text-subtle: #75738a;
+
+   --color-primary: #8b7dff; /* a bit brighter so it pops on dark */
+   --color-primary-rgb: 139, 125, 255;
+   --color-primary-hover: #9f93ff;
+   --color-primary-soft: #262241;
+
+   --color-star-empty: #45425a;
+
+   --color-input-bg: #1f1d29;
+   --color-overlay: rgba(0, 0, 0, 0.6);
+
+   --color-decor-light: #34324a;
+   --color-decor-dark: #2a283c;
+
+   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+   color-scheme: dark; /* native scrollbars and form controls go dark too */
+}

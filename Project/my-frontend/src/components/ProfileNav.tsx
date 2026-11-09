@@ -1,6 +1,7 @@
 import styles from "../components/styles/Home.module.css";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { HistoryIcon, SlidersIcon, UserIcon } from "../assets/icons/Icons";
 
 const ProfileNav = () => {
 
@@ -17,7 +18,8 @@ const ProfileNav = () => {
                      isActive ? styles.innerProfileNavAct : styles.innerProfileNavDefault
                   }
                >
-                  {t('profileData')}
+                  <UserIcon size={18} />
+                  <span>{t('profileData')}</span>
                </NavLink>
             </li>
             <li>
@@ -27,7 +29,8 @@ const ProfileNav = () => {
                      isActive ? styles.innerProfileNavAct : styles.innerProfileNavDefault
                   }
                >
-                  {t("profileSettings")}
+                  <SlidersIcon size={18} />
+                  <span>{t("profileSettings")}</span>
                </NavLink>
             </li>
             <li>
@@ -37,7 +40,8 @@ const ProfileNav = () => {
                      isActive ? styles.innerProfileNavAct : styles.innerProfileNavDefault
                   }
                >
-                  {t("profileVotingHis")}
+                  <HistoryIcon size={18} />
+                  <span>{t("profileVotingHis")}</span>
                </NavLink>
             </li>
          </ul>

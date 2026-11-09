@@ -12,6 +12,8 @@ import ProfileSettings from "./components/ProfileSettings";
 import ProfileVotesHistory from "./components/ProfileVotesHistory";
 import LanguageHandler from "./components/LanguageHandler";
 import RootRedirector from "./components/RootRedirector";
+import NotFoundPage from "./pages/NotFoundPage";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
    return (
@@ -33,6 +35,10 @@ function App() {
                   <Route path="settings" element={<ProfileSettings></ProfileSettings>}></Route>
                   <Route path="votesHistory" element={<ProfileVotesHistory></ProfileVotesHistory>}></Route>
                </Route>
+               {/* admin tools (add restaurants, logos, sponsors), the backend only lets ADMIN_USER_IDS in */}
+               <Route path="admin" element={<AdminPage></AdminPage>}></Route>
+               {/* any path that doesn't match above (like /en/privacy-policy for now) shows this instead of a blank page */}
+               <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
             </Route>
          </Route>
       </Routes>

@@ -1,4 +1,4 @@
-import StarFilled from "../assets/icons/StarFilled";
+import { StarIcon } from "../assets/icons/Icons";
 import type { Restaurant } from "../pages/HomePage";
 import styles from "../components/styles/Review.module.css";
 import { API_BASE_URL } from "../config/config";
@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 type ReviewProps = Restaurant["reviews"][number];
 
 const ReviewComments = ({ rating, comment, reviewedAt, user }: ReviewProps) => {
-   const { t } = useTranslation();
+   const { t, i18n } = useTranslation();
 
    const { user: CurrentLoggedUser } = useAuth();
    const profileImageUrl = user.profilePictureURL
@@ -23,14 +23,15 @@ const ReviewComments = ({ rating, comment, reviewedAt, user }: ReviewProps) => {
    const starIconsRating = () => {
       const arrayToMapOver = [...Array(rating)];
       const StarsRating = arrayToMapOver.map((_, index) => {
-         return <StarFilled key={index} className={styles.smallStar}></StarFilled>;
+         return <StarIcon key={index} variant="full" size={15} className={styles.smallStar} />;
       });
       return StarsRating;
    };
 
    // A simple helper function to make the date more readable
    const formatDate = (isoString: string) => {
-      return new Date(isoString).toLocaleDateString("en-US", {
+      // use the site language so arabic shows an arabic date instead of always "October 2, 2026"
+      return new Date(isoString).toLocaleDateString(i18n.language === "ar" ? "ar" : "en-US", {
          year: "numeric",
          month: "long",
          day: "numeric",
@@ -64,7 +65,7 @@ const ReviewComments = ({ rating, comment, reviewedAt, user }: ReviewProps) => {
          {comment ? (
             <p className={styles.reviewComment}>{comment}</p>
          ) : (
-            <p className={`${styles.reviewComment} ${styles.noComment}`}>No comment provided.</p>
+            <p className={`${styles.reviewComment} ${styles.noComment}`}>{t("noCommentProvided")}</p>
          )}
       </article>
    );

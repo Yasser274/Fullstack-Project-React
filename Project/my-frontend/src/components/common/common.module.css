@@ -1,30 +1,8 @@
-:root {
-   --primary-900: hsl(256, 43%, 7%);
-   --primary-800: hsl(240, 24%, 13%);
-   --primary-700: hsl(243, 26%, 15%);
-   --primary-600: hsl(252, 9%, 22%);
-   --primary-500: hsl(259, 13%, 28%);
-   --primary-400: hsl(254, 22%, 32%);
-
-   --primary-300: hsl(251, 13%, 68%);
-   --primary-200: hsl(240, 15%, 76%);
-   --primary-100: hsl(240, 21%, 88%);
-
-   --neutral-100: hsl(0, 0%, 100%);
-
-   --accent-400: hsl(93, 60%, 69%);
-
-   --text-1: var(--neutral-100);
-   --text-2: var(--primary-100);
-   --text-3: var(--primary-200);
-
-   --surface-1: var(--primary-900);
-   --surface-2: var(--primary-800);
-   --surface-3: var(--primary-700);
-
-   --border-1: var(--primary-500); /* top */
-   --border-2: var(--primary-600); /* bottom */
-}
+/* =================================================================== */
+/* ===          COMMON: MODAL, AUTH FORM, LANGUAGE SWITCH           === */
+/* =================================================================== */
+/* every color/size comes from styles/theme.css (the :root palette that was here moved there too) */
+/* the modal is dark navy in both themes (same family as the navbar) so it uses the --color-modal-* tokens */
 
 /* * Modal (Modal.tsx) */
 h3 {
@@ -32,44 +10,38 @@ h3 {
 }
 .modalCon {
    position: fixed;
-   background: rgba(0, 0, 0, 0.397);
-   top: 0;
-   inset-inline-start: 0;
-   z-index: 15;
-   cursor: pointer;
-   width: 100vw;
-   height: 100vh;
-   backdrop-filter: blur(5px);
-}
-.modalTitle {
+   inset: 0;
+   z-index: var(--z-modal);
    display: flex;
    align-items: center;
    justify-content: center;
+   padding: var(--space-4);
+   box-sizing: border-box;
+   background: var(--color-overlay);
+   backdrop-filter: blur(6px);
+   cursor: pointer;
+   animation: fadeIn var(--duration) ease;
 }
+/* (centering is done with flex on .modalCon now, the old translate(-50%) trick needed an RTL fix) */
 .modalContent {
-   /* - LTR/Default Value --- */
-   --translate-x: -50%;
    position: relative;
-   top: 50%;
-   inset-inline-start: 50%; /* so when it switches from rtl it doesn't mess up*/
-   transform: translate(var(--translate-x), -50%); /*  variable here */
-   padding-top: 20px;
-   padding-bottom: 20px;
-   padding-inline: 40px;
-   z-index: 30;
+   width: min(460px, 100%);
+   max-height: 85dvh; /* never taller than the screen, the body below scrolls instead */
+   display: flex;
+   flex-direction: column;
+   box-sizing: border-box;
+   padding: var(--space-6) var(--space-8);
    cursor: default;
-   width: 75vw;
-   color: white;
+   isolation: isolate; /* so the gradient border (::before, z-index -1) always stays visible above the background */
+   color: var(--color-modal-text);
    --border-width: 1px;
-   border-radius: 1rem;
-   position: relative;
-
-   background: hsl(from var(--surface-3) h s l / 0.25);
-   backdrop-filter: blur(12px);
+   border-radius: var(--radius-lg);
+   /* was 0.25 opacity, on the light theme the light page showed through and the white text was hard to read */
+   background: var(--color-modal-bg);
+   box-shadow: var(--shadow-modal);
+   animation: popIn var(--duration) var(--ease);
 }
-[dir="rtl"] .modalContent {
-   --translate-x: 50%;
-}
+/* gradient border (same idea as the navbar border) */
 .modalContent::before {
    content: "";
    position: absolute;
@@ -77,135 +49,199 @@ h3 {
    inset: 0;
    border-radius: inherit;
    border: var(--border-width) solid transparent;
-   background: linear-gradient(var(--border-1), var(--border-2)) border-box;
+   background: linear-gradient(var(--color-nav-border-1), var(--color-nav-border-2)) border-box;
    mask: linear-gradient(black, black) border-box, linear-gradient(black, black) padding-box;
    mask-composite: subtract;
 }
-.modalErrorMessage {
-   color: red !important;
-   text-align: center;
+@keyframes fadeIn {
+   from {
+      opacity: 0;
+   }
 }
-.modalDisplayMessage {
-   color: green !important;
-   text-align: center;
+@keyframes popIn {
+   from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+   }
 }
-.modalCloseBtn {
-   position: absolute;
-   top: 4%;
-   right: 6%;
-   cursor: pointer;
-   background-color: transparent;
-   border: none;
+.modalTitle {
    display: flex;
    align-items: center;
    justify-content: center;
+   padding: 0 var(--space-8); /* keeps long titles away from the close button */
+}
+.modalTitle h3 {
+   font-size: var(--text-xl);
+   font-weight: var(--weight-bold);
+}
+.modalBody {
+   overflow-y: auto;
+   min-height: 0;
+   margin-top: var(--space-4);
+   padding-inline-end: 4px; /* little space for the scrollbar */
+}
+.modalErrorBanner {
+   margin-top: var(--space-3);
+   padding: var(--space-2) var(--space-3);
+   border-radius: var(--radius-sm);
+   background-color: var(--color-danger-soft);
+   color: var(--color-danger);
+   text-align: center;
+   font-weight: var(--weight-medium);
+}
+.modalErrorMessage {
+   color: var(--color-danger) !important;
+   text-align: center;
+}
+.modalDisplayMessage {
+   color: var(--color-success) !important;
+   text-align: center;
+}
+/* round close button (same style as the navbar icon buttons) */
+.modalCloseBtn {
+   position: absolute;
+   top: var(--space-4);
+   inset-inline-end: var(--space-4); /* right in english, left in arabic */
+   z-index: 2;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 34px;
+   height: 34px;
+   padding: 0;
+   border: 1px solid var(--color-modal-field-border);
+   border-radius: 50%;
+   background-color: var(--color-modal-field-bg);
+   color: var(--color-modal-text-muted);
+   cursor: pointer;
+   transition: all var(--duration-fast) ease;
+}
+.modalCloseBtn:hover {
+   background-color: var(--color-danger);
+   border-color: var(--color-danger);
+   color: var(--color-white);
+   transform: rotate(90deg);
 }
 .modalCloseIconBtn {
-   width: 28px;
-   transition: all 0.1s ease-in-out;
+   color: currentColor;
 }
-.modalCloseIconBtn:hover {
-   transform: scale(1.1);
-}
+
+/* * switch between login and register */
 .switchAuthCon {
    display: flex;
-   gap: 10px;
-   margin-top: 10px;
+   justify-content: center;
+   gap: var(--space-2);
+   margin-top: var(--space-5);
+   color: var(--color-modal-text-muted);
 }
-.switchAuthCon a {
-   text-decoration: underline;
-   color: white;
-   font-weight: 800;
+.switchAuthCon a,
+.switchAuthBtn {
+   color: var(--color-gold);
+   font-weight: var(--weight-bold);
    cursor: pointer;
+   /* reset the default button look so it still looks like a link */
+   background: none;
+   border: none;
+   padding: 0;
+   font-size: inherit;
+   text-decoration: underline;
+   text-underline-offset: 3px;
+}
+.switchAuthBtn:hover {
+   color: var(--color-white);
 }
 
 /* * Form that will be inside Modal (Form.tsx) */
+.formCon {
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-1);
+}
 .formDetailsDiv {
    display: flex;
-   align-items: flex-start;
    flex-direction: column;
-   gap: 4px;
-   padding: 8px 4px;
-   color: white;
-}
-.formPasswordWrapper {
-   position: relative;
-   width: 100%;
-}
-.passwordInputWrapper {
-   position: relative;
-   width: 100%;
-}
-.normalInputWrapper {
-   width: 100%;
-}
-.togglePasswordIcon {
-   position: absolute;
-   top: 50%;
-   inset-inline-end: 0%;
-   cursor: pointer;
-   background-color: transparent;
-   border: none;
-   padding: 0;
-   color: white;
-   transition: color 200ms ease-in-out;
-   height: 24px;
-}
-.iconInactive {
-   color: var(--primary-300);
+   gap: 6px;
+   padding: var(--space-2) 0;
+   color: var(--color-modal-text);
 }
 .formDetailsLabel {
    display: flex;
    align-items: center;
-   gap: 5px;
-   margin-bottom: 0.2rem;
+   gap: 6px;
 }
 .formDetailsLabel label {
-   display: flex;
-   font-size: 0.9rem;
-   font-weight: bold;
-   color: #ffffff;
-   transition: color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+   font-size: var(--text-sm);
+   font-weight: var(--weight-bold);
+   color: var(--color-modal-text-muted);
+   transition: color var(--duration) ease;
+}
+/* only the label changes color on hover, not the typed text */
+.formDetailsDiv:hover .formDetailsLabel label,
+.formDetailsDiv:focus-within .formDetailsLabel label {
+   color: var(--color-modal-text);
 }
 .formIcons {
-   fill: white;
-   height: 24px;
-   width: 24px;
+   color: var(--color-gold); /* same svg icons as the rest of the site, gold on the navy modal */
+}
+.passwordInputWrapper,
+.normalInputWrapper {
+   position: relative;
+   width: 100%;
 }
 .formDetailsDiv input {
-   width: 92%;
-   height: 44px;
-   background-color: #7474770a;
-   border-radius: 0.5rem;
-   padding: 0 1rem;
-   border: 2px solid transparent;
-   font-size: 1rem;
-   color: white;
-   transition: border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
-      color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s, background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+   width: 100%;
+   box-sizing: border-box;
+   height: var(--control-height);
+   padding: 0 var(--space-4);
+   border: 1px solid var(--color-modal-field-border);
+   border-radius: var(--radius-md);
+   background-color: var(--color-modal-field-bg);
+   color: var(--color-modal-text);
+   font-size: var(--text-base);
+   transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
 }
-.formDetailsDiv input:hover,
+.passwordInputWrapper input {
+   padding-inline-end: 48px; /* room for the eye button */
+}
+.formDetailsDiv input:hover {
+   border-color: var(--navy-300);
+}
 .formDetailsDiv input:focus {
    outline: none;
-   border-color: #6c6d7c;
+   border-color: var(--color-primary);
+   box-shadow: var(--shadow-focus);
 }
-.formDetailsDiv:hover .formDetailsLabel label,
-.formDetailsDiv input:focus {
-   color: #6c6d7cc7;
+.togglePasswordIcon {
+   position: absolute;
+   top: 50%;
+   inset-inline-end: 12px; /* inside the input */
+   height: 24px;
+   padding: 0;
+   border: none;
+   background-color: transparent;
+   color: var(--color-modal-text);
+   cursor: pointer;
+   transition: color var(--duration-fast) ease;
 }
+.iconInactive {
+   color: var(--color-modal-text-muted);
+}
+
+/* * Login / Register button (kept my 3D pressable button) */
 .formBtnCon {
    display: flex;
-   justify-content: flex-end;
-   margin-top: 1rem;
+   justify-content: stretch;
+   margin-top: var(--space-4);
 }
 .formBtnCon button {
    position: relative;
+   width: 100%;
    border: none;
    background: transparent;
    padding: 0;
    outline: none;
    cursor: pointer;
-   font-weight: 600;
+   font-weight: var(--weight-bold);
 }
 .formBtnShadow {
    position: absolute;
@@ -213,10 +249,10 @@ h3 {
    inset-inline-start: 0;
    width: 100%;
    height: 100%;
-   background: rgba(0, 0, 0, 0.25);
-   border-radius: 8px;
+   background: var(--shadow-press);
+   border-radius: var(--radius-md);
    transform: translateY(2px);
-   transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+   transition: transform var(--duration-slow) cubic-bezier(0.3, 0.7, 0.4, 1);
 }
 .formBtnEdge {
    position: absolute;
@@ -224,35 +260,30 @@ h3 {
    inset-inline-start: 0;
    width: 100%;
    height: 100%;
-   border-radius: 8px;
-   background: linear-gradient(
-      to left,
-      hsl(217, 33%, 16%) 0%,
-      hsl(217, 33%, 32%) 8%,
-      hsl(217, 33%, 32%) 92%,
-      hsl(217, 33%, 16%) 100%
-   );
+   border-radius: var(--radius-md);
+   background: var(--color-primary-hover);
+   filter: brightness(0.7);
 }
 .formBtnFront {
    position: relative;
    display: flex;
    align-items: center;
    justify-content: center;
-   padding: 12px 28px;
-   font-size: 1.07rem;
-   color: white;
-   background: var(--primary-700);
-   border-radius: 8px;
+   height: var(--control-height);
+   font-size: var(--text-base);
+   color: var(--color-on-primary);
+   background: var(--color-primary);
+   border-radius: var(--radius-md);
    transform: translateY(-4px);
-   transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+   transition: transform var(--duration-slow) cubic-bezier(0.3, 0.7, 0.4, 1);
 }
 .formBtnCon button:hover .formBtnShadow {
    transform: translateY(4px);
-   transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+   transition: transform var(--duration) cubic-bezier(0.3, 0.7, 0.4, 1.5);
 }
 .formBtnCon button:hover .formBtnFront {
    transform: translateY(-6px);
-   transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+   transition: transform var(--duration) cubic-bezier(0.3, 0.7, 0.4, 1.5);
 }
 .formBtnCon button:active .formBtnShadow {
    transform: translateY(1px);
@@ -262,36 +293,30 @@ h3 {
    transform: translateY(-2px);
    transition: transform 34ms;
 }
+.formBtnCon button:focus-visible .formBtnFront {
+   outline: 2px solid var(--color-gold);
+   outline-offset: 2px;
+}
 
-/* --- MEDIA QUERIES (for responsive design) --- */
-
-/* For screens that are 768px wide or wider (tablets and up) */
-@media (width >= 768px) {
+@media (width <= 480px) {
    .modalContent {
-      width: 600px;
+      padding: var(--space-5);
    }
 }
 
-/* For screens that are 1024px wide or wider (desktops and up) */
-@media (width >= 1024px) {
-   .modalContent {
-      width: 400px;
-   }
-}
-
-/*. Toggle Switch BTN */
+/*. Toggle Switch BTN (language) */
 /* The switch - the box around the slider */
 .switch {
    /* variable on the parent */
-   --switch-translate-x: 1.6em;
-   font-size: 17px;
+   --switch-translate-x: 30px;
    position: relative;
    display: inline-block;
-   width: 3.5em;
-   height: 2em;
+   width: 62px;
+   height: 32px;
+   flex-shrink: 0;
 }
 [dir="rtl"] .switch {
-   --switch-translate-x: -1.6em;
+   --switch-translate-x: -30px;
 }
 
 /* Hide default HTML checkbox */
@@ -306,59 +331,54 @@ h3 {
    position: absolute;
    cursor: pointer;
    inset: 0;
-   background: #9fccfa;
-   border-radius: 50px;
-   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+   background: var(--color-on-dark-fill);
+   border: 1px solid var(--color-on-dark-border);
+   border-radius: var(--radius-pill);
+   transition: all 0.4s var(--ease-bounce);
 }
-
+/* the knob */
 .slider:before {
    position: absolute;
    content: "";
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   height: 2em;
-   width: 2em;
-   inset: 0;
-   background-color: white;
-   border-radius: 50px;
-   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+   top: 3px;
+   inset-inline-start: 3px;
+   height: 24px;
+   width: 24px;
+   background-color: var(--color-gold);
+   border-radius: 50%;
+   box-shadow: var(--shadow-md);
+   transition: all 0.4s var(--ease-bounce);
 }
-/* when checked */
+/* the letter of the OTHER language shows on the empty side (click = switch to it) */
+.switch input + .slider::after,
 .switch input:checked + .slider::after {
-   content: "ع";
    position: absolute;
-   inset-inline-start: 20%;
-   top: -2%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
+   top: 50%;
+   transform: translateY(-50%);
+   font-size: var(--text-sm);
    font-weight: 900;
-   color: rgb(15, 206, 15);
-   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.911));
+   line-height: 1;
+   color: var(--color-nav-text);
 }
-/* when not checked */
+/* when not checked (english) */
 .switch input + .slider::after {
-   content: "E";
-   position: absolute;
-   inset-inline-start: 65%;
-   top: 14%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   font-weight: 900;
-   color: rgb(15, 206, 15);
-   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.911));
+   content: "ع";
+   inset-inline-end: 10px;
 }
-
-.switch input:checked + .slider {
-   background: #0974f1;
+/* when checked (arabic) */
+.switch input:checked + .slider::after {
+   content: "EN";
+   inset-inline-end: auto;
+   inset-inline-start: 8px;
+   font-size: var(--text-xs);
 }
-.switch input:focus + .slider {
-   box-shadow: 0 0 1px #0974f1;
-}
-
 .switch input:checked + .slider:before {
    transform: translateX(var(--switch-translate-x));
+}
+.switch:hover .slider {
+   border-color: var(--color-gold);
+}
+.switch input:focus-visible + .slider {
+   outline: 2px solid var(--color-gold);
+   outline-offset: 2px;
 }

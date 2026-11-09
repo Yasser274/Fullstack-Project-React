@@ -1,4 +1,4 @@
-import searchPng from "../../../src/assets/icons/search.png";
+import { SearchIcon } from "../../assets/icons/Icons";
 
 interface searchBarProps {
    placeholderText: string;
@@ -23,10 +23,11 @@ const SearchBar = ({
 
    return (
       <div className={classNameCon}>
-         <img src={searchPng} alt="Search icon" className={searchBarIcon} />
+         <SearchIcon className={searchBarIcon} size={18} />
          <input
             className={classNameStyle}
             type="text"
+            aria-label={placeholderText}
             placeholder={placeholderText}
             onChange={(e) => updateTextValueState(e.target.value)}
             // If searchBarText is not null and not undefined return its value if not return "" (if it's null or undefined)

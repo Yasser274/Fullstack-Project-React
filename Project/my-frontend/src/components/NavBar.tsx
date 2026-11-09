@@ -12,30 +12,9 @@ import type { User } from "../context/AuthContext&Global";
 // for translations
 import { useTranslation } from "react-i18next";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
-// type for hamburgerIcon
-interface HamburgerIconProps {
-   className?: string;
-}
-// A simple hamburger icon component
-const HamburgerIcon = ({ className }: HamburgerIconProps) => (
-   <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-   >
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-   </svg>
-);
-
+// (the hamburger svg that was inside this file moved to Icons.tsx with the other icons)
+import { CloseIcon, LogInIcon, LogOutIcon, MenuIcon } from "../assets/icons/Icons";
+import { useEffect } from "react";
 interface NavBarProps {
    isLoginModalOpen: boolean;
    setIsLoginModalOpen: (v: boolean) => void;
@@ -79,9 +58,17 @@ const NavBar = ({
       // ["about", "us"] becomes "about/us"
       const currentPath = pathParts.slice(2).join("/");
 
-      // Navigate to the new URL
-      navigate(`/${newLang}/${currentPath}`);
+      // Navigate to the new URL (+ location.search so ?page=2&sortBy=... is kept when switching language)
+      navigate(`/${newLang}/${currentPath}${location.search}`);
    };
+
+   // when the user logs in close the login modal (this replaces the window.location.reload() after login in AuthModalContent)
+   useEffect(() => {
+      if (user) {
+         setIsLoginModalOpen(false);
+         setSwitchModalTitle(0);
+      }
+   }, [user, setIsLoginModalOpen, setSwitchModalTitle]);
 
    // for when mobile nav menu is opened disable scrolling if closed enable it back again
    useBodyScrollLock(isMobileMenuOpen);
@@ -89,7 +76,8 @@ const NavBar = ({
    return (
       <header>
          <nav className={styles.navBarCon}>
-            <Link to={""}>
+            {/* to="" pointed to the CURRENT page (so on /profile the logo did nothing) now it always goes home */}
+            <Link to={`/${i18n.language}`} aria-label="Trend Bites home">
                {/*    // Determine the direction based on the current language. */}
                {i18n.dir(i18n.language) === "ltr" ? (
                   <TrendBitesLogo className={styles.logoSVG}></TrendBitesLogo>
@@ -102,8 +90,10 @@ const NavBar = ({
                <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} //setIsMobileMenuOpen(!isMobileMenuOpen) to toggle between true and false
                   className={`${styles.hamburgerBtn} ${isMobileMenuOpen ? styles.holdHamburgerBtn : ""}`}
+                  aria-label="Open menu"
+                  aria-expanded={isMobileMenuOpen}
                >
-                  <HamburgerIcon className={styles.hamburgerMenuIcon}></HamburgerIcon>
+                  <MenuIcon className={styles.hamburgerMenuIcon} size={24} />
                </button>
             </div>
 
@@ -117,16 +107,20 @@ const NavBar = ({
                </Modal>
             ) : null}
 
+            {/* dark layer behind the side menu, clicking it closes the menu (before you could only close it with the hamburger) */}
+            <div
+               className={`${styles.mobileMenuBackdrop} ${isMobileMenuOpen ? styles.mobileMenuBackdropShow : ""}`}
+               onClick={() => setIsMobileMenuOpen(false)}
+            ></div>
+
             <div className={`${styles.navBarItemsCon} ${isMobileMenuOpen ? styles.navBarMenuMobile : ""}`}>
                <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className={`${styles.hamburgerBtn} ${isMobileMenuOpen ? styles.holdHamburgerBtn : ""}`}
+                  aria-label="Close menu"
                >
-                  <HamburgerIcon
-                     className={`${styles.hamburgerMenuIconInsideSide} ${
-                        isMobileMenuOpen ? styles.holdHamburgerBtn : ""
-                     }`}
-                  ></HamburgerIcon>
+                  {/* an X inside the open menu reads better as "close" than a second hamburger */}
+                  <CloseIcon className={styles.hamburgerMenuIconInsideSide} size={24} />
                </button>
 
                <NavLink
@@ -166,19 +160,20 @@ const NavBar = ({
                         />
                      </Link>
                      <button onClick={logout} className={styles.logoutBtn}>
+                        <LogOutIcon size={18} />
                         {t("logout")}
                      </button>
                   </div>
                ) : (
                   // if not show the login button
                   <button className={styles.loginBtn} onClick={() => setIsLoginModalOpen(true)}>
+                     <LogInIcon size={18} />
                      {t("login")}
                   </button>
                )}
-               <div>
+               {/* theme + language grouped together so they stay side by side in the mobile menu */}
+               <div className={styles.navTogglesCon}>
                   <ThemeMandSIcon></ThemeMandSIcon>
-               </div>
-               <div>
                   <ToggleSwitchBtn
                      onChangeFun={handleLanguageChange}
                      checkLan={i18n.language}

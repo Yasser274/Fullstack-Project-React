@@ -1,4 +1,3 @@
-
 /**
  * An animated eye icon component that smoothly transitions between open and closed states.
  */
@@ -37,7 +36,10 @@ const pathVariants: Variants = {
 };
 
 export function EyeIcon({
+   // (taken out so they don't get passed to the div, they're not used)
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    onMouseEnter,
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    onMouseLeave,
    className,
    size = 28,
@@ -70,7 +72,12 @@ export function EyeIcon({
    }, [open, controls, progress]);
 
    return (
-      <div className={cn(`select-none flex items-center justify-center`, className)} {...props}>
+      // inline styles instead of the tailwind classes it came with (tailwind isn't installed in this project so those classes did nothing)
+      <div
+         className={cn("icon", className)}
+         style={{ display: "flex", alignItems: "center", justifyContent: "center", userSelect: "none" }}
+         {...props}
+      >
          <svg
             xmlns="http://www.w3.org/2000/svg"
             width={size}
@@ -78,7 +85,7 @@ export function EyeIcon({
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="2" // same line width as Icons.tsx
             strokeLinecap="round"
             strokeLinejoin="round"
          >
@@ -89,9 +96,7 @@ export function EyeIcon({
             {/* Full eye shape for open state */}
             <path
                d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
-               className={cn("opacity-0 transition-opacity duration-200", {
-                  "opacity-100": open,
-               })}
+               style={{ opacity: open ? 1 : 0, transition: "opacity 200ms" }}
             />
             {/* Animated strike-through line */}
             <motion.path variants={pathVariants} d="m2 2 20 20" animate={controls} />

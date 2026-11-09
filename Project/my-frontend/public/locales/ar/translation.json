@@ -54,11 +54,28 @@
    "contactUs": "اتصل بنا",
    "privacyPolicy": "سياسة الخصوصية",
    "termsOfSer": "شروط الخدمة",
-   "rightsText": "2025 Trend Bites. جميع الحقوق محفوظة",
+   "rightsText": "{{year}} Trend Bites. جميع الحقوق محفوظة",
    "yourReview": "(انت)",
    "ratedSuccessfully": "لقد قمت بالتقييم بنجاح!",
    "selectTag": "تحديد الفئة",
    "searchTagPlaceholder": "البحث عن تصنيف",
+   "TrendingResSub": "ترتيب يحدده المجتمع ويتجدد كل شهر",
+   "noRestaurantsFound": "لم يتم العثور على مطاعم مطابقة لبحثك.",
+   "noTagsFound": "لا توجد فئات",
+   "alreadyRatedSame": "لقد قيّمت هذا المطعم بالفعل بـ {{rating}} نجوم.",
+   "ratingFailed": "لم يتم إرسال تقييمك، يرجى المحاولة مرة أخرى.",
+   "noReviewsYet": "لا توجد تقييمات بعد. كن أول من يقيّم!",
+   "noCommentProvided": "لم يتم إضافة تعليق.",
+   "noVotesHistory": "لم تقم بتقييم أي مطعم بعد.",
+   "somethingWentWrong": "حدث خطأ ما، يرجى المحاولة مرة أخرى.",
+   "prevPage": "الصفحة السابقة",
+   "nextPage": "الصفحة التالية",
+   "notFoundTitle": "الصفحة غير موجودة",
+   "notFoundDesc": "هذه الصفحة غير متوفرة بعد أو تم نقلها.",
+   "backHome": "العودة للرئيسية",
+   "contactTitle": "تواصل معنا",
+   "contactDesc": "هل لديك مطعم تريد رؤيته في Trend Bites أو وجدت مشكلة؟ تواصل معي عبر أي من هذه الحسابات وسأرد عليك.",
+   "rateStars": "قيّم بـ {{count}} نجوم",
    "auth": {
       "login": {
          "success": "تم تسجيل الدخول بنجاح",
@@ -73,6 +90,7 @@
          "incorrectOldPassword": "كلمة المرور القديمة غير صحيحة",
          "notMatch": "كلمة المرور الجديدة لا تتطابق",
          "changedSuccessfully": "تم تغيير كلمة المرور بنجاح! سيتم تسجيل خروجك خلال 5 ثوانٍ",
+         "imageTooBig": "يجب أن يكون حجم الصورة أقل من 8 ميجابايت",
          "changedProfilePic": "تم تحديث صورة الملف الشخصي بنجاح!"
       }
    }

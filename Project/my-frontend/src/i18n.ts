@@ -14,7 +14,7 @@ i18n
    .init({
       // Default language
       fallbackLng: "en",
-      debug: true, // Set to false in production
+      debug: import.meta.env.DEV, // Set to false in production (DEV is true on npm run dev and false on npm run build so it handles itself)
 
       interpolation: {
          escapeValue: false, // React already safes from xss

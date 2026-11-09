@@ -35,28 +35,31 @@ interface AuthContextType {
 // This is to toggle between null(user not logged in) and (AuthContextType data type which has user info)
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// .Read the token once when the app loads
+// this used to be inside a useEffect, but effects run AFTER the first render so for one render the user was always null
+// (that made /profile flash the "Authentication Required" modal on refresh) now the first render already has the user
+const getInitialAuth = (): { user: User | null; expired: boolean } => {
+   const token = localStorage.getItem("token");
+   if (!token) {
+      return { user: null, expired: false };
+   }
+   // if token is expired
+   if (isTokenExpired(token)) {
+      // token found in localstorage and remove it
+      localStorage.removeItem("token");
+      return { user: null, expired: true };
+   }
+   // Token is valid, log the user in
+   return { user: jwtDecode<User>(token), expired: false };
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-   const [user, setUser] = useState<User | null>(null);
+   // useState(() => ...) only runs the function on the first render
+   const [initialAuth] = useState(getInitialAuth);
 
-   const [isSessionExpired, setIsSessionExpired] = useState<boolean>(false);
+   const [user, setUser] = useState<User | null>(initialAuth.user);
 
-   // This effect runs once when the app loads
-   useEffect(() => {
-      const token = localStorage.getItem("token");
-      if (token) {
-         // if token is expired
-         if (isTokenExpired(token)) {
-            // token found in localstorage and remove it
-            localStorage.removeItem("token");
-            setUser(null);
-            setIsSessionExpired(true);
-         } else {
-            // Token is valid, log the user in
-            const decodedUser: User = jwtDecode(token);
-            setUser(decodedUser);
-         }
-      }
-   }, []);
+   const [isSessionExpired, setIsSessionExpired] = useState<boolean>(initialAuth.expired);
 
    // This effect sets up a recurring check ONLY WHEN a user is logged in
    useEffect(() => {

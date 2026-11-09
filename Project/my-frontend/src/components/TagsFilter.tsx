@@ -4,6 +4,7 @@ import styles from "../components/styles/Home.module.css";
 import { useTranslation } from "react-i18next";
 import { type tagsPropsListAPI } from "../pages/HomePage";
 import SearchBar from "./common/SearchBar";
+import { CheckIcon, ChevronDownIcon, CloseIcon, TagIcon } from "../assets/icons/Icons";
 
 interface tagsProps {
    tagsList: tagsPropsListAPI[] | null;
@@ -28,7 +29,8 @@ const TagsFilter = ({ tagsList, funResetPage1, selectedTagsList, selectTagsFun }
       // * when user inputted inside search and looks for certain tag
       filteredTag = tagsList?.filter((tag) => {
          // if tagname includes whats inside tagSearch that inputted by user return it (meaning just filter out the ones that doesn't include)
-         return tag.tagname.includes(tagSearch);
+         // lowercase both so "Burger" still finds "burger"
+         return tag.tagname.toLowerCase().includes(tagSearch.trim().toLowerCase());
       });
    }
 
@@ -38,9 +40,10 @@ const TagsFilter = ({ tagsList, funResetPage1, selectedTagsList, selectTagsFun }
 
    // this effect when user clicks outside of tags select div anywhere on the page it will close the menu
    useEffect(() => {
-      const handleClickOutside = () => {
+      // use the event the listener gives me, the old code read the global window.event which is deprecated (and missing in some browsers)
+      const handleClickOutside = (event: MouseEvent) => {
          // when user clicks anywhere but the containerRef(tag select menu)
-         if (containerRef.current && !containerRef.current.contains(event?.target as Node)) {
+         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
             setMenuIsOpen(false);
          }
       };
@@ -80,7 +83,21 @@ const TagsFilter = ({ tagsList, funResetPage1, selectedTagsList, selectTagsFun }
 
    return (
       <div className={styles.tagsFilterContainer} ref={containerRef}>
-         <div onClick={handleOpeningMenu} className={styles.tagsControl}>
+         <div
+            onClick={handleOpeningMenu}
+            className={`${styles.tagsControl} ${menuIsOpen ? styles.tagsControlOpen : ""}`}
+            role="button"
+            tabIndex={0}
+            aria-expanded={menuIsOpen}
+            // Enter or Space opens it from the keyboard like a normal select
+            onKeyDown={(e) => {
+               if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleOpeningMenu();
+               }
+            }}
+         >
+            <TagIcon className={styles.controlIcon} size={18} />
             <div className={styles.selectedTagWrapper}>
                {/* if no tags are selected */}
                {selectedTagsList.length === 0 ? (
@@ -102,8 +119,10 @@ const TagsFilter = ({ tagsList, funResetPage1, selectedTagsList, selectTagsFun }
                            <span
                               className={styles.removeTagIcon}
                               onClick={(e) => removeTag(e, selectedTagId)}
+                              role="button"
+                              aria-label={`Remove ${matchingTag.tagname}`}
                            >
-                              &times;
+                              <CloseIcon size={12} strokeWidth={3} />
                            </span>
                         </span>
                      );
@@ -112,7 +131,7 @@ const TagsFilter = ({ tagsList, funResetPage1, selectedTagsList, selectTagsFun }
                })}
             </div>
             {/* A visual chevron to indicate open/closed state */}
-            <span className={`${styles.chevron} ${menuIsOpen ? styles.chevronOpen : ""}`}>▼</span>
+            <ChevronDownIcon className={`${styles.chevron} ${menuIsOpen ? styles.chevronOpen : ""}`} size={18} />
          </div>
          {/* The dropdown menu appears only when `menuIsOpen` is true */}
          {menuIsOpen ? (
@@ -125,10 +144,12 @@ const TagsFilter = ({ tagsList, funResetPage1, selectedTagsList, selectTagsFun }
                   classNameCon={styles.searchBarDivConTag}
                   classNameStyle={styles.searchBarS}
                ></SearchBar>
+               {filteredTag?.length === 0 ? <span className={styles.noTagsFound}>{t("noTagsFound")}</span> : null}
                {filteredTag?.map((tag) => {
                   const isSelected = selectedTagsList.includes(tag.id);
                   return (
                      <button
+                        type="button"
                         value={tag.id}
                         key={tag.id}
                         onClick={addTag}
@@ -136,7 +157,7 @@ const TagsFilter = ({ tagsList, funResetPage1, selectedTagsList, selectTagsFun }
                         className={`${styles.tagBtn} ${isSelected ? styles.tagBtnActive : ""}`}
                      >
                         {tag.tagname.charAt(0).toUpperCase() + tag.tagname.slice(1)}
-                        {isSelected && <span className={styles.checkMark}>✓</span>}
+                        {isSelected && <CheckIcon className={styles.checkMark} size={16} strokeWidth={2.5} />}
                      </button>
                   );
                })}

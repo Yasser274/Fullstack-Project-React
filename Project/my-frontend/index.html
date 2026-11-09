@@ -2,19 +2,34 @@
 <html lang="en">
    <head>
       <meta charset="UTF-8" />
-      <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
-      <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
-      <link rel="shortcut icon" href="favicon/favicon.ico" />
-      <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
-      <link rel="manifest" href="favicon/site.webmanifest" />
+      <!-- paths start with / so they still work on nested routes like /en/profile/settings (without it the browser looks for /en/profile/favicon/...) -->
+      <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+      <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+      <link rel="shortcut icon" href="/favicon/favicon.ico" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+      <link rel="manifest" href="/favicon/site.webmanifest" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="theme-color" content="#0f0b1a" />
       <title>Trend Bites</title>
+
+      <!-- * Theme before first paint -->
+      <!-- set data-theme before React loads so dark mode users don't see a white flash on refresh -->
+      <script>
+         try {
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            document.documentElement.setAttribute("data-theme", savedTheme || (prefersDark ? "dark" : "light"));
+         } catch (e) {
+            // localStorage can be blocked (private mode etc) so just fall back to light
+         }
+      </script>
 
       <!-- * Fonts -->
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <!-- Beau Rivage is the font the logo text uses, without it the logo falls back to a wider font and gets cut off ("Trend Bi") -->
       <link
-         href="https://fonts.googleapis.com/css2?family=Changa:wght@200..800&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+         href="https://fonts.googleapis.com/css2?family=Beau+Rivage&family=Changa:wght@200..800&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
          rel="stylesheet"
       />
    </head>

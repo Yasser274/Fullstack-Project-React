@@ -3,18 +3,22 @@ interface PasswordFieldProps {
    type: "text" | "password" | "email";
    label: string;
    Icon: ElementType; // It accepts a component type.
+   autoComplete?: string; // so password managers know what to fill (username, current-password, new-password..)
 }
 
 import styles from "../components/common/common.module.css";
-import { useState, type ElementType } from "react";
+import { useId, useState, type ElementType } from "react";
 import { EyeIcon } from "./EyeIcon";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 
-const InputField = ({ name, label, Icon, type }: PasswordFieldProps) => {
+const InputField = ({ name, label, Icon, type, autoComplete }: PasswordFieldProps) => {
    const { t } = useTranslation();
 
    const [showPassword, setShowPassword] = useState(false);
+
+   // unique id to connect the <label> with its <input> (clicking the label now focuses the input)
+   const inputId = useId();
 
    const isPasswordField = type === "password"; // if type is entered password by parent it will be true if "text" it will be false
 
@@ -23,12 +27,19 @@ const InputField = ({ name, label, Icon, type }: PasswordFieldProps) => {
    return (
       <div className={styles.formDetailsDiv}>
          <div className={styles.formDetailsLabel}>
-            <Icon className={styles.formIcons}></Icon>
-            <label>{t(label)}</label>
+            <Icon className={styles.formIcons} size={18}></Icon>
+            <label htmlFor={inputId}>{t(label)}</label>
          </div>
 
          <div className={isPasswordField ? styles.passwordInputWrapper : styles.normalInputWrapper}>
-            <input type={currentInputType} name={name} className={styles.formDetailsDivInput} />
+            <input
+               id={inputId}
+               type={currentInputType}
+               name={name}
+               className={styles.formDetailsDivInput}
+               autoComplete={autoComplete}
+               required
+            />
 
             {/* {Conditionally render the eye icon button only for password fields } */}
             {isPasswordField && (

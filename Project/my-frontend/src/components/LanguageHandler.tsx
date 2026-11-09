@@ -10,18 +10,12 @@ const LanguageHandler = () => {
    const { i18n } = useTranslation();
 
    useEffect(() => {
-      let timerId: number | undefined = undefined;
       // if lang exists and lang is included in supportedLanguages and i18n.language(current site language) isn't the new changed language
       if (lang && supportedLanguages.includes(lang) && i18n.language !== lang) {
+         // no more window.location.reload() after this, everything that depends on the language already re-renders/refetches
+         // when i18n.language changes, and the Swiper (the only thing that needed the reload for RTL) now remounts with a key in Sponsored.tsx
          i18n.changeLanguage(lang);
-         timerId = setTimeout(() => {
-            window.location.reload();
-         }, 1000);
       }
-
-      return () => {
-         clearTimeout(timerId);
-      };
    }, [lang, i18n]);
 
    //  when language changes to arabic or english change the page direction (LTR or RTL)
@@ -30,7 +24,7 @@ const LanguageHandler = () => {
          document.documentElement.lang = "ar";
          document.documentElement.dir = "rtl"; // set page direction to right to left
       } else {
-        document.documentElement.lang = "en";
+         document.documentElement.lang = "en";
          document.documentElement.dir = "ltr";
       }
    }, [i18n.language]);

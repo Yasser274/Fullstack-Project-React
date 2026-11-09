@@ -2,8 +2,7 @@ import type { Restaurant } from "../pages/HomePage";
 import styles from "../components/styles/Home.module.css";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast, Bounce } from "react-toastify";
-import { useTheme } from "../context/ThemeContext";
+import { notify } from "../utils/notify";
 
 // get the types of restaurant
 interface RestaurantCardProps {
@@ -22,25 +21,17 @@ type RatingAmountT = 1 | 2 | 3 | 4 | 5 | number;
 
 // Importing SVGs
 import { API_BASE_URL } from "../config/config";
-import Star from "../assets/icons/Star";
+import { MessageIcon, StarIcon } from "../assets/icons/Icons";
 import { useAuth } from "../context/AuthContext&Global";
 import Modal from "./common/Modal";
-import ReviewCommentsIcon from "../assets/icons/ReviewCommentsIcon";
 import ReviewComments from "./ReviewComments";
-import HalfEmptyStar from "../assets/icons/HalfEmptyStar";
-import i18n from "../i18n";
 
 const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCardProps) => {
    const { t } = useTranslation();
-   const { theme } = useTheme();
-   let isRTL: boolean | null = null;
+   // (removed the isRTL check, the half star flips for arabic in the css now)
 
-   // check if the current language is RTL or LTR and return true or false
-   if (i18n.dir() === "rtl") {
-      isRTL = true;
-   } else {
-      isRTL = false;
-   }
+   // which star the mouse is over (0 = none), used to preview the rating before clicking
+   const [hoverRating, setHoverRating] = useState<number>(0);
 
    // function to votes and affect the ranking
    // State to hold the current rating. 0 means no stars are selected.
@@ -80,6 +71,12 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
    }, [user, restaurantList.reviews]);
 
    const popUpReviewModal = (uRatingA: RatingAmountT, restId: number) => {
+      // check login BEFORE showing the review popup, before this the user wrote a whole comment and only then got told to log in
+      if (!user) {
+         setIsAuthModalOpen(true);
+         return;
+      }
+      if (isVoting) return;
       setReviewModal(true);
 
       // take which restaurant id the user rated and how much he rated it and store it in a state so the rateRestaurant can use it
@@ -110,13 +107,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
       }
 
       if (rateValue === userReview?.rating) {
-         toast.error(`You have already given this restaurant a rating of ${userReview?.rating} stars.`, {
-            position: "top-center",
-            autoClose: 4000,
-            theme: theme === "light" ? "light" : "dark",
-            transition: Bounce,
-            pauseOnHover: true,
-         });
+         notify.error(t("alreadyRatedSame", { rating: userReview?.rating }));
          return;
       }
       setIsVoting(true);
@@ -139,20 +130,15 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
          const updatedRestaurant = await response.json();
          console.dir(updatedRestaurant);
          console.log("Sent", updatedRestaurant);
-         toast.success(t("ratedSuccessfully"), {
-            position: "top-center",
-            autoClose: 4000,
-            theme: theme === "light" ? "light" : "dark",
-            transition: Bounce,
-            pauseOnHover: true,
-            icon: <>🎉</>,
-         });
+         notify.success(t("ratedSuccessfully"));
          handleVoteUpdate(updatedRestaurant.restaurantsData);
       } catch (error) {
          console.error("Error submitting vote:", error);
          if (error instanceof Error) {
             console.error("Message:", error.message);
          }
+         // before this a failed vote only showed in the console, now the user knows it didn't go through
+         notify.error(t("ratingFailed"));
       } finally {
          // Re-enable the stars whether the vote succeeded or failed
          setIsVoting(false);
@@ -230,6 +216,10 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                onClose={() => setReviewCommentsModal(false)}
                title={t("reviewsTitleModal")}
             >
+               {/* empty modal looked broken so show a message when there are no reviews yet */}
+               {restaurantList.reviews.length === 0 ? (
+                  <p className={styles.noReviewsYet}>{t("noReviewsYet")}</p>
+               ) : null}
                {restaurantList.reviews.map((review, index) => {
                   // Combine two unique IDs to create a new unique string
                   const uniqueKey = `${index}-${review.user.id}`;
@@ -246,8 +236,15 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
             </Modal>
          ) : null}
          {/* //.RESTAURANTS LISTS */}
-         <div className={`${styles.card} restaurantsEle`}>
-            <div className={styles.cardRank}>#{rank}</div>
+         <article className={styles.card}>
+            {/* top 3 get the gold/silver/bronze look */}
+            <div className={`${styles.cardRank} ${rank <= 3 ? styles[`cardRankTop${rank}`] : ""}`}>
+               {/* dir="ltr" so it reads "#1" in arabic too (it was flipping to "1#") */}
+               <span dir="ltr">
+                  <span className={styles.cardRankHash}>#</span>
+                  {rank}
+               </span>
+            </div>
 
             <div className={styles.cardContent}>
                <header className={styles.cardHeader}>
@@ -273,14 +270,19 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
 
                <footer className={styles.cardFooter}>
                   {/* The onClick is now on the parent div for a larger click area */}
-                  <div className={styles.cardReviews} onClick={() => setReviewCommentsModal(true)}>
-                     <ReviewCommentsIcon className={styles.reviewCommentsIcon} />
+                  {/* a button instead of a div so it also works with the keyboard (Tab + Enter) */}
+                  <button
+                     type="button"
+                     className={styles.cardReviews}
+                     onClick={() => setReviewCommentsModal(true)}
+                  >
+                     <MessageIcon className={styles.reviewCommentsIcon} size={20} />
                      <span>
                         {restaurantList.reviews.length === 1
                            ? `${restaurantList.reviews.length} ${t("review")}`
                            : `${restaurantList.reviews.length} ${t("reviews")}`}
                      </span>
-                  </div>
+                  </button>
 
                   {/* User's rating for the restaurant */}
                   <div className={styles.cardRating}>
@@ -290,14 +292,15 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                            <div className={styles.stars}>
                               {[...Array(userReview.rating)].map((_, index) => (
                                  // **FIX:** Using standard `className` prop instead of custom `classNameUser`
-                                 <Star key={index} classNameUser={styles.smallStar} />
+                                 <StarIcon key={index} variant="full" size={16} className={styles.smallStar} />
                               ))}
                            </div>
                         </div>
                      )}
                      {/* Restaurant Average Rating */}
                      <div className={styles.averageRating}>
-                        <div className={styles.stars}>
+                        {/* mouse leaving the whole row clears the preview */}
+                        <div className={styles.stars} onMouseLeave={() => setHoverRating(0)}>
                            {[...Array(totalStars)].map((_, index) => {
                               const ratingValue = index + 1;
                               const avgRating = restaurantList.average_rating; // The raw value, e.g., 3.5
@@ -307,38 +310,45 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                                  popUpReviewModal(ratingValue, Number(restaurantList.id));
                               };
 
-                              if (avgRating >= ratingValue) {
+                              // * which star to draw
+                              let variant: "full" | "half" | "empty";
+                              if (hoverRating > 0) {
+                                 // while hovering show the rating the user is about to give (1 to the hovered star)
+                                 variant = ratingValue <= hoverRating ? "full" : "empty";
+                              } else if (avgRating >= ratingValue) {
                                  // return full star if avgRating is more than ratingValue except when it's EX: 3.5 >= 4 (no go to the else if)
-                                 return (
-                                    <Star
-                                       key={index}
-                                       classNameUser={styles.filledStar}
-                                       onClick={handleStarClick}
-                                       disabled={isVoting}
-                                    />
-                                 );
+                                 variant = "full";
                                  // then avgRating is 3.5 > 3
                               } else if (avgRating > ratingValue - 1) {
                                  // render half star
-                                 return (
-                                    <HalfEmptyStar
-                                       key={index}
-                                       className={styles.halfEmptyStar}
-                                       onClick={handleStarClick}
-                                       rightOrLeft={isRTL}
-                                    ></HalfEmptyStar>
-                                 );
+                                 variant = "half";
                               } else {
                                  // render empty star
-                                 return (
-                                    <Star
-                                       key={index}
-                                       classNameUser={styles.unfilledStar}
-                                       disabled={isVoting}
-                                       onClick={handleStarClick}
-                                    ></Star>
-                                 );
+                                 variant = "empty";
                               }
+
+                              return (
+                                 // a real button for every star so it works with the keyboard and screen readers say "Rate 3 stars"
+                                 <button
+                                    key={index}
+                                    type="button"
+                                    className={`${styles.starBtn} ${hoverRating > 0 ? styles.starBtnPreview : ""}`}
+                                    onClick={handleStarClick}
+                                    onMouseEnter={() => setHoverRating(ratingValue)}
+                                    onFocus={() => setHoverRating(ratingValue)}
+                                    onBlur={() => setHoverRating(0)}
+                                    disabled={isVoting}
+                                    aria-label={t("rateStars", { count: ratingValue })}
+                                 >
+                                    <StarIcon
+                                       variant={variant}
+                                       size={26}
+                                       className={`${styles.star} ${variant === "empty" ? styles.starEmpty : ""} ${
+                                          variant === "half" ? styles.starHalf : ""
+                                       }`}
+                                    />
+                                 </button>
+                              );
                            })}
                         </div>
                         <div className={styles.ratingInfo}>
@@ -349,7 +359,7 @@ const RestaurantCard = ({ restaurantList, rank, handleVoteUpdate }: RestaurantCa
                   </div>
                </footer>
             </div>
-         </div>
+         </article>
       </>
    );
 };

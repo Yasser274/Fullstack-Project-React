@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import styles from "../components/styles/Home.module.css";
 import { API_BASE_URL } from "../config/config";
 import { useAuth } from "../context/AuthContext&Global";
-import StarFilled from "../assets/icons/StarFilled";
+import { CalendarIcon, MessageIcon, StarIcon } from "../assets/icons/Icons";
 import { useTranslation } from "react-i18next";
+import Loading from "../assets/icons/Loading";
 
 interface rateHistoryT {
    restaurant_id: number;
@@ -21,7 +22,8 @@ const ProfileVotesHistory = () => {
 
    const [, setError] = useState<string>("");
 
-   const [, setIsLoading] = useState<boolean>(true);
+   // now actually used so the "no ratings" message doesn't flash before the data arrives
+   const [isLoading, setIsLoading] = useState<boolean>(true);
 
    const { user } = useAuth();
 
@@ -58,31 +60,43 @@ const ProfileVotesHistory = () => {
                const errorData = await response.json();
                throw new Error(errorData.error || "Failed to fetch user's rating history");
             }
-            const data = await response.json();
-            const ratingHistoryArr: [] = data.reviewsHistory;
-            if (ratingHistoryArr.length <= 0 && response.status === 204) {
-               setError(data.displayMessage);
+            // 204 (No Content) never has a body even if the backend sends json with it, so response.json() would throw here
+            if (response.status === 204) {
+               setRateHistory([]);
+               return;
             }
+            const data = await response.json();
+            const ratingHistoryArr: rateHistoryT[] = data.reviewsHistory ?? [];
             setRateHistory(ratingHistoryArr);
-         } catch (error: any) {
-            setError(error);
+         } catch (error) {
+            console.error(error);
+            setError(error instanceof Error ? error.message : String(error));
          } finally {
             setIsLoading(false);
          }
       };
       fetchRatingHistory();
-   }, [i18n.language]);
+   }, [i18n.language, user]);
 
    return (
       <div className={styles.votesHistoryCon}>
-         {rateHistory === null || rateHistory.length <= 0 ? (
-            <div className={styles.emptyVoteHistory}>You haven’t rated any restaurants.</div>
+         {isLoading ? (
+            <div className={styles.emptyVoteHistory}>
+               <Loading></Loading>
+            </div>
+         ) : rateHistory === null || rateHistory.length <= 0 ? (
+            <div className={styles.emptyVoteHistory}>{t("noVotesHistory")}</div>
          ) : (
             rateHistory.map((rateH, index) => {
                const showStarsRating = () => {
-                  const ratingUserArrayLength = [...Array(rateH.rating)];
-                  const ratingStars = ratingUserArrayLength.map((_, index) => (
-                     <StarFilled key={index} className={styles.filledStarProfile}></StarFilled>
+                  // always 5 stars (filled up to the rating, empty after) so every card lines up the same
+                  const ratingStars = [...Array(5)].map((_, index) => (
+                     <StarIcon
+                        key={index}
+                        variant={index < rateH.rating ? "full" : "empty"}
+                        size={18}
+                        className={index < rateH.rating ? styles.filledStarProfile : styles.emptyStarProfile}
+                     />
                   ));
                   return ratingStars;
                };
@@ -96,25 +110,29 @@ const ProfileVotesHistory = () => {
                               className={styles.historyLogo}
                            />
                         </div>
-                        <div className={styles.timeHistoryCon}>
-                           {t("votingHistoryTimeStamp")}
-                           {new Date(rateH.reviewed_at).toLocaleString([], {
-                              hour12: true,
-                           })}
-                        </div>
-                     </div>
-                     <div className={styles.bottomHistoryDetails}>
                         <div className={styles.resturVoteInfo}>
                            <div className={styles.resturVoteName}>{rateH.restaurant_name}</div>
                            <div className={styles.resturVoteRatingCon}>
-                              <div className={styles.resturVoteInfoRating}>{t("votingHistoryRated")}</div>
+                              <span className={styles.visuallyHidden}>{t("votingHistoryRated")}</span>
                               <div className={styles.resturVoteInfoRating}>{showStarsRating()}</div>
                            </div>
                         </div>
-                        <div className={styles.resturReviewCommentCon}>
-                           {rateH.comment ? t("votingHistoryComment") : t("votingHistoryNoComment")}
-                           <p>{rateH.comment}</p>
+                        <div className={styles.timeHistoryCon}>
+                           <CalendarIcon size={16} />
+                           <span className={styles.visuallyHidden}>{t("votingHistoryTimeStamp")}</span>
+                           <time dateTime={rateH.reviewed_at}>
+                              {new Date(rateH.reviewed_at).toLocaleString(i18n.language === "ar" ? "ar" : "en-US", {
+                                 dateStyle: "medium",
+                                 timeStyle: "short",
+                                 hour12: true,
+                              })}
+                           </time>
                         </div>
+                     </div>
+                     {/* comment shown like a quote bubble under the restaurant */}
+                     <div className={`${styles.resturReviewCommentCon} ${rateH.comment ? "" : styles.noCommentHistory}`}>
+                        <MessageIcon size={16} />
+                        <p>{rateH.comment ? rateH.comment : t("votingHistoryNoComment")}</p>
                      </div>
                   </div>
                );

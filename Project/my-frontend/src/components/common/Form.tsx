@@ -1,8 +1,8 @@
 import styles from "./common.module.css";
 
 // Import SVGs icons
-import UsernameIcon from "../../assets/icons/UsernameSVG"; // so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
-import PasswordIcon from "../../assets/icons/PasswordSVG";
+// so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
+import { UserIcon as UsernameIcon, LockIcon as PasswordIcon } from "../../assets/icons/Icons";
 import InputField from "../InputField";
 
 export interface FormDataTy {
@@ -36,13 +36,14 @@ const Form = ({ onSubmitP, buttonAction, errorMes, displayMessage }: FormProps) 
          {errorMes !== null ? <p className={styles.modalErrorMessage}>{errorMes}</p> : null}
          {displayMessage !== null ? <p className={styles.modalDisplayMessage}>{displayMessage}</p> : null}
 
-         <InputField name="username" label="usernameTextField" Icon={UsernameIcon} type="text"></InputField>
+         <InputField name="username" label="usernameTextField" Icon={UsernameIcon} type="text" autoComplete="username"></InputField>
 
          <InputField
             name="password"
             label="passwordTextField"
             type="password"
             Icon={PasswordIcon}
+            autoComplete="current-password"
          ></InputField>
 
          <div className={styles.formBtnCon}>

@@ -13,6 +13,7 @@ import Sponsored from "../components/Sponsored";
 // for translations
 import { useTranslation } from "react-i18next";
 import TagsFilter from "../components/TagsFilter";
+import { AlertIcon, ChevronDownIcon, SortIcon, TrendingIcon, UtensilsIcon } from "../assets/icons/Icons";
 
 // export the types of restaurants in useState
 export interface Restaurant {
@@ -110,6 +111,9 @@ const HomePage = () => {
    const handlePageChange = (pageNumber: number) => {
       // This will update the URL to, for example, "/?page=2"
 
+      // scroll back up to the search bar so the user sees the new page from the top (not stuck at the bottom where the buttons are)
+      section2Ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
       // without overwriting the whole Params and removing sortBy just access the prevParamas and set the new page value to new page just clicked
       setSearchParams((prevParams) => {
          prevParams.set("page", pageNumber.toString());
@@ -119,6 +123,13 @@ const HomePage = () => {
 
    // useEffect to add selected tags into the URL
    useEffect(() => {
+      // only touch the URL when the tags really changed compared to what's already in it
+      // (on page load they are the same because the tags come FROM the URL, without this check opening a shared link like ?page=3 reset it to page 1)
+      const tagsInUrl = searchParams.getAll("tags").join(",");
+      if (tagsInUrl === selectedTag.join(",")) {
+         return;
+      }
+
       const handleTagChange = () => {
          //it's crucial to remove any existing 'tags' parameters
          // This handles the case where a user deselects a tag.
@@ -136,19 +147,26 @@ const HomePage = () => {
          });
       };
       handleTagChange();
-   }, [selectedTag]);
+      // searchParams left out on purpose, this should only run when the selected tags change
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [selectedTag, setSearchParams]);
 
    // * fetch tags
    useEffect(() => {
       const fetchTags = async () => {
-         const response = await fetch(`${API_BASE_URL}/api/restaurants/restaurantTags`);
+         // try/catch so a failed tags request doesn't become an "Uncaught (in promise)" error, the page still works without tags
+         try {
+            const response = await fetch(`${API_BASE_URL}/api/restaurants/restaurantTags`);
 
-         const data = await response.json();
+            const data = await response.json();
 
-         if (!response.ok) {
-            throw new Error(data.message || `Fetching tags went wrong (Frontend)`);
+            if (!response.ok) {
+               throw new Error(data.message || `Fetching tags went wrong (Frontend)`);
+            }
+            setTags(data.tagsData);
+         } catch (error) {
+            console.error("Retrieving tags went wrong", error);
          }
-         setTags(data.tagsData);
       };
       fetchTags();
    }, []);
@@ -184,6 +202,10 @@ const HomePage = () => {
 
    // useEffect to fetch the data(json) from api of restaurants and use setRestaurants to store the data in the state
    useEffect(() => {
+      // since i don't debounce the search, typing fast fires many requests and an older (slower) one could finish last
+      // and overwrite the results, so every new run cancels the request from the previous run
+      const controller = new AbortController();
+
       const fetchRestaurantsList = async () => {
          // Instead, set a timer. If the fetch finishes before the timer, we cancel it.
          const timer = setTimeout(() => {
@@ -227,39 +249,61 @@ const HomePage = () => {
 
          //-- search delay so it doesn't hit the API instantly (debounce)
          // i've decided to not debounce and delay the query
+         // (the page reset to 1 happens in handleSearchChange now, forcing page=1 here made the pagination buttons do nothing while searching)
          if (searchTerm) {
             params.append("searchT", searchTerm.toString());
-            params.set("page", "1");
          }
 
          try {
             // Append the page and limit to the API URL (limit only gets 15 restaurants per page)
-            const response = await fetch(`${API_BASE_URL}/api/restaurants?${params.toString()}`);
+            const response = await fetch(`${API_BASE_URL}/api/restaurants?${params.toString()}`, {
+               signal: controller.signal,
+            });
             if (!response.ok) {
                const errorData = await response.json();
-               throw new Error(errorData.error || "Failed to fetch data from the server.");
+               // the 404 (page not found) sends "message" not "error"
+               throw new Error(errorData.error || errorData.message || "Failed to fetch data from the server.");
             }
             const data = await response.json(); // Get the full object first
             const restaurantsArray: [] = data.restaurantsData; // Then extract the array from the 'restaurantsData' property
             if (restaurantsArray.length <= 0) {
-               setNothingFound("No restaurants found matching your search.");
+               setNothingFound(t("noRestaurantsFound"));
                console.log(restaurantsArray);
             }
             setError(null);
             setRestaurants(restaurantsArray);
-            setTotalPages(data.totalPages);
-         } catch (error: any) {
+            setTotalPages(data.totalPages ?? 0); // the empty result sends "totalPage" so default to 0
+         } catch (error) {
+            // cancelled on purpose by a newer request, not a real error
+            if (controller.signal.aborted) return;
             setRestaurants([]);
-            setError(error.message);
+            setError(error instanceof Error ? error.message : String(error));
             console.error(error);
          } finally {
             // when both try or catch finishes this runs and it takes away the loading render from the website
             clearTimeout(timer);
-            setIsLoading(false);
+            // a cancelled request leaves the loading state to the newer request
+            if (!controller.signal.aborted) {
+               setIsLoading(false);
+            }
          }
       };
       fetchRestaurantsList();
+
+      return () => controller.abort();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [currentPage, sortBy, searchTerm, i18n.language, selectedTag]);
+
+   // when the search text changes go back to page 1 (if i was on page 3 the new results might only have 1 page)
+   const handleSearchChange = (text: string) => {
+      setSearchTerm(text);
+      if (currentPage !== 1) {
+         setSearchParams((prevParams) => {
+            prevParams.set("page", "1");
+            return prevParams;
+         });
+      }
+   };
 
    const handleVoteUpdate = (updatedRestaurantDataFromServer: Restaurant[]) => {
       if (!updatedRestaurantDataFromServer || updatedRestaurantDataFromServer.length === 0) {
@@ -297,7 +341,16 @@ const HomePage = () => {
             className={`${styles.titleAndSort} ${isSectionVisible ? styles.titleAndSortVisible : ""}`}
             ref={sectionRef}
          >
-            <h2 style={{ textAlign: "center" }}>{t("TrendingRes")}</h2>
+            {/* small badge with the current month (in the site language) */}
+            <span className={styles.titleEyebrow}>
+               <TrendingIcon size={16} />
+               {new Date().toLocaleDateString(i18n.language === "ar" ? "ar" : "en-US", {
+                  month: "long",
+                  year: "numeric",
+               })}
+            </span>
+            <h2>{t("TrendingRes")}</h2>
+            <span className={styles.titleSubText}>{t("TrendingResSub")}</span>
          </div>
          <div
             className={`${styles.searchBarCon} ${isSection2Visible ? styles.searchBarConVisible : ""}`}
@@ -305,28 +358,37 @@ const HomePage = () => {
          >
             <SearchBar
                searchBarText={searchTerm}
-               onChangeText={setSearchTerm}
+               onChangeText={handleSearchChange}
                placeholderText={t("searchRestaurant")}
                classNameStyle={styles.searchBarS}
                classNameCon={styles.searchBarDivCon}
                searchBarIcon={styles.searchBarIcon}
             ></SearchBar>
-            <select
-               name="sorting"
-               onChange={(e) =>
-                  setSearchParams((prevParams) => {
-                     prevParams.set("sortBy", e.target.value);
-                     prevParams.set("page", "1"); // Reset to page 1 on new sort
-                     return prevParams;
-                  })
-               }
-            >
-               <option value="" disabled>
-                  {t("sort")}
-               </option>
-               <option value="highestRating">{t("sortByHighest")}</option>
-               <option value="lowestRating">{t("sortByLowest")}</option>
-            </select>
+            {/* wrapper so the sort icon and the chevron (same svg icons as everywhere) can sit on top of the select */}
+            <div className={styles.sortWrap}>
+               <SortIcon className={styles.controlIcon} size={18} />
+               <select
+                  name="sorting"
+                  aria-label={t("sort")}
+                  className={styles.sortSelect}
+                  // controlled by the URL so after a refresh it still shows what the list is sorted by
+                  value={sortBy ?? ""}
+                  onChange={(e) =>
+                     setSearchParams((prevParams) => {
+                        prevParams.set("sortBy", e.target.value);
+                        prevParams.set("page", "1"); // Reset to page 1 on new sort
+                        return prevParams;
+                     })
+                  }
+               >
+                  <option value="" disabled>
+                     {t("sort")}
+                  </option>
+                  <option value="highestRating">{t("sortByHighest")}</option>
+                  <option value="lowestRating">{t("sortByLowest")}</option>
+               </select>
+               <ChevronDownIcon className={styles.sortChevron} size={18} />
+            </div>
 
             <TagsFilter
                tagsList={tags}
@@ -344,11 +406,16 @@ const HomePage = () => {
             className={`${styles.restaurantsCon} ${isSection4Visible ? styles.restaurantsConVisible : ""}`}
             ref={section4Ref}
          >
-            {error ? <div className={styles.notFoundRestaurant}>{error}</div> : ""}
+            {error ? (
+               <div className={styles.emptyState}>
+                  <AlertIcon size={40} className={styles.emptyStateIconError} />
+                  <p>{error}</p>
+               </div>
+            ) : null}
 
             {/* if isLoading is true it will display the loading animation  */}
             {isLoading ? (
-               <div style={{ justifyContent: "center", display: "flex", marginTop: "20px" }}>
+               <div className={styles.loadingCon}>
                   <Loading></Loading>
                </div>
             ) : //if not it will check restaurants if it has stuff in it will display the restaurants
@@ -364,9 +431,12 @@ const HomePage = () => {
                      ></RestaurantCard>
                   );
                })
-            ) : (
-               <div className={styles.notFoundRestaurantM}>{nothingFound}</div>
-            )}
+            ) : nothingFound ? (
+               <div className={styles.emptyState}>
+                  <UtensilsIcon size={44} className={styles.emptyStateIcon} />
+                  <p>{nothingFound}</p>
+               </div>
+            ) : null}
             {isLoading ? null : PaginationFun()}
          </div>
       </div>

@@ -1,9 +1,8 @@
 import styles from "../../components/common/common.module.css";
 // Import SVGs icons
-import UsernameIcon from "../../assets/icons/UsernameSVG"; // so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
-import EmailSVG from "../../assets/icons/EmailSVG";
+// so i can use the SVG and render it as SVG and not img so i can edit its color etc (meaning path)
+import { UserIcon as UsernameIcon, MailIcon as EmailSVG, LockIcon as PasswordSVG } from "../../assets/icons/Icons";
 import InputField from "../InputField";
-import PasswordSVG from "../../assets/icons/PasswordSVG";
 
 export interface RegisterFormData {
    username: string;
@@ -39,15 +38,16 @@ const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage
          {/* render this when the backend returns an error(meaning not null(a string message means an error)) if there is no error return null(nothing) */}
          {errorMes !== null ? <p className={styles.modalErrorMessage}>{errorMes}</p> : null}
          {displayMessage !== null ? <p className={styles.modalDisplayMessage}>{displayMessage}</p> : null}
-         <InputField name="username" label="usernameTextField" Icon={UsernameIcon} type="text"></InputField>
+         <InputField name="username" label="usernameTextField" Icon={UsernameIcon} type="text" autoComplete="username"></InputField>
 
-         <InputField name="email" label="emailTextField" Icon={EmailSVG} type="email"></InputField>
+         <InputField name="email" label="emailTextField" Icon={EmailSVG} type="email" autoComplete="email"></InputField>
 
          <InputField
             name="password"
             label="passwordTextField"
             Icon={PasswordSVG}
             type="password"
+            autoComplete="new-password"
          ></InputField>
 
          <InputField
@@ -55,6 +55,7 @@ const RegisterForm = ({ buttonAction, OnSubmitRegister, errorMes, displayMessage
             label="confPasswordTextField"
             Icon={PasswordSVG}
             type="password"
+            autoComplete="new-password"
          ></InputField>
 
          <div className={styles.formBtnCon}>

@@ -1,58 +1,48 @@
-/* .Dark and light theme */
+/* .Global base styles */
+/* all the colors and sizes moved to styles/theme.css (single source), this file only has the global resets */
+@import "./styles/theme.css";
 
-/* Define a consistent color palette and design */
-/* for light theme (default) */
-:root {
-   --card-bg: #ffffff;
-   --card-border-color: #e9ecef;
-   --text-primary: #212529;
-   --text-secondary: #6c757d;
-   --accent-color: #007bff;
-   --accent-color-rgb: 0, 123, 255;
-   --accent-color-light: #e7f3ff;
-   --star-color: #ffc107;
-   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-   --card-hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-   --border-radius: 16px;
-   --card-leftRanking: #ebebeb;
-   --background-color-secondary: #ffffff;
-   --main-background-color: #f0f0f0;
-   --pagination-number-color: #212529;
-   --pagination-number-color-active: #007bff;
-   --pagination-background-color: #ffffff;
-   --pagination-background-color-active: #212529;
-   --pagination-shadow: rgba(0, 0, 0, 0.27);
-   --input-login-background-color: #242424dc;
-   --footer-background-color: #111827;
-
-   /* fonts for arabic and english */
-   --font-family-english: "Nunito", Arial, Helvetica, sans-serif;
-   --font-family-arabic: "Changa", "Nunito", Arial, Helvetica, sans-serif;
-}
-/* for dark theme */
-[data-theme="dark"] {
-   --accent-color-light: #424446;
-   --card-bg: #222222;
-   --text-primary: #d6d9db;
-   --text-secondary: #abacad;
-   --card-border-color: #262727;
-   --card-leftRanking: #303030;
-   --background-color-secondary: #353535;
-   --main-background-color: #131313;
-   --pagination-number-color: #212529;
-   --pagination-number-color-active: #007bff;
-   --pagination-background-color: #212529;
-   --pagination-background-color-active: #e7f3ff;
-   --pagination-shadow: rgba(189, 189, 189, 0.27);
-   --input-login-background-color: #cecece3f;
-   --footer-background-color: #111827;
+/* smooth scroll for the "back to top of list" when changing page */
+html {
+   scroll-behavior: smooth;
 }
 
 body {
    font-family: var(--font-family-english);
    margin: 0;
+   color: var(--color-text);
+   /* so there is no white strip in dark mode while the page loads */
+   background-color: var(--color-bg);
+   -webkit-font-smoothing: antialiased;
+   transition: background-color var(--duration) ease, color var(--duration) ease;
 }
 /* my arabic font lan */
 body:lang(ar) {
    font-family: var(--font-family-arabic);
+}
+
+/* visible focus ring for keyboard users only (mouse clicks don't show it) */
+:focus-visible {
+   outline: 2px solid var(--color-primary);
+   outline-offset: 2px;
+}
+
+::selection {
+   background-color: var(--color-gold);
+   color: var(--color-on-gold);
+}
+
+/* every icon from Icons.tsx gets this so they all behave the same */
+.icon {
+   flex-shrink: 0;
+   display: inline-block;
+   vertical-align: middle;
+}
+
+/* * Toasts (react-toastify) use the theme too */
+:root {
+   --toastify-color-success: var(--color-success);
+   --toastify-color-error: var(--color-danger);
+   --toastify-font-family: inherit;
+   --toastify-toast-bd-radius: var(--radius-md);
 }

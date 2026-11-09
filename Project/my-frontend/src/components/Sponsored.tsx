@@ -11,14 +11,19 @@ import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import type { Swiper as SwiperClass } from "swiper/types"; // Import Swiper's type for the callback
 import type { sponsorsProps } from "../pages/HomePage";
-import  { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { ChevronLeftIcon, ChevronRightIcon } from "../assets/icons/Icons";
 
 const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
 
-   const {t} = useTranslation()
+   const { t, i18n } = useTranslation();
 
    const progressCircle = useRef<SVGSVGElement | null>(null);
    const progressContent = useRef<HTMLSpanElement | null>(null);
+
+   // my own arrow buttons (same chevron icons as the pagination) instead of Swiper's built in thin arrow
+   const prevBtnRef = useRef<HTMLButtonElement | null>(null);
+   const nextBtnRef = useRef<HTMLButtonElement | null>(null);
 
    const onAutoplayTimeLeft = (_s: SwiperClass, time: number, progress: number) => {
       if (progressCircle.current) {
@@ -29,9 +34,18 @@ const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
       }
    };
 
+   // nothing to show (still loading or no sponsors) so don't render an empty slider with a timer on it
+   if (!slidesList || slidesList.length === 0) {
+      return null;
+   }
+
    return (
       <>
          <Swiper
+            // Swiper only reads the page direction once when it's created, so the key makes it rebuild when switching
+            // between english and arabic (this is what the window.location.reload() in LanguageHandler was covering for)
+            key={i18n.dir(i18n.language)}
+            dir={i18n.dir(i18n.language)}
             spaceBetween={30}
             centeredSlides={true}
             autoplay={{
@@ -42,7 +56,14 @@ const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
             pagination={{
                clickable: true,
             }}
-            navigation={true}
+            navigation={{ prevEl: prevBtnRef.current, nextEl: nextBtnRef.current }}
+            // the refs are still null on the first render, so hand them to swiper right before it starts
+            onBeforeInit={(swiper) => {
+               if (swiper.params.navigation && typeof swiper.params.navigation !== "boolean") {
+                  swiper.params.navigation.prevEl = prevBtnRef.current;
+                  swiper.params.navigation.nextEl = nextBtnRef.current;
+               }
+            }}
             modules={[Autoplay, Pagination, Navigation]}
             onAutoplayTimeLeft={onAutoplayTimeLeft}
             className={styles.mySwiperSponsorCon}
@@ -54,7 +75,7 @@ const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
                           <div
                              className={styles.sponsoredBox}
                              style={{
-                                backgroundImage: `url(${slides.banner_image_url})`,
+                                backgroundImage: `url("${slides.banner_image_url}")`, // quotes so URLs with spaces or ( ) don't break
                              }}
                              aria-label={`Sponsored Content from ${slides.restaurant_name}`}
                           >
@@ -75,7 +96,25 @@ const Sponsored = ({ slidesList }: { slidesList: sponsorsProps[] | null }) => {
                     );
                  })
                : null}
-            <div className={styles.autoplayProgress} slot="container-end" >
+            <button
+               ref={prevBtnRef}
+               type="button"
+               className={`${styles.swiperNavBtn} ${styles.swiperPrev}`}
+               aria-label="Previous slide"
+               slot="container-end"
+            >
+               <ChevronLeftIcon size={22} />
+            </button>
+            <button
+               ref={nextBtnRef}
+               type="button"
+               className={`${styles.swiperNavBtn} ${styles.swiperNext}`}
+               aria-label="Next slide"
+               slot="container-end"
+            >
+               <ChevronRightIcon size={22} />
+            </button>
+            <div className={styles.autoplayProgress} slot="container-end">
                <svg viewBox="0 0 48 48" ref={progressCircle}>
                   <circle cx="24" cy="24" r="20" className={styles.progressTrack}></circle>
 

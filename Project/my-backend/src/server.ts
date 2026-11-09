@@ -9,6 +9,7 @@ import serverless from "serverless-http";
 //* import routes (where the path lies)
 import userRouter from "./routes/userRoutes.js";
 import restaurantRouter from "./routes/restaurantRoutes.js";
+import adminRouter from "./routes/adminRoutes.js";
 
 // Create an instance of the Express application. The `app` object is the heart of my server.
 const app = express();
@@ -46,6 +47,9 @@ app.use("/uploads", express.static(uploadsPath));
 // . API to fetch the restaurants list from the Database
 // ? Any request starting with '/api/restaurants' will be handled by the restaurantRoutes file.
 app.use("/api/restaurants", restaurantRouter);
+
+// . Admin API (add restaurants, logos, tags, sponsors). only users in ADMIN_USER_IDS can use it
+app.use("/api/admin", adminRouter);
 
 // . API to get the login/register value from frontend (login)
 //? Any request starting with '/api' will be handled by the userRoutes file.
